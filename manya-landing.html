@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manya · Sistemas de Crecimiento Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#182345;
+  --blue:#2396FE;
+  --alice:#DEEAFB;
+  --ghost:#F8FAFF;
+  --rose:#FF006E;
+  --white:#ffffff;
+  --muted:#6B7A99;
+  --border:rgba(35,150,254,0.15);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--ghost);color:var(--navy);overflow-x:hidden;line-height:1.6}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 5%;
+  background:rgba(248,250,255,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:0.5rem}
+.logo-mark{
+  width:38px;height:38px;background:var(--navy);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.1rem;color:var(--blue);letter-spacing:-0.04em;
+}
+.logo-text{font-weight:800;font-size:1.2rem;color:var(--navy);letter-spacing:-0.03em}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--navy)}
+.nav-actions{display:flex;gap:.75rem;align-items:center}
+.btn-nav-ghost{
+  color:var(--navy);font-size:0.85rem;font-weight:600;padding:.55rem 1.2rem;
+  border:1.5px solid var(--navy);border-radius:50px;text-decoration:none;
+  transition:all .2s;background:transparent;cursor:pointer;
+  font-family:'Poppins',sans-serif;
+}
+.btn-nav-ghost:hover{background:var(--navy);color:var(--white)}
+.btn-nav-primary{
+  background:var(--blue);color:var(--white);font-size:0.85rem;font-weight:600;
+  padding:.55rem 1.4rem;border-radius:50px;text-decoration:none;border:none;
+  cursor:pointer;transition:all .2s;font-family:'Poppins',sans-serif;
+}
+.btn-nav-primary:hover{background:#1a7fd4}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:7rem 5% 5rem;position:relative;overflow:hidden;
+  background:var(--navy);
+}
+.hero-bg-shape{
+  position:absolute;right:-10%;top:50%;transform:translateY(-50%);
+  width:600px;height:600px;opacity:0.06;pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;width:fit-content;
+  background:rgba(35,150,254,.12);border:1px solid rgba(35,150,254,.3);
+  color:var(--blue);font-size:.75rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;padding:.4rem 1rem;border-radius:50px;margin-bottom:2rem;
+}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero h1{
+  font-size:clamp(2.6rem,5.5vw,5rem);font-weight:900;line-height:1.0;
+  letter-spacing:-.04em;color:var(--white);max-width:850px;margin-bottom:1.5rem;
+  text-transform:uppercase;
+}
+.hero h1 .accent-blue{color:var(--blue)}
+.hero h1 .accent-rose{
+  position:relative;display:inline-block;
+  background:var(--rose);padding:0 .15em;color:var(--white);
+  font-style:italic;
+}
+.hero-sub{
+  font-size:1.1rem;color:rgba(255,255,255,.65);max-width:580px;
+  margin-bottom:3rem;font-weight:300;line-height:1.75;
+}
+.hero-sub strong{color:var(--white);font-weight:600}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem}
+.btn-hero-primary{
+  background:var(--blue);color:var(--white);font-weight:700;font-size:1rem;
+  padding:1rem 2.2rem;border-radius:50px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;
+  font-family:'Poppins',sans-serif;border:none;cursor:pointer;
+}
+.btn-hero-primary:hover{background:#1a7fd4;transform:translateY(-2px)}
+.btn-hero-ghost{
+  color:var(--white);font-weight:500;font-size:1rem;
+  padding:1rem 2.2rem;border-radius:50px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:.5rem;
+  border:1.5px solid rgba(255,255,255,.3);transition:all .2s;background:transparent;
+  cursor:pointer;font-family:'Poppins',sans-serif;
+}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.05)}
+
+.hero-stats{
+  display:flex;gap:3rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,.1);
+  flex-wrap:wrap;
+}
+.hstat .num{
+  font-size:2.4rem;font-weight:900;letter-spacing:-.05em;
+  color:var(--white);line-height:1;
+}
+.hstat .num .rose-num{color:var(--rose)}
+.hstat .label{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:.2rem;font-weight:400}
+
+/* ── LOGOS BAR ── */
+.logos-bar{
+  background:var(--white);padding:2.5rem 5%;
+  border-bottom:1px solid var(--border);
+}
+.logos-label{
+  text-align:center;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;margin-bottom:1.5rem;
+}
+.logos-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:3.5rem;flex-wrap:wrap;
+}
+.logo-item{
+  font-size:.82rem;font-weight:700;color:#9BA8C0;letter-spacing:.05em;
+  text-transform:uppercase;transition:color .2s;
+}
+.logo-item:hover{color:var(--navy)}
+
+/* ── SECTION BASE ── */
+section{padding:6rem 5%}
+.section-num{
+  font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--blue);font-weight:700;margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.section-num::before{content:'';width:24px;height:1.5px;background:var(--blue)}
+.section-title{
+  font-size:clamp(1.8rem,3.5vw,3rem);font-weight:900;letter-spacing:-.04em;
+  line-height:1.05;margin-bottom:1rem;text-transform:uppercase;
+}
+.section-sub{color:var(--muted);font-size:1rem;max-width:580px;line-height:1.75;font-weight:400}
+
+/* ── PAIN SECTION ── */
+.pain-section{background:var(--alice)}
+.pain-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;margin-bottom:4rem}
+.pain-antithesis{
+  background:var(--navy);border-radius:20px;padding:2.5rem;
+}
+.pain-antithesis .line-bad{
+  font-size:1.1rem;font-weight:300;color:rgba(255,255,255,.5);
+  padding-bottom:1rem;margin-bottom:1rem;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.pain-antithesis .line-bad span{color:rgba(255,255,255,.3);text-decoration:line-through}
+.pain-antithesis .line-good{font-size:1.1rem;font-weight:700;color:var(--white)}
+.pain-antithesis .line-good em{font-style:normal;color:var(--blue)}
+
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.pain-card{
+  background:var(--white);border-radius:16px;padding:2rem;
+  border:1px solid transparent;transition:border-color .3s;position:relative;overflow:hidden;
+}
+.pain-card:hover{border-color:var(--border)}
+.pain-shape{width:48px;height:48px;margin-bottom:1.2rem;opacity:.15;position:absolute;top:1.5rem;right:1.5rem}
+.pain-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--alice);display:flex;align-items:center;
+  justify-content:center;margin-bottom:1.2rem;
+}
+.pain-icon svg{width:22px;height:22px;color:var(--blue)}
+.pain-card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem;color:var(--navy)}
+.pain-card p{font-size:.85rem;color:var(--muted);line-height:1.65}
+.pain-tag{
+  display:inline-block;margin-top:.8rem;font-size:.7rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--blue);
+}
+
+/* ── PLATAFORMAS ── */
+.platforms-section{background:var(--ghost)}
+.platforms-intro{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:4rem}
+.platforms-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.platform-card{
+  border-radius:20px;padding:2.5rem;
+  border:1.5px solid transparent;transition:all .3s;position:relative;overflow:hidden;
+}
+.platform-card.g{background:#FFF5F5;border-color:rgba(234,67,53,.15)}
+.platform-card.m{background:#F0F5FF;border-color:rgba(8,102,255,.15)}
+.platform-card.t{background:#FFF0F5;border-color:rgba(255,0,79,.15)}
+.platform-card.l{background:#F0F6FF;border-color:rgba(10,102,194,.15)}
+.platform-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(24,35,69,.1)}
+.plat-dot{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.1rem;margin-bottom:1.5rem;
+  font-family:'Poppins',sans-serif;
+}
+.plat-dot.g{background:#EA4335;color:#fff}
+.plat-dot.m{background:#0866FF;color:#fff}
+.plat-dot.t{background:#FF004F;color:#fff;font-size:.9rem}
+.plat-dot.l{background:#0A66C2;color:#fff}
+.platform-card h3{font-size:1.15rem;font-weight:800;margin-bottom:.4rem;color:var(--navy)}
+.platform-card .plat-sub{font-size:.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.55}
+.plat-features{list-style:none}
+.plat-features li{
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:.82rem;color:var(--muted);padding:.3rem 0;
+  border-bottom:1px solid rgba(24,35,69,.06);
+}
+.plat-features li:last-child{border:none}
+.plat-features li::before{content:'→';color:var(--blue);flex-shrink:0;font-size:.75rem;margin-top:.1rem}
+.plat-badge{
+  position:absolute;top:1.5rem;right:1.5rem;
+  background:var(--navy);color:var(--white);
+  font-size:.65rem;font-weight:700;letter-spacing:.06em;
+  padding:.3rem .7rem;border-radius:50px;text-transform:uppercase;
+}
+
+/* ── SISTEMA MANYA ── */
+.sistema-section{background:var(--navy)}
+.sistema-top{text-align:center;margin-bottom:4rem}
+.sistema-top .section-num{justify-content:center}
+.sistema-top .section-title{color:var(--white)}
+.sistema-top .section-sub{color:rgba(255,255,255,.5);margin:0 auto}
+.sistema-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.sistema-card{
+  border-radius:20px;padding:2.5rem;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);transition:border-color .3s;
+}
+.sistema-card:hover{border-color:rgba(35,150,254,.3)}
+.sistema-shape-wrap{margin-bottom:1.5rem}
+.sistema-shape-wrap svg{width:52px;height:52px;stroke:var(--blue);fill:none;stroke-width:1.2;opacity:.7}
+.sistema-num{
+  font-size:3.5rem;font-weight:900;letter-spacing:-.06em;
+  color:rgba(255,255,255,.06);line-height:1;margin-bottom:.8rem;
+}
+.sistema-card h3{
+  font-size:1.3rem;font-weight:800;text-transform:uppercase;
+  color:var(--white);letter-spacing:-.02em;margin-bottom:.6rem;
+}
+.sistema-card p{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.7}
+.sistema-card .sistema-tag{
+  display:inline-block;margin-top:1.2rem;font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);
+}
+
+/* ── PROCESO ── */
+.proceso-section{background:var(--white)}
+.proceso-header{margin-bottom:4rem}
+.proceso-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.proceso-steps::before{
+  content:'';position:absolute;top:2rem;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),var(--blue),var(--border),transparent);
+}
+.proceso-step{padding:2rem;text-align:center;position:relative}
+.step-circle{
+  width:56px;height:56px;border-radius:50%;background:var(--alice);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.5rem;font-size:1.3rem;font-weight:900;
+  color:var(--blue);border:2px solid var(--blue);position:relative;z-index:1;
+  background:var(--white);
+}
+.proceso-step.active .step-circle{background:var(--blue);color:var(--white)}
+.step-title{font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.5rem}
+.step-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
+.step-tag{
+  display:inline-block;margin-top:.8rem;font-size:.65rem;font-weight:700;
+  letter-spacing:.08em;color:var(--blue);text-transform:uppercase;
+}
+
+/* ── RESULTADOS ── */
+.results-section{background:var(--alice)}
+.results-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-bottom:4rem}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.result-hero{
+  grid-column:1/-1;background:var(--navy);border-radius:20px;padding:3rem;
+  display:flex;align-items:center;gap:4rem;flex-wrap:wrap;
+}
+.rh-num{
+  font-size:5.5rem;font-weight:900;letter-spacing:-.06em;
+  color:var(--blue);line-height:.9;white-space:nowrap;
+}
+.rh-num span{font-size:2rem;color:rgba(255,255,255,.4)}
+.rh-info h3{font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:.5rem;text-transform:uppercase}
+.rh-info p{color:rgba(255,255,255,.5);font-size:.92rem;max-width:420px;line-height:1.65}
+.rh-info .rh-client{
+  margin-top:1rem;font-size:.75rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--blue);
+}
+
+.result-card{
+  background:var(--white);border-radius:20px;padding:2rem;
+  border:1.5px solid var(--border);
+}
+.rc-metric{
+  font-size:3rem;font-weight:900;letter-spacing:-.05em;
+  line-height:1;margin-bottom:.4rem;
+}
+.rc-metric.blue{color:var(--blue)}
+.rc-metric.navy{color:var(--navy)}
+.rc-label{font-size:.88rem;font-weight:600;margin-bottom:.3rem}
+.rc-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+.rc-rose-num{color:var(--rose)}
+
+/* ── TECNOLOGÍA ── */
+.tech-section{background:var(--ghost)}
+.tech-intro{max-width:700px;margin-bottom:3.5rem}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.tech-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:14px;padding:1.75rem;transition:border-color .25s;
+}
+.tech-card:hover{border-color:var(--blue)}
+.tech-icon{
+  width:40px;height:40px;border-radius:8px;background:var(--alice);
+  display:flex;align-items:center;justify-content:center;margin-bottom:1rem;
+}
+.tech-icon svg{width:20px;height:20px;stroke:var(--blue);fill:none;stroke-width:2}
+.tech-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.3rem}
+.tech-name{font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.4rem}
+.tech-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+
+/* ── TESTIMONIALES ── */
+.testi-section{background:var(--white)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.testi-card{
+  background:var(--ghost);border-radius:16px;padding:2rem;
+  border:1px solid var(--border);position:relative;
+}
+.testi-card::before{
+  content:'"';position:absolute;top:1rem;right:1.5rem;
+  font-size:4rem;font-weight:900;color:var(--blue);opacity:.1;line-height:1;
+}
+.testi-stars{display:flex;gap:.2rem;margin-bottom:1rem}
+.star{width:14px;height:14px;background:var(--blue);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.testi-text{font-size:.88rem;color:var(--navy);line-height:1.7;margin-bottom:1.5rem;font-weight:400}
+.testi-author{display:flex;align-items:center;gap:.75rem}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;background:var(--alice);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;color:var(--blue);flex-shrink:0;
+}
+.testi-name{font-size:.85rem;font-weight:700;color:var(--navy)}
+.testi-role{font-size:.75rem;color:var(--muted)}
+.testi-metric{
+  display:inline-flex;align-items:center;gap:.3rem;
+  margin-top:1rem;font-size:.72rem;font-weight:700;
+  color:var(--blue);letter-spacing:.06em;
+  background:var(--alice);padding:.3rem .8rem;border-radius:50px;
+}
+
+/* ── DIFERENCIADORES ── */
+.diff-section{background:var(--navy)}
+.diff-claim{
+  text-align:center;margin-bottom:4rem;
+}
+.diff-claim h2{
+  font-size:clamp(1.6rem,3vw,2.5rem);font-weight:900;text-transform:uppercase;
+  letter-spacing:-.04em;color:var(--white);max-width:700px;margin:0 auto 1rem;line-height:1.1;
+}
+.diff-claim p{color:rgba(255,255,255,.5);font-size:.95rem;max-width:480px;margin:0 auto}
+.diff-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.diff-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:2rem;display:flex;align-items:flex-start;gap:1.2rem;
+  transition:border-color .3s;
+}
+.diff-card:hover{border-color:rgba(35,150,254,.3)}
+.diff-check{
+  width:36px;height:36px;border-radius:8px;background:rgba(35,150,254,.15);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:.9rem;color:var(--blue);font-weight:900;
+}
+.diff-card h4{font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.diff-card p{font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.6}
+
+/* ── CTA BAND ── */
+.cta-band{
+  background:var(--blue);padding:5rem 5%;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;
+}
+.cta-band h2{
+  font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:900;text-transform:uppercase;
+  letter-spacing:-.04em;color:var(--white);max-width:550px;line-height:1.1;
+}
+.cta-band h2 em{font-style:normal;background:var(--rose);padding:0 .1em}
+.cta-band-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-dark{
+  background:var(--navy);color:var(--white);padding:1rem 2rem;
+  border-radius:50px;font-weight:700;font-size:.95rem;text-decoration:none;
+  white-space:nowrap;transition:all .2s;font-family:'Poppins',sans-serif;
+}
+.btn-dark:hover{background:#0f1930}
+.btn-wa{
+  background:var(--white);color:var(--navy);padding:1rem 2rem;
+  border-radius:50px;font-weight:700;font-size:.95rem;text-decoration:none;
+  white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:.5rem;
+  font-family:'Poppins',sans-serif;
+}
+.btn-wa:hover{background:var(--ghost)}
+
+/* ── CONTACT ── */
+.contact-section{background:var(--ghost)}
+.contact-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:5rem;align-items:start}
+.contact-info h2{
+  font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;text-transform:uppercase;
+  letter-spacing:-.04em;line-height:1.1;margin-bottom:1rem;color:var(--navy);
+}
+.contact-info p{color:var(--muted);line-height:1.75;margin-bottom:2rem;font-size:.95rem}
+.trust-list{display:flex;flex-direction:column;gap:.85rem}
+.trust-item{display:flex;align-items:center;gap:.75rem;font-size:.88rem;color:var(--muted)}
+.trust-bullet{
+  width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0
+}
+.contact-tag{
+  display:inline-block;margin-top:2rem;font-size:.75rem;font-weight:700;
+  color:var(--blue);letter-spacing:.1em;text-transform:uppercase;
+  border-left:3px solid var(--rose);padding-left:.75rem;
+}
+
+/* FORM */
+.lead-form{display:flex;flex-direction:column;gap:1.2rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-group label{
+  font-size:.75rem;font-weight:600;color:var(--navy);
+  letter-spacing:.05em;text-transform:uppercase;
+}
+.form-group input,
+.form-group select,
+.form-group textarea{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:10px;padding:.8rem 1rem;
+  color:var(--navy);font-family:'Poppins',sans-serif;font-size:.88rem;
+  outline:none;transition:border-color .2s;resize:vertical;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{border-color:var(--blue)}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:#b0b9cc}
+.form-group select option{background:var(--white);color:var(--navy)}
+.form-group textarea{min-height:100px}
+.form-footer{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.btn-submit{
+  background:var(--navy);color:var(--white);border:none;
+  padding:1rem 2.2rem;border-radius:50px;font-size:.95rem;
+  font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;
+  transition:all .2s;display:flex;align-items:center;gap:.5rem;
+}
+.btn-submit:hover{background:#0f1930}
+.btn-submit-wa{
+  background:transparent;color:var(--muted);border:none;
+  font-size:.82rem;cursor:pointer;font-family:'Poppins',sans-serif;
+  display:flex;align-items:center;gap:.4rem;text-decoration:underline;
+  transition:color .2s;
+}
+.btn-submit-wa:hover{color:var(--navy)}
+.form-note{font-size:.7rem;color:var(--muted);margin-top:.5rem;line-height:1.5}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--navy);padding:3rem 5%;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;
+}
+.footer-logo-wrap{display:flex;align-items:center;gap:.6rem}
+.footer-mark{
+  width:34px;height:34px;background:var(--blue);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.95rem;color:var(--white);letter-spacing:-.04em;
+}
+.footer-text{font-weight:800;font-size:1.05rem;color:var(--white);letter-spacing:-.02em}
+.footer-tagline{font-size:.75rem;color:rgba(255,255,255,.4)}
+footer p{color:rgba(255,255,255,.35);font-size:.78rem}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.78rem;transition:color .2s}
+.footer-links a:hover{color:rgba(255,255,255,.8)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .pain-header,.platforms-intro,.results-header,.contact-wrap{grid-template-columns:1fr;gap:2rem}
+  .pain-grid,.sistema-grid,.platforms-grid,.results-grid,.testi-grid,.diff-grid,.tech-grid{grid-template-columns:1fr}
+  .result-hero{flex-direction:column;gap:1.5rem}
+  .proceso-steps{grid-template-columns:1fr 1fr}
+  .proceso-steps::before{display:none}
+  footer{flex-direction:column;text-align:center}
+}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">M.</div>
+    <span class="logo-text">MANYA</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#plataformas">Plataformas</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#resultados">Resultados</a></li>
+    <li><a href="#tecnologia">IA & Tech</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-nav-ghost" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Ver planes</button>
+    <a href="#contacto" class="btn-nav-primary">Diagnóstico gratis →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-bg-shape" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="300" r="280" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="300" r="220" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="300" r="160" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="300" r="100" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="300" r="50" stroke="white" stroke-width="1"/>
+  </svg>
+  <div class="hero-eyebrow"><span class="hero-dot"></span>Sistemas de Crecimiento Digital</div>
+  <h1>
+    Tu inversión digital<br>
+    <span class="accent-blue">convertida en</span><br>
+    <span class="accent-rose">resultados</span> reales.
+  </h1>
+  <p class="hero-sub">
+    Combinamos <strong>IA, estrategia y ejecución ágil</strong> en Google, Meta, TikTok y LinkedIn.<br>
+    El crecimiento real no se intuye. Se estructura. Se valida. <strong>Se logra.</strong>
+  </p>
+  <div class="hero-actions">
+    <a href="#contacto" class="btn-hero-primary">Quiero crecer con Manya →</a>
+    <button class="btn-hero-ghost" onclick="document.getElementById('resultados').scrollIntoView({behavior:'smooth'})">Ver resultados ↓</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat">
+      <div class="num"><span class="rose-num">+300</span></div>
+      <div class="label">Empresas escaladas</div>
+    </div>
+    <div class="hstat">
+      <div class="num">4<span>.1×</span></div>
+      <div class="label">ROAS promedio</div>
+    </div>
+    <div class="hstat">
+      <div class="num">-<span class="rose-num">67%</span></div>
+      <div class="label">Reducción de CPL</div>
+    </div>
+    <div class="hstat">
+      <div class="num">8<span>+</span></div>
+      <div class="label">Años de ejecución</div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS BAR -->
+<div class="logos-bar reveal">
+  <div class="logos-label">Marcas que confían en Manya</div>
+  <div class="logos-row">
+    <div class="logo-item">MAPFRE</div>
+    <div class="logo-item">Arellano</div>
+    <div class="logo-item">PUCP</div>
+    <div class="logo-item">Oriflame</div>
+    <div class="logo-item">CIRSA</div>
+    <div class="logo-item">Green Dreams</div>
+  </div>
+</div>
+
+<!-- PAIN POINTS -->
+<section class="pain-section" id="problema">
+  <div class="pain-header reveal">
+    <div>
+      <div class="section-num">El problema</div>
+      <h2 class="section-title">¿Por qué tu inversión<br>en ads no crece?</h2>
+      <p class="section-sub">El crecimiento digital no debería ser un proceso complejo, lento o frustrante. Si lo es, algo en el sistema está roto.</p>
+    </div>
+    <div class="pain-antithesis">
+      <div class="line-bad">Sin estrategia, <span>cada clic cuesta.</span><br>Sin estructura, cada campaña falla.</div>
+      <div class="line-good">Con Manya, <em>cada clic convierte.</em><br>Cada inversión construye sistema.</div>
+    </div>
+  </div>
+  <div class="pain-grid">
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3>Presupuesto sin dirección</h3>
+      <p>Campañas activas en múltiples plataformas pero sin saber qué canal genera revenue real. El dinero se gasta, no se invierte.</p>
+      <span class="pain-tag">#SabiduríaManya</span>
+    </div>
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>Plataformas en silos</h3>
+      <p>Google, Meta, TikTok y LinkedIn reportan de forma inconsistente. Sin visión unificada, es imposible optimizar el mix correctamente.</p>
+      <span class="pain-tag">#InnovaConManya</span>
+    </div>
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      </div>
+      <h3>ROAS impredecible</h3>
+      <p>Funciona un mes, falla el siguiente. Sin metodología de testing continuo y creativos data-driven, los resultados no escalan.</p>
+      <span class="pain-tag">#ManyaLosResultados</span>
+    </div>
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>IA sin estrategia</h3>
+      <p>PMax y Advantage+ automatizan targeting, pero sin señales de primera parte y creativos optimizados, la IA no puede convertir.</p>
+      <span class="pain-tag">#InnovaConManya</span>
+    </div>
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      </div>
+      <h3>Reportes sin contexto</h3>
+      <p>Métricas de vanidad que no conectan con el negocio real. Un reporte sin insights accionables es solo ruido con colores.</p>
+      <span class="pain-tag">#SabiduríaManya</span>
+    </div>
+    <div class="pain-card reveal">
+      <div class="pain-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Equipo sin especialización</h3>
+      <p>Cada plataforma requiere expertise técnico distinto. Un generalista no puede competir contra especialistas full-time en cada canal.</p>
+      <span class="pain-tag">#ManyaElTeam</span>
+    </div>
+  </div>
+</section>
+
+<!-- PLATAFORMAS
+<section class="platforms-section" id="plataformas">
+  <div class="platforms-intro reveal">
+    <div>
+      <div class="section-num">Plataformas</div>
+      <h2 class="section-title">Cobertura total del funnel, sin silos</h2>
+    </div>
+    <div>
+      <p class="section-sub">Cada plataforma cumple un rol estratégico en el journey del cliente. No las usamos de forma aislada — las usamos en sinergia deliberada para que cada touchpoint construya el siguiente.</p>
+    </div>
+  </div>
+  <div class="platforms-grid">
+    <div class="platform-card g reveal">
+      <div class="plat-badge">Intent</div>
+      <div class="plat-dot g">G</div>
+      <h3>Google Ads</h3>
+      <p class="plat-sub">Capturamos demanda existente. El canal de mayor intención de compra — cuando alguien busca, ya decidió.</p>
+      <ul class="plat-features">
+        <li>Search, Shopping & Performance Max</li>
+        <li>Dynamic Keyword Insertion (DKI)</li>
+        <li>Smart Bidding + tROAS personalizado</li>
+        <li>Optimización de Quality Score</li>
+        <li>Integración GA4 + CRM completa</li>
+      </ul>
+    </div>
+    <div class="platform-card m reveal">
+      <div class="plat-badge">Demand Gen</div>
+      <div class="plat-dot m">f</div>
+      <h3>Meta Ads</h3>
+      <p class="plat-sub">Generamos demanda y construimos audiencias. Meta inicia el journey que Google cierra — son complementarios.</p>
+      <ul class="plat-features">
+        <li>Facebook & Instagram Ads</li>
+        <li>Advantage+ Shopping Campaigns</li>
+        <li>Lookalike & Custom Audiences</li>
+        <li>Creative testing A/B sistemático</li>
+        <li>Retargeting por etapa de funnel</li>
+      </ul>
+    </div>
+    <div class="platform-card t reveal">
+      <div class="plat-badge">Awareness</div>
+      <div class="plat-dot t">TT</div>
+      <h3>TikTok Ads</h3>
+      <p class="plat-sub">El canal de mayor crecimiento orgánico amplificado. Reach masivo con creativos nativos de alto engagement.</p>
+      <ul class="plat-features">
+        <li>In-Feed Ads, TopView & Spark Ads</li>
+        <li>UGC producido para performance</li>
+        <li>TikTok Shopping integrado</li>
+        <li>Creator Marketplace + influencer</li>
+        <li>Pixel avanzado + optimización SKAN</li>
+      </ul>
+    </div>
+    <div class="platform-card l reveal">
+      <div class="plat-badge">B2B</div>
+      <div class="plat-dot l">in</div>
+      <h3>LinkedIn Ads</h3>
+      <p class="plat-sub">El canal B2B por excelencia. Alcanzamos decision-makers con segmentación por cargo, empresa e industria.</p>
+      <ul class="plat-features">
+        <li>Sponsored Content & InMail</li>
+        <li>Lead Gen Forms (2-3× vs web form)</li>
+        <li>Account-Based Marketing (ABM)</li>
+        <li>LinkedIn Insight Tag + retargeting</li>
+        <li>Thought leadership + conversion ads</li>
+      </ul>
+    </div>
+  </div>
+</section>  -->
+
+<!-- SISTEMA MANYA -->
+<section class="sistema-section">
+  <div class="sistema-top reveal">
+    <div class="section-num">Nuestra razón</div>
+    <h2 class="section-title" style="color:var(--white)">El sistema que nos<br>hace diferentes</h2>
+    <p class="section-sub">Desarrollamos sistemas integrales de crecimiento digital que transforman cómo una empresa se presenta, se comunica, vende y escala.</p>
+  </div>
+  
+  <div class="tech-grid">
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="tech-label">Atribución</div>
+      <div class="tech-name">Triple Whale · Hyros</div>
+      <p class="tech-desc">Multi-touch attribution cross-device. Eliminamos el "last-click bias" y conectamos cada touchpoint con revenue real en el CRM.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      </div>
+      <div class="tech-label">Data & Reportes</div>
+      <div class="tech-name">BigQuery · Looker Studio</div>
+      <p class="tech-desc">Dashboard en tiempo real que conecta 15+ fuentes de datos. KPIs de negocio visibles, no hojas de cálculo.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      </div>
+      <div class="tech-label">IA Publicitaria</div>
+      <div class="tech-name">Google AI · Meta AI</div>
+      <p class="tech-desc">Aprovechamos Smart Bidding, PMax y Advantage+ con señales de primera parte correctamente configuradas. La IA necesita contexto para rendir.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="tech-label">Landing Pages</div>
+      <div class="tech-name">Unbounce · Instapage</div>
+      <p class="tech-desc">Smart Traffic A/B automatizado y Dynamic Text Replacement. Cada ad tiene su landing con mensaje exacto. +400% vs páginas genéricas.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div class="tech-label">CRM Integration</div>
+      <div class="tech-name">HubSpot · Salesforce</div>
+      <p class="tech-desc">Cerramos el loop entre campañas y deals. Cada lead tiene tracking completo desde el ad hasta el cierre, con revenue attribution real.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      </div>
+      <div class="tech-label">Creative Intelligence</div>
+      <div class="tech-name">Motion · Foreplay</div>
+      <p class="tech-desc">Analizamos creativos de competencia, identificamos patrones ganadores y producimos ads basados en datos de performance, no en intuición.</p>
+    </div>
+  </div>
+  
+  <!-- SISTEMA MANYA
+  <div class="sistema-grid">
+    <div class="sistema-card reveal">
+      <div class="sistema-shape-wrap">
+        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="22"/><circle cx="26" cy="26" r="15"/><circle cx="26" cy="26" r="8"/></svg>
+      </div>
+      <div class="sistema-num">01</div>
+      <h3>Efectividad</h3>
+      <p>Mostramos resultados medibles y confiables. Cada campaña tiene KPIs conectados a revenue real, no a métricas de vanidad.</p>
+      <span class="sistema-tag">#SabiduríaManya</span>
+    </div>
+    <div class="sistema-card reveal">
+      <div class="sistema-shape-wrap">
+        <svg viewBox="0 0 52 52"><polygon points="26,6 46,17 46,35 26,46 6,35 6,17"/><polygon points="26,14 38,21 38,33 26,40 14,33 14,21"/><polygon points="26,22 32,26 32,30 26,34 20,30 20,26"/></svg>
+      </div>
+      <div class="sistema-num">02</div>
+      <h3>Sobresalientes</h3>
+      <p>Superamos expectativas en cada entrega. Nuestros equipos no entregan lo pedido — entregan lo que el negocio necesita para crecer.</p>
+      <span class="sistema-tag">#ManyaElTeam</span>
+    </div>
+    <div class="sistema-card reveal">
+      <div class="sistema-shape-wrap">
+        <svg viewBox="0 0 52 52"><polygon points="26,4 48,44 4,44"/><polygon points="26,16 38,36 14,36"/><polygon points="26,26 32,36 20,36"/></svg>
+      </div>
+      <div class="sistema-num">03</div>
+      <h3>Eficiencia</h3>
+      <p>Metodologías ágiles y tecnología de IA para maximizar resultados. Más impacto con cada peso invertido, en menos tiempo.</p>
+      <span class="sistema-tag">#InnovaConManya</span>
+    </div>
+  </div> -->
+</section> 
+
+<!-- TECNOLOGÍA -->
+<section class="tech-section" id="tecnologia">
+  <div class="tech-intro reveal">
+    <div class="section-num">IA & Tecnología</div>
+    <h2 class="section-title">La innovación no es inspiración.<br>Es estructura que ejecuta.</h2>
+    <p class="section-sub">Integramos el mejor stack de herramientas para atribución, automatización y reporting. Tú pagas por resultados, nosotros absorbemos el costo del stack.</p>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="tech-label">Atribución</div>
+      <div class="tech-name">Triple Whale · Hyros</div>
+      <p class="tech-desc">Multi-touch attribution cross-device. Eliminamos el "last-click bias" y conectamos cada touchpoint con revenue real en el CRM.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      </div>
+      <div class="tech-label">Data & Reportes</div>
+      <div class="tech-name">BigQuery · Looker Studio</div>
+      <p class="tech-desc">Dashboard en tiempo real que conecta 15+ fuentes de datos. KPIs de negocio visibles, no hojas de cálculo.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      </div>
+      <div class="tech-label">IA Publicitaria</div>
+      <div class="tech-name">Google AI · Meta AI</div>
+      <p class="tech-desc">Aprovechamos Smart Bidding, PMax y Advantage+ con señales de primera parte correctamente configuradas. La IA necesita contexto para rendir.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="tech-label">Landing Pages</div>
+      <div class="tech-name">Unbounce · Instapage</div>
+      <p class="tech-desc">Smart Traffic A/B automatizado y Dynamic Text Replacement. Cada ad tiene su landing con mensaje exacto. +400% vs páginas genéricas.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div class="tech-label">CRM Integration</div>
+      <div class="tech-name">HubSpot · Salesforce</div>
+      <p class="tech-desc">Cerramos el loop entre campañas y deals. Cada lead tiene tracking completo desde el ad hasta el cierre, con revenue attribution real.</p>
+    </div>
+    <div class="tech-card reveal">
+      <div class="tech-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      </div>
+      <div class="tech-label">Creative Intelligence</div>
+      <div class="tech-name">Motion · Foreplay</div>
+      <p class="tech-desc">Analizamos creativos de competencia, identificamos patrones ganadores y producimos ads basados en datos de performance, no en intuición.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section class="results-section" id="resultados">
+  <div class="results-header reveal">
+    <div>
+      <div class="section-num">Resultados</div>
+      <h2 class="section-title">La innovación no es inspiración.<br>Es estructura que ejecuta y demuestra resultados</h2>
+    </div>
+    <p class="section-sub">No reportamos clics. Reportamos revenue. Cada caso de éxito conecta inversión publicitaria con crecimiento real del negocio.</p>
+  </div>
+  
+  <div class="results-grid">
+    <!-- 
+    <div class="result-hero reveal">
+      <div class="rh-num">+349%<span>/subs</span></div>
+      <div class="rh-info">
+        <h3>Crecimiento de comunidad</h3>
+        <p>App de fitness que pasó de 8K a 36K suscriptores activos en 4 meses, reduciendo simultáneamente el costo de adquisición en un 79%. La combinación de TikTok Spark Ads + Meta Retargeting generó el flywheel de crecimiento.</p>
+        <div class="rh-client">silBe by Silvy Araujo · Colombia · Apps</div>
+      </div>
+    </div> -->
+    <div class="result-card reveal">
+      <div class="rc-metric blue">-<span class="rc-rose-num">79%</span></div>
+      <div class="rc-label">Reducción de CAC</div>
+      <p class="rc-desc">Optimización de Creative + audience con IA redujo el costo de adquisición drásticamente mientras la inversión total incrementó.</p>
+    </div>
+    <div class="result-card reveal">
+      <div class="rc-metric navy">4.2<span style="font-size:1.5rem">×</span></div>
+      <div class="rc-label">ROAS promedio portafolio</div>
+      <p class="rc-desc">$4.20 generados por cada $1 invertido en ads. Promedio ponderado de clientes activos en todos los sectores.</p>
+    </div>
+    <div class="result-card reveal">
+      <div class="rc-metric blue">+<span class="rc-rose-num">67%</span></div>
+      <div class="rc-label">Tasa de conversión</div>
+      <p class="rc-desc">Landing pages con video + social proof integrado por Manya convierten hasta 67% más que páginas genéricas.</p>
+    </div>
+    <div class="result-card reveal">
+      <div class="rc-metric navy">-38<span style="font-size:1.5rem">%</span></div>
+      <div class="rc-label">Reducción de CPL</div>
+      <p class="rc-desc">Empresas B2B que usan LinkedIn Lead Gen Forms + Google en estrategia integrada reducen su CPL consistentemente.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- TESTIMONIALES -->
+<section class="testi-section">
+  <div class="reveal">
+    <div class="section-num">Testimonios</div>
+    <h2 class="section-title">Lo que dicen<br>nuestros clientes</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="testi-text">"Manya transformó completamente nuestra estrategia digital. Antes teníamos campañas activas pero sin dirección. Ahora cada peso invertido tiene un propósito y podemos ver exactamente qué genera resultados."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">SV</div>
+        <div>
+          <div class="testi-name">Silvy Araujo</div>
+          <div class="testi-role">CEO · silBe · Colombia</div>
+        </div>
+      </div>
+      <div class="testi-metric">+349% suscriptores · -79% CAC</div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="testi-text">"Lo que más valoro es su enfoque constante en las ventas reales y su compromiso por cumplir los objetivos del negocio. Manya forma parte fundamental del crecimiento de nuestra empresa."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">HR</div>
+        <div>
+          <div class="testi-name">Hernando Ríos</div>
+          <div class="testi-role">CEO · Hafa · Colombia</div>
+        </div>
+      </div>
+      <div class="testi-metric">4.2× ROAS sostenido</div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="testi-text">"Excelente trabajo y atención. Realizamos campañas con objetivos muy concretos y sobre todo el seguimiento y las optimizaciones que realizan para mejorar constantemente la calidad y calidad de leads."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">SP</div>
+        <div>
+          <div class="testi-name">Sebastián Pérez</div>
+          <div class="testi-role">CEO · Boleto · Colombia</div>
+        </div>
+      </div>
+      <div class="testi-metric">-67% CPL en 60 días</div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- DIFERENCIADORES
+<section class="diff-section">
+  <div class="diff-claim reveal">
+    <h2>La mayoría de agencias no toca esto.<br>Nosotros <em>sí</em> lo hacemos.</h2>
+    <p>No somos una agencia de ads. Somos un sistema de crecimiento digital. La diferencia es profunda.</p>
+  </div>
+  <div class="diff-grid">
+    <div class="diff-card reveal">
+      <div class="diff-check">✓</div>
+      <div>
+        <h4>Landing pages como parte del servicio</h4>
+        <p>La mayoría de agencias gestiona el ad y se desentiende de lo que pasa después del clic. Manya incluye optimización de landing en cada plan — porque ahí se gana o pierde la conversión.</p>
+      </div>
+    </div>
+    <div class="diff-card reveal">
+      <div class="diff-check">✓</div>
+      <div>
+        <h4>Atribución multi-touch, no last-click</h4>
+        <p>Los reportes de plataforma mienten por diseño. Implementamos atribución de terceros que muestra el real customer journey — cada touchpoint con su peso correcto.</p>
+      </div>
+    </div>
+    <div class="diff-card reveal">
+      <div class="diff-check">✓</div>
+      <div>
+        <h4>IA correctamente configurada</h4>
+        <p>PMax y Advantage+ no son mágicos sin señales de datos correctas. Configuramos las integraciones de primera parte para que la IA de las plataformas tenga contexto real del negocio.</p>
+      </div>
+    </div>
+    <div class="diff-card reveal">
+      <div class="diff-check">✓</div>
+      <div>
+        <h4>Dashboard de negocio, no de vanidad</h4>
+        <p>Conectamos campañas con CRM y revenue real. Cada reporte muestra pipeline, CAC, LTV y ROAS real — no impresiones ni alcance. Métricas que tu CFO entiende.</p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- CTA BAND -->
+<div class="cta-band reveal">
+  <h2>¿Listo para estructurar tu crecimiento digital con <em>resultados reales</em>?</h2>
+  <div class="cta-band-actions">
+    <a href="#contacto" class="btn-dark">Diagnóstico gratuito →</a>
+    <a href="https://wa.me/51999999999?text=Hola,%20quiero%20saber%20más%20sobre%20los%20servicios%20de%20Manya" class="btn-wa">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="results-section" id="contacto">
+  <div class="contact-wrap">
+    <div class="contact-info reveal">
+      <div class="section-num">Diagnóstico</div>
+      <h2>Empieza con una consulta estratégica gratuita</h2>
+      <p>En 30 minutos identificamos las principales oportunidades en tus campañas actuales y proyectamos el impacto potencial con la metodología Manya. Sin compromiso, con datos concretos.</p>
+      <div class="trust-list">
+        <div class="trust-item"><div class="trust-bullet"></div>Análisis gratuito de tus cuentas actuales sin compromiso</div>
+        <div class="trust-item"><div class="trust-bullet"></div>Respuesta en menos de 24 horas hábiles</div>
+        <div class="trust-item"><div class="trust-bullet"></div>Recomendaciones accionables independientemente de si contratas</div>
+        <div class="trust-item"><div class="trust-bullet"></div>Reunión con especialista senior, no con un vendedor</div>
+        <div class="trust-item"><div class="trust-bullet"></div>NDA disponible para empresas con información sensible</div>
+      </div>
+      <div class="contact-tag">El crecimiento real se estructura. Empieza hoy.</div>
+    </div>
+
+    <form class="lead-form reveal" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" placeholder="María García" required>
+        </div>
+        <div class="form-group">
+          <label>Email empresarial</label>
+          <input type="email" placeholder="maria@empresa.com" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Empresa</label>
+          <input type="text" placeholder="Nombre de tu empresa" required>
+        </div>
+        <div class="form-group">
+          <label>Presupuesto mensual en ads</label>
+          <select required>
+            <option value="" disabled selected>Selecciona un rango</option>
+            <option>Menos de S/ 3,000</option>
+            <option>S/ 3,000 – S/ 10,000</option>
+            <option>S/ 10,000 – S/ 30,000</option>
+            <option>S/ 30,000 – S/ 100,000</option>
+            <option>Más de S/ 100,000</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>¿Cuál es tu principal objetivo?</label>
+        <textarea placeholder="Ej: Reducir el CPL actual de S/ 80 a S/ 30, escalar ventas de ecommerce de 200 a 600 unidades/mes, generar 50 leads calificados B2B por mes..."></textarea>
+      </div>
+      <div class="form-footer">
+        <button type="submit" class="btn-submit">Solicitar diagnóstico gratis →</button>
+        <button type="button" class="btn-submit-wa" onclick="window.open('https://wa.me/51999999999?text=Hola%2C%20quiero%20hablar%20con%20un%20especialista%20de%20Manya','_blank')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          O escríbenos por WhatsApp
+        </button>
+      </div>
+      <p class="form-note">Al enviar este formulario aceptas nuestra política de privacidad. Tu información es confidencial y nunca será compartida con terceros.</p>
+    </form>
+  </div>
+</section>
+
+
+<!-- PROCESO -->
+<section class="proceso-section" id="proceso">
+  <div class="proceso-header reveal">
+    <div class="section-num">Metodología</div>
+    <h2 class="section-title">Cómo trabajamos juntos</h2>
+    <p class="section-sub">Convertir no es suerte. Es estrategia con dirección. Guiamos cada paso, medimos cada impacto, construimos relaciones que cierran.</p>
+  </div>
+  <div class="proceso-steps reveal">
+    <div class="proceso-step">
+      <div class="step-circle">01</div>
+      <div class="step-title">Diagnóstico inicial</div>
+      <p class="step-desc">Analizamos tus cuentas actuales, identificamos pérdidas de inversión y establecemos benchmarks reales de tu industria.</p>
+      <span class="step-tag">Auditoría gratis</span>
+    </div>
+    <div class="proceso-step active">
+      <div class="step-circle">02</div>
+      <div class="step-title">Kickoff & Investigación</div>
+      <p class="step-desc">Entendemos tu oferta, audiencia, competidores y objetivos. Definimos el mix de plataformas para bases sólidas.</p>
+      <span class="step-tag">Semana 1</span>
+    </div>
+    <div class="proceso-step">
+      <div class="step-circle">03</div>
+      <div class="step-title">Configuración inicial</div>
+      <p class="step-desc">Setup completo de tracking, pixels y conversiones. Configuramos las herramientas para trazabilidad de datos sin ruido.</p>
+      <span class="step-tag">Semanas 2–3</span>
+    </div>
+    <div class="proceso-step">
+      <div class="step-circle">04</div>
+      <div class="step-title">Estrategia de medios</div>
+      <p class="step-desc">Definimos objetivos SMART, planeamos el contenido, la estrategia del embudo y el plan de inversión para maximizar resultados.</p>
+      <span class="step-tag">En curso</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo-wrap">
+      <div class="footer-mark">M.</div>
+      <span class="footer-text">MANYA</span>
+    </div>
+    <div class="footer-tagline">Sistemas de Crecimiento Digital</div>
+  </div>
+  <p>© 2025 Manya Agency · Performance Marketing Multi-Plataforma</p>
+  <div class="footer-links">
+    <a href="#">Privacidad</a>
+    <a href="#">Términos</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Instagram</a>
+  </div>
+</footer>
+
+<script>
+/* FORM SUBMIT */
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.btn-submit');
+  btn.textContent='✓ Enviado — Te contactaremos en menos de 24h';
+  btn.style.background='#0f6638';
+  btn.disabled=true;
+}
+
+/* SCROLL REVEAL */
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(el=>{
+    if(el.isIntersecting){
+      el.target.classList.add('visible');
+    }
+  });
+},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+
+document.querySelectorAll('.reveal').forEach((el,i)=>{
+  el.style.transitionDelay=(i%4)*0.08+'s';
+  io.observe(el);
+});
+
+/* NAVBAR SCROLL */
+const nav=document.querySelector('nav');
+window.addEventListener('scroll',()=>{
+  nav.style.boxShadow=window.scrollY>40?'0 4px 30px rgba(24,35,69,.1)':'none';
+});
+</script>
+</body>
+</html>
