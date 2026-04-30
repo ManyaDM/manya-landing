@@ -5,26 +5,26 @@ const EXTRA_SCROLL = 2500
 
 const resultCards = [
   {
-    metric: <><span className="rc-rose-num">-79%</span></>,
+    metric: <>-<span className="rc-rose-num">79</span><span style={{ fontSize: '2rem' }}>%</span></>,
     metricClass: 'blue',
     label: 'Reducción de CPL',
     desc: 'Optimización de Creative + audience con IA redujo el costo por resultado drásticamente, mientras la inversión total incrementó.',
   },
   {
-    metric: <>4.5<span style={{ fontSize: '1.5rem' }}>×</span></>,
-    metricClass: 'navy',
+    metric: <><span className="rc-rose-num">4.5</span><span style={{ fontSize: '2rem' }}>×</span></>,
+    metricClass: 'blue',
     label: 'ROAS promedio portafolio',
     desc: '$4.20 generados por cada $1 invertido en ads. Promedio ponderado de clientes activos en todos los sectores.',
   },
   {
-    metric: <>+<span className="rc-rose-num">67%</span></>,
+    metric: <>+<span className="rc-rose-num">67</span><span style={{ fontSize: '2rem' }}>%</span></>,
     metricClass: 'blue',
     label: 'Tasa de conversión',
     desc: 'Landing pages con video + social proof integrado por Manya convierten hasta 67% más que páginas genéricas.',
   },
   {
-    metric: <>-38<span style={{ fontSize: '1.5rem' }}>%</span></>,
-    metricClass: 'navy',
+    metric: <>-<span className="rc-rose-num">38</span><span style={{ fontSize: '2rem' }}>%</span></>,
+    metricClass: 'blue',
     label: 'Reducción de CPL en B2B',
     desc: 'Empresas B2B que usan LinkedIn Lead Gen Forms + Google en estrategia integrada reducen su CPL consistentemente.',
   },
