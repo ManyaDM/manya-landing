@@ -5,6 +5,8 @@
   --alice:#DEEAFB;
   --ghost:#F8FAFF;
   --rose:#FF006E;
+  --danger:#E53935;
+  --danger-bg:#FDECEA;
   --white:#ffffff;
   --muted:#6B7A99;
   --border:rgba(35,150,254,0.15);
@@ -257,12 +259,17 @@ section{padding:6rem 5%}
   transform:scale(1.2);
   z-index:5;
 }
+@keyframes pulse-error{
+  0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.45)}
+  50%{box-shadow:0 0 0 8px rgba(229,57,53,0)}
+}
 .pain-icon{
   width:52px;height:52px;border-radius:12px;
-  background:var(--alice);display:flex;align-items:center;
+  background:var(--danger-bg);display:flex;align-items:center;
   justify-content:center;margin-bottom:1.4rem;flex-shrink:0;
+  animation:pulse-error 2s ease-in-out infinite;
 }
-.pain-icon svg{width:26px;height:26px;color:var(--blue)}
+.pain-icon svg{width:26px;height:26px;color:var(--danger)}
 .pain-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.6rem;color:var(--navy)}
 .pain-card p{font-size:.88rem;color:var(--muted);line-height:1.7;flex:1}
 .pain-tag{
@@ -279,15 +286,15 @@ section{padding:6rem 5%}
 .sistema-section{background:var(--navy);padding:0;position:relative}
 .sistema-sticky{
   position:sticky;top:0;height:100vh;overflow:hidden;
-  display:flex;flex-direction:column;padding-top:7.5rem;
+  display:flex;flex-direction:column;padding-top:6.5rem;
 }
 .sistema-top{text-align:center;margin-bottom:2.5rem;padding:0 5%}
 .sistema-top .section-num{justify-content:center}
 .sistema-top .section-title{color:var(--white)}
 .sistema-top .section-sub{color:rgba(255,255,255,.5);margin:0 auto}
 .sistema-track-wrap{
-  flex:1;position:relative;overflow:hidden;
-  display:flex;align-items:center;padding-block:2.5rem;
+  flex:1;position:relative;
+  display:flex;align-items:center;padding-block:1.5rem;
 }
 .sistema-track{display:flex;gap:1.5rem;padding:0 5%;will-change:transform}
 .sistema-card{
@@ -299,17 +306,25 @@ section{padding:6rem 5%}
   transition:border-color .3s,box-shadow .3s,transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 .sistema-card:hover{
-  transform:scale(1.2);z-index:5;
-  border-color:rgba(35,150,254,.4);
-  box-shadow:0 16px 56px rgba(24,35,69,.45);
+  transform:translateY(-6px);z-index:5;
+  background:rgba(35,150,254,.10);
+  border-color:rgba(35,150,254,.55);
+  box-shadow:0 0 0 1px rgba(35,150,254,.2), 0 20px 60px rgba(24,35,69,.55);
+}
+.sistema-card:hover .sistema-card-desc{color:rgba(255,255,255,.9)}
+.sistema-card:hover .sistema-card-name{color:var(--white)}
+@keyframes pulse-success{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}
+  50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}
 }
 .sistema-card-icon{
   width:48px;height:48px;border-radius:12px;
-  background:rgba(35,150,254,.12);
+  background:rgba(34,197,94,.12);
   display:flex;align-items:center;justify-content:center;
   margin-bottom:1.4rem;
+  animation:pulse-success 2.2s ease-in-out infinite;
 }
-.sistema-card-icon svg{width:26px;height:26px;stroke:var(--blue);fill:none;stroke-width:1.5}
+.sistema-card-icon svg{width:26px;height:26px;stroke:#22c55e;fill:none;stroke-width:1.5}
 .sistema-card-label{
   font-size:.7rem;font-weight:700;letter-spacing:.12em;
   text-transform:uppercase;color:var(--blue);margin-bottom:.4rem;
@@ -317,8 +332,9 @@ section{padding:6rem 5%}
 .sistema-card-name{
   font-size:1.1rem;font-weight:800;
   color:var(--white);letter-spacing:-.02em;margin-bottom:.8rem;
+  transition:color .3s;
 }
-.sistema-card-desc{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.7}
+.sistema-card-desc{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.7;transition:color .3s}
 .sistema-fade-left,.sistema-fade-right{
   position:absolute;top:0;bottom:0;width:160px;pointer-events:none;z-index:2;
 }
@@ -366,7 +382,7 @@ section{padding:6rem 5%}
 }
 .results-reveal-h2 span{color:#2396fe}
 .results-header{margin-bottom:3.5rem}
-.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3.2rem;padding-top:2rem}
 .result-hero{
   grid-column:1/-1;background:var(--navy);border-radius:20px;padding:3rem;
   display:flex;align-items:center;gap:4rem;flex-wrap:wrap;
@@ -384,12 +400,15 @@ section{padding:6rem 5%}
 }
 
 .result-card{
-  background:var(--white);border-radius:20px;padding:2rem;
+  background:var(--white);border-radius:20px;
+  padding:2rem;padding-top:3.5rem;
   border:1.5px solid var(--border);
+  position:relative;overflow:visible;
 }
 .rc-metric{
+  position:absolute;top:-1.5rem;left:2rem;
   font-size:3rem;font-weight:900;letter-spacing:-.05em;
-  line-height:1;margin-bottom:.4rem;
+  line-height:1;padding-left: 3.2rem;
 }
 .rc-metric.blue{color:var(--blue)}
 .rc-metric.navy{color:var(--navy)}
@@ -417,10 +436,13 @@ section{padding:6rem 5%}
 
 /* ── TESTIMONIALES ── */
 .testi-section{background:var(--white)}
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.testi-carousel-wrap{overflow:hidden;margin-top:3.5rem}
+.testi-carousel-track{display:flex;align-items:stretch}
+.testi-slide{flex-shrink:0;padding:0 .75rem;box-sizing:border-box}
 .testi-card{
   background:var(--ghost);border-radius:16px;padding:2rem;
-  border:1px solid var(--border);position:relative;
+  border:1px solid var(--border);position:relative;height:100%;
+  display:flex;flex-direction:column;
 }
 .testi-card::before{
   content:'"';position:absolute;top:1rem;right:1.5rem;
@@ -428,20 +450,23 @@ section{padding:6rem 5%}
 }
 .testi-stars{display:flex;gap:.2rem;margin-bottom:1rem}
 .star{width:14px;height:14px;background:var(--blue);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
-.testi-text{font-size:.88rem;color:var(--navy);line-height:1.7;margin-bottom:1.5rem;font-weight:400}
+.testi-text{font-size:.88rem;color:var(--navy);line-height:1.7;margin-bottom:1.5rem;font-weight:400;flex:1}
 .testi-author{display:flex;align-items:center;gap:.75rem}
 .testi-avatar{
-  width:40px;height:40px;border-radius:50%;background:var(--alice);
+  width:80px;height:38px;border-radius:8px;
+  background:var(--white);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;font-weight:700;color:var(--blue);flex-shrink:0;
+  flex-shrink:0;padding:4px 8px;overflow:hidden;
 }
+.testi-avatar img{width:100%;height:100%;object-fit:contain}
 .testi-name{font-size:.85rem;font-weight:700;color:var(--navy)}
 .testi-role{font-size:.75rem;color:var(--muted)}
 .testi-metric{
   display:inline-flex;align-items:center;gap:.3rem;
   margin-top:1rem;font-size:.72rem;font-weight:700;
   color:var(--blue);letter-spacing:.06em;
-  background:var(--alice);padding:.3rem .8rem;border-radius:50px;
+  background:var(--alice);padding:.3rem .8rem;border-radius:50px;justify-content: center;
+
 }
 
 /* ── DIFERENCIADORES ── */
@@ -494,7 +519,7 @@ section{padding:6rem 5%}
 
 /* ── CONTACT ── */
 .contact-section{background:var(--ghost)}
-.contact-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:5rem;align-items:start}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
 .contact-info h2{
   font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;text-transform:uppercase;
   letter-spacing:-.04em;line-height:1.1;margin-bottom:1rem;color:var(--navy);
@@ -593,7 +618,12 @@ footer p{color:rgba(255,255,255,.35);font-size:.78rem}
   .results-reveal-h2{font-size:clamp(1.8rem,7vw,3rem);white-space:normal;transform:none !important;padding-left:0}
   .results-body{padding:2rem 5% 4rem}
   .platforms-intro,.results-header,.contact-wrap{grid-template-columns:1fr;gap:2rem}
-  .platforms-grid,.results-grid,.testi-grid,.diff-grid,.tech-grid{grid-template-columns:1fr}
+  .platforms-grid,.results-grid,.diff-grid,.tech-grid{grid-template-columns:1fr}
+  .testi-carousel-wrap{overflow:visible}
+  .testi-carousel-track{flex-wrap:wrap;transform:none !important;transition:none !important;width:100% !important}
+  .testi-slide{width:100% !important;padding:0;margin-bottom:1.5rem}
+  .results-grid{padding-top:2rem}
+  .result-card{padding-top:3.5rem}
   .result-hero{flex-direction:column;gap:1.5rem}
   .proceso-steps{grid-template-columns:1fr 1fr}
   .proceso-steps::before{display:none}

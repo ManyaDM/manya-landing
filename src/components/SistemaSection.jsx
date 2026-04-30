@@ -12,8 +12,8 @@ const sistemaCards = [
       </svg>
     ),
     label: 'Atribución',
-    name: 'Triple Whale · Hyros',
-    desc: 'Multi-touch attribution cross-device. Eliminamos el "last-click bias" y conectamos cada touchpoint con revenue real en el CRM.',
+    name: 'Trazabilidad Completa',
+    desc: 'Toma las mejores decisiones sabiendo desde qué plataforma, fuente, campaña, segmento o anuncio llegan tus leads calificados y no calificados.',
   },
   {
     icon: (
@@ -23,7 +23,7 @@ const sistemaCards = [
     ),
     label: 'Data & Reportes',
     name: 'BigQuery · Looker Studio',
-    desc: 'Dashboard en tiempo real que conecta 15+ fuentes de datos. KPIs de negocio visibles, no hojas de cálculo.',
+    desc: 'Dashboard en tiempo real que conecta todas tus fuentes de campañas, para un análisis más profundo de tus resultados.',
   },
   {
     icon: (
@@ -33,8 +33,8 @@ const sistemaCards = [
       </svg>
     ),
     label: 'IA Publicitaria',
-    name: 'Google AI · Meta AI',
-    desc: 'Aprovechamos Smart Bidding, PMax y Advantage+ con señales de primera parte correctamente configuradas. La IA necesita contexto para rendir.',
+    name: 'Google AI • Meta AI',
+    desc: 'Aprovechamos al máximo las mejores herramientas de IA para identificar al público que compra, profundizar en el análisis e identificar patrones de optimización.',
   },
   {
     icon: (
@@ -45,8 +45,8 @@ const sistemaCards = [
       </svg>
     ),
     label: 'Landing Pages',
-    name: 'Unbounce · Instapage',
-    desc: 'Smart Traffic A/B automatizado y Dynamic Text Replacement. Cada ad tiene su landing con mensaje exacto. +400% vs páginas genéricas.',
+    name: 'UX/UI para ventas',
+    desc: 'La mitad de la venta lo hace tu activo digital. Realizamos A/B testing y tracking profundo, enfocados siempre en la conversión.',
   },
   {
     icon: (
@@ -55,9 +55,9 @@ const sistemaCards = [
         <circle cx="9" cy="7" r="4" />
       </svg>
     ),
-    label: 'CRM Integration',
-    name: 'HubSpot · Salesforce',
-    desc: 'Cerramos el loop entre campañas y deals. Cada lead tiene tracking completo desde el ad hasta el cierre, con revenue attribution real.',
+    label: 'Integración de CRM',
+    name: 'Kommo • Hubspot',
+    desc: 'Cerramos la brecha entre campañas y ventas. Cada lead tiene tracking completo desde el anuncio hasta el cierre, identificando el costo por adquisición real.',
   },
   {
     icon: (
@@ -65,8 +65,8 @@ const sistemaCards = [
         <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
       </svg>
     ),
-    label: 'Creative Intelligence',
-    name: 'Motion · Foreplay',
+    label: 'Creatividad Inteligente',
+    name: 'Estáticas • Animación',
     desc: 'Analizamos creativos de competencia, identificamos patrones ganadores y producimos ads basados en datos de performance, no en intuición.',
   },
 ]

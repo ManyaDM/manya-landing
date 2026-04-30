@@ -13,9 +13,9 @@ const painCards = [
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
     ),
-    title: 'Presupuesto sin dirección',
-    desc: 'Campañas activas en múltiples plataformas pero sin saber qué canal genera revenue real. El dinero se gasta, no se invierte.',
-    tag: '#SabiduríaManya',
+    title: '⚠️ Presupuesto sin dirección',
+    desc: 'Campañas activas en múltiples plataformas, pero sin saber qué canal genera rentabilidad real. El dinero se gasta, no se invierte.',
+    
   },
   {
     icon: (
@@ -24,9 +24,9 @@ const painCards = [
         <line x1="12" y1="17" x2="12" y2="21" />
       </svg>
     ),
-    title: 'Plataformas en silos',
-    desc: 'Google, Meta, TikTok y LinkedIn reportan de forma inconsistente. Sin visión unificada, es imposible optimizar el mix correctamente.',
-    tag: '#InnovaConManya',
+    title: '⚠️ Plataformas sin resultados',
+    desc: 'Google, Meta, TikTok y LinkedIn reportan gastos de forma inconsistente. Sin visión unificada, es imposible optimizar el mix correctamente.',
+    
   },
   {
     icon: (
@@ -34,9 +34,9 @@ const painCards = [
         <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
       </svg>
     ),
-    title: 'ROAS impredecible',
+    title: '⚠️ ROAS impredecible',
     desc: 'Funciona un mes, falla el siguiente. Sin metodología de testing continuo y creativos data-driven, los resultados no escalan.',
-    tag: '#ManyaLosResultados',
+    
   },
   {
     icon: (
@@ -44,9 +44,9 @@ const painCards = [
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
     ),
-    title: 'IA sin estrategia',
+    title: '⚠️ IA sin estrategia',
     desc: 'PMax y Advantage+ automatizan targeting, pero sin señales de primera parte y creativos optimizados, la IA no puede convertir.',
-    tag: '#InnovaConManya',
+    
   },
   {
     icon: (
@@ -55,9 +55,9 @@ const painCards = [
         <polyline points="14,2 14,8 20,8" />
       </svg>
     ),
-    title: 'Reportes sin contexto',
+    title: '⚠️ Reportes sin contexto',
     desc: 'Métricas de vanidad que no conectan con el negocio real. Un reporte sin insights accionables es solo ruido con colores.',
-    tag: '#SabiduríaManya',
+    
   },
   {
     icon: (
@@ -68,9 +68,9 @@ const painCards = [
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
-    title: 'Equipo sin especialización',
+    title: '⚠️ Equipo sin especialización',
     desc: 'Cada plataforma requiere expertise técnico distinto. Un generalista no puede competir contra especialistas full-time en cada canal.',
-    tag: '#ManyaElTeam',
+    
   },
 ]
 
@@ -132,7 +132,7 @@ export default function PainSection() {
         <div className="pain-sticky-header reveal">
           <div>
             <div className="section-num">El problema</div>
-            <h2 className="section-title">¿Por qué tu inversión<br />en ads no crece?</h2>
+            <h2 className="section-title">¿Por qué tu inversión<br />en ads no genera resultados?</h2>
             <div className="section-sub">
               El crecimiento digital no debería ser un proceso complejo, lento o frustrante.
               Si lo es, algo en el sistema está roto.

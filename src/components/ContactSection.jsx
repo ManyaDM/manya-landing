@@ -23,7 +23,7 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="results-section" id="contacto">
+    <section className="results-section">
       <div className="contact-wrap">
         <div className="contact-info reveal">
           <div className="section-num">Diagnóstico</div>
@@ -40,10 +40,15 @@ export default function ContactSection() {
               </div>
             ))}
           </div>
-          <div className="contact-tag">El crecimiento real se estructura. Empieza hoy.</div>
+          <div className="contact-tag">Agenda una reunión para un diagnóstico profesional → </div>
         </div>
 
-        <form className="lead-form reveal" onSubmit={handleSubmit}>
+        <form id="contacto" className="lead-form reveal" onSubmit={handleSubmit}>
+          <div className="contact-info reveal">
+            <p>
+            El crecimiento real toma tiempo. Empieza hoy.
+            </p>
+          </div>
           <div className="form-row">
             <div className="form-group">
               <label>Nombre completo</label>
@@ -81,15 +86,7 @@ export default function ContactSection() {
               className={`btn-submit${sent ? ' sent' : ''}`}
               disabled={sent}
             >
-              {sent ? '✓ Enviado — Te contactaremos en menos de 24h' : 'Solicitar diagnóstico gratis →'}
-            </button>
-            <button
-              type="button"
-              className="btn-submit-wa"
-              onClick={() => window.open('https://wa.me/51999999999?text=Hola%2C%20quiero%20hablar%20con%20un%20especialista%20de%20Manya', '_blank')}
-            >
-              <WaIconSm />
-              O escríbenos por WhatsApp
+              {sent ? '✓ Enviado — Te contactaremos en menos de 24h' : 'Solicitar una reunión →'}
             </button>
           </div>
           <p className="form-note">

@@ -8,10 +8,10 @@ const resultCards = [
     metric: <><span className="rc-rose-num">-79%</span></>,
     metricClass: 'blue',
     label: 'Reducción de CPL',
-    desc: 'Optimización de Creative + audience con IA redujo el costo por resultado drásticamente mientras la inversión total incrementó.',
+    desc: 'Optimización de Creative + audience con IA redujo el costo por resultado drásticamente, mientras la inversión total incrementó.',
   },
   {
-    metric: <>4.2<span style={{ fontSize: '1.5rem' }}>×</span></>,
+    metric: <>4.5<span style={{ fontSize: '1.5rem' }}>×</span></>,
     metricClass: 'navy',
     label: 'ROAS promedio portafolio',
     desc: '$4.20 generados por cada $1 invertido en ads. Promedio ponderado de clientes activos en todos los sectores.',
@@ -25,7 +25,7 @@ const resultCards = [
   {
     metric: <>-38<span style={{ fontSize: '1.5rem' }}>%</span></>,
     metricClass: 'navy',
-    label: 'Reducción de CPL',
+    label: 'Reducción de CPL en B2B',
     desc: 'Empresas B2B que usan LinkedIn Lead Gen Forms + Google en estrategia integrada reducen su CPL consistentemente.',
   },
 ]

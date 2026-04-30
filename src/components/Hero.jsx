@@ -135,19 +135,19 @@ export default function Hero() {
         </div>
         <div className="hero-stats">
           <div className="hstat">
-            <div className="num"><span className="rose-num">+300</span></div>
+            <div className="num">800<span className="rose-num">+</span></div>
             <div className="label">Empresas escaladas</div>
           </div>
           <div className="hstat">
-            <div className="num">4<span>.1×</span></div>
+            <div className="num">4.5<span className="rose-num">×</span></div>
             <div className="label">ROAS promedio</div>
           </div>
           <div className="hstat">
-            <div className="num">-<span className="rose-num">67%</span></div>
-            <div className="label">Reducción de CPL</div>
+            <div className="num">6Mill<span className="rose-num">$</span></div>
+            <div className="label">De Inversión en pauta</div>
           </div>
           <div className="hstat">
-            <div className="num">8<span>+</span></div>
+            <div className="num">14<span className="rose-num">+</span></div>
             <div className="label">Años de ejecución</div>
           </div>
         </div>
