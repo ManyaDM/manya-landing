@@ -758,7 +758,13 @@ footer p{color:rgba(255,255,255,.35);font-size:.78rem}
   .sistema-sticky{position:static;height:auto;padding:4rem 5% 2rem;overflow:visible}
   .sistema-track-wrap{overflow:visible;flex:none;padding-block:1rem}
   .sistema-track{flex-direction:column;padding:0;transform:none !important}
-  .sistema-card{width:100%;min-height:auto}
+  .sistema-card{
+    width:100%;min-height:auto;
+    background:rgba(35,150,254,.10);
+    box-shadow:0 0 0 1px rgba(35,150,254,.2), 0 20px 60px rgba(24,35,69,.55);
+  }
+  .sistema-card .sistema-card-desc{color:rgba(255,255,255,.9)}
+  .sistema-card .sistema-card-name{color:var(--white)}
   .sistema-fade-left,.sistema-fade-right{display:none}
   .results-reveal-wrap{height:auto !important}
   .results-reveal-sticky{position:static;overflow:visible;padding:2rem 5%}
