@@ -47,7 +47,7 @@ export default function Navbar() {
         />
       </Link>
 
-      <ul className="nav-links">
+      {/*<ul className="nav-links">
         <li ref={dropRef} className="nav-services-item">
           <button
             className="nav-services-btn"
@@ -82,7 +82,7 @@ export default function Navbar() {
             </div>
           )}
         </li>
-      </ul>
+      </ul>*/}
 
       <div className="nav-actions">
         <Link href="/marketing-de-performance#contacto" className="btn-nav-primary">
