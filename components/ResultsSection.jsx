@@ -1,36 +1,10 @@
 'use client'
 import { useRef, useEffect } from 'react'
+import { tinaField } from 'tinacms/dist/react'
 
 const EXTRA_SCROLL = 2500
 
-const resultCards = [
-  {
-    metric: <>-<span className="rc-rose-num">79</span><span style={{ fontSize: '2rem' }}>%</span></>,
-    metricClass: 'blue',
-    label: 'Reducción de CPL',
-    desc: 'Optimización de Creative + audience con IA redujo el costo por resultado drásticamente, mientras la inversión total incrementó.',
-  },
-  {
-    metric: <><span className="rc-rose-num">4.5</span><span style={{ fontSize: '2rem' }}>×</span></>,
-    metricClass: 'blue',
-    label: 'ROAS promedio portafolio',
-    desc: '$4.20 generados por cada $1 invertido en ads. Promedio ponderado de clientes activos en todos los sectores.',
-  },
-  {
-    metric: <>+<span className="rc-rose-num">67</span><span style={{ fontSize: '2rem' }}>%</span></>,
-    metricClass: 'blue',
-    label: 'Tasa de conversión',
-    desc: 'Landing pages con video + social proof integrado por Manya convierten hasta 67% más que páginas genéricas.',
-  },
-  {
-    metric: <>-<span className="rc-rose-num">38</span><span style={{ fontSize: '2rem' }}>%</span></>,
-    metricClass: 'blue',
-    label: 'Reducción de CPL en B2B',
-    desc: 'Empresas B2B que usan LinkedIn Lead Gen Forms + Google en estrategia integrada reducen su CPL consistentemente.',
-  },
-]
-
-export default function ResultsSection() {
+export default function ResultsSection({ cards }) {
   const sectionRef = useRef(null)
   const h2Ref = useRef(null)
 
@@ -83,11 +57,27 @@ export default function ResultsSection() {
           </div>
         </div>
         <div className="results-grid">
-          {resultCards.map((card) => (
+          {cards.map((card) => (
             <div key={card.label} className="result-card reveal">
-              <div className={`rc-metric ${card.metricClass}`}>{card.metric}</div>
-              <div className="rc-label">{card.label}</div>
-              <p className="rc-desc">{card.desc}</p>
+              <div className="rc-metric blue">
+                <span data-tina-field={tinaField(card, 'metricPrefix')}>{card.metricPrefix}</span>
+                <span
+                  className="rc-rose-num"
+                  data-tina-field={tinaField(card, 'metricNumber')}
+                >{card.metricNumber}</span>
+                <span
+                  style={{ fontSize: '2rem' }}
+                  data-tina-field={tinaField(card, 'metricSuffix')}
+                >{card.metricSuffix}</span>
+              </div>
+              <div
+                className="rc-label"
+                data-tina-field={tinaField(card, 'label')}
+              >{card.label}</div>
+              <p
+                className="rc-desc"
+                data-tina-field={tinaField(card, 'desc')}
+              >{card.desc}</p>
             </div>
           ))}
         </div>

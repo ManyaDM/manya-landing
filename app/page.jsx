@@ -1,4 +1,5 @@
-import Link from 'next/link'
+import client from '@/tina/__generated__/client'
+import HomeClient from './home-client'
 
 export const metadata = {
   title: 'Manya · Sistemas de Crecimiento Digital',
@@ -6,113 +7,7 @@ export const metadata = {
     'Agencia especializada en marketing de performance, branding, desarrollo web, SEO, automatizaciones y trazabilidad comercial para empresas que quieren crecer.',
 }
 
-const services = [
-  {
-    slug: 'marketing-de-performance',
-    name: 'Marketing de Performance',
-    tag: 'Paid Media · SEM · Social Ads',
-    desc: 'Campañas digitales optimizadas en Google, Meta, TikTok y LinkedIn para generar resultados medibles en ROAS y conversiones.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-        <polyline points="17 6 23 6 23 12" />
-      </svg>
-    ),
-  },
-  {
-    slug: 'branding',
-    name: 'Branding',
-    tag: 'Identidad · Estrategia de Marca',
-    desc: 'Construimos identidades de marca con propósito que conectan con tu audiencia y te diferencian en el mercado.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-      </svg>
-    ),
-  },
-  {
-    slug: 'desarrollo-web',
-    name: 'Desarrollo Web',
-    tag: 'UX/UI · Landing Pages · Apps',
-    desc: 'Sitios y aplicaciones web diseñados para convertir, escalar y ofrecer una experiencia de usuario que impulsa resultados.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-  },
-  {
-    slug: 'posicionamiento-web',
-    name: 'Posicionamiento Web',
-    tag: 'SEO · Contenido · Autoridad',
-    desc: 'Estrategia SEO que posiciona tu negocio en los primeros resultados de Google y genera tráfico orgánico sostenible.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        <polyline points="8 11 11 14 14 8" />
-      </svg>
-    ),
-  },
-  {
-    slug: 'automatizaciones',
-    name: 'Automatizaciones',
-    tag: 'Flujos · CRM · Integraciones',
-    desc: 'Flujos de trabajo inteligentes que eliminan tareas manuales, aceleran tu equipo y escalan tu operación sin fricción.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polyline points="17 1 21 5 17 9" />
-        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-        <polyline points="7 23 3 19 7 15" />
-        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-      </svg>
-    ),
-  },
-  {
-    slug: 'trazabilidad-comercial',
-    name: 'Trazabilidad Comercial',
-    tag: 'Analytics · Atribución · Datos',
-    desc: 'Datos claros y atribución precisa para tomar decisiones comerciales más inteligentes y medir el impacto real de tus campañas.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-    ),
-  },
-]
-
-export default function HomePage() {
-  return (
-    <>
-      <div className="home-hero">
-        <div className="home-kicker">
-          <span className="hero-dot" />
-          go.manya.pe
-        </div>
-        <h1 className="home-title">
-          Sistemas de<br />
-          <span>Crecimiento Digital</span>
-        </h1>
-        <p className="home-sub">
-          Elige el servicio que tu empresa necesita para crecer. Estrategia, ejecución y resultados medibles.
-        </p>
-      </div>
-
-      <div className="services-section">
-        <div className="services-grid">
-          {services.map((s) => (
-            <Link key={s.slug} href={`/${s.slug}`} className="service-card">
-              <div className="service-icon">{s.icon}</div>
-              <div className="service-tag">{s.tag}</div>
-              <div className="service-name">{s.name}</div>
-              <p className="service-desc">{s.desc}</p>
-              <span className="service-arrow">Conocer más →</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </>
-  )
+export default async function HomePage() {
+  const services = await client.queries.serviceConnection({ sort: 'order' })
+  return <HomeClient services={services} />
 }

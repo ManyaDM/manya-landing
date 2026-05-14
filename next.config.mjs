@@ -2,11 +2,11 @@
 const nextConfig = {
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: 'https://manya.pe',
-        permanent: false,
-      },
+      // {
+      //   source: '/',
+      //   destination: 'https://manya.pe',
+      //   permanent: false,
+      // },
     ]
   },
   images: {

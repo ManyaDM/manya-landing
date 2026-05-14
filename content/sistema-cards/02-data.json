@@ -1,0 +1,7 @@
+{
+  "label": "Data & Reportes",
+  "name": "BigQuery · Looker Studio",
+  "desc": "Dashboard en tiempo real que conecta todas tus fuentes de campañas, para un análisis más profundo de tus resultados.",
+  "iconKey": "activity",
+  "order": 2
+}

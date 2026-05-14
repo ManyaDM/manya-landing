@@ -1,0 +1,92 @@
+fragment HeroParts on Hero {
+  __typename
+  eyebrow
+  title
+  accentBlue
+  accentRose
+  sub1
+  sub2
+  ctaPrimary
+  ctaSecondary
+  stats {
+    __typename
+    number
+    suffix
+    label
+  }
+}
+
+fragment ServiceParts on Service {
+  __typename
+  slug
+  name
+  tag
+  desc
+  iconKey
+  order
+}
+
+fragment TestimonialParts on Testimonial {
+  __typename
+  name
+  role
+  metric
+  logo
+  text
+  order
+}
+
+fragment PainCardParts on PainCard {
+  __typename
+  title
+  desc
+  iconKey
+  order
+}
+
+fragment ResultParts on Result {
+  __typename
+  metricNumber
+  metricPrefix
+  metricSuffix
+  label
+  desc
+  order
+}
+
+fragment TechCardParts on TechCard {
+  __typename
+  label
+  name
+  desc
+  iconKey
+  order
+}
+
+fragment SistemaCardParts on SistemaCard {
+  __typename
+  label
+  name
+  desc
+  iconKey
+  order
+}
+
+fragment ProcesoStepParts on ProcesoStep {
+  __typename
+  num
+  title
+  desc
+  tag
+  active
+  order
+}
+
+fragment ContactParts on Contact {
+  __typename
+  sectionTitle
+  sectionDesc
+  tagline
+  trustItems
+  objectives
+}

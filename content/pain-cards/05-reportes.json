@@ -1,0 +1,6 @@
+{
+  "title": "⚠️ Reportes sin contexto",
+  "desc": "Métricas de vanidad que no conectan con el negocio real. Un reporte sin insights accionables es solo ruido con colores.",
+  "iconKey": "document",
+  "order": 5
+}

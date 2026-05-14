@@ -6,6 +6,9 @@ dist/
 dist-ssr/
 .next/
 
+# TinaCMS generado (panel admin — artefacto de build)
+/public/admin
+
 # Local env files
 .env
 .env.local

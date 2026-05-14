@@ -1,0 +1,8 @@
+{
+  "num": "03",
+  "title": "Configuración inicial",
+  "desc": "Setup completo de tracking, pixels y conversiones. Configuramos las herramientas para trazabilidad de datos sin ruido.",
+  "tag": "Semanas 2–3",
+  "active": false,
+  "order": 3
+}

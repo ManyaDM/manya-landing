@@ -1,0 +1,7 @@
+{
+  "label": "CRM Integration",
+  "name": "HubSpot · Salesforce",
+  "desc": "Cerramos el loop entre campañas y deals. Cada lead tiene tracking completo desde el ad hasta el cierre, con revenue attribution real.",
+  "iconKey": "user",
+  "order": 5
+}

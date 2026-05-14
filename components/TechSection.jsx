@@ -1,6 +1,6 @@
 import TechGrid from './TechGrid'
 
-export default function TechSection() {
+export default function TechSection({ cards }) {
   return (
     <section className="tech-section" id="tecnologia">
       <div className="tech-intro reveal">
@@ -11,7 +11,7 @@ export default function TechSection() {
           Tú pagas por resultados, nosotros absorbemos el costo del stack.
         </p>
       </div>
-      <TechGrid />
+      <TechGrid cards={cards} />
     </section>
   )
 }

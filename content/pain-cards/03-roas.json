@@ -1,0 +1,6 @@
+{
+  "title": "⚠️ ROAS impredecible",
+  "desc": "Funciona un mes, falla el siguiente. Sin metodología de testing continuo y creativos data-driven, los resultados no escalan.",
+  "iconKey": "activity",
+  "order": 3
+}

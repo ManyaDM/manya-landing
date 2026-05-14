@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useEffect } from 'react'
+import { tinaField } from 'tinacms/dist/react'
 
 const MAX_OFFSET_X = 55
 const MAX_OFFSET_Y = 40
@@ -20,7 +21,7 @@ const logos = [
   },
 ]
 
-export default function Hero() {
+export default function Hero({ data, tinaRef }) {
   const heroRef = useRef(null)
   const svgRef = useRef(null)
 
@@ -75,32 +76,52 @@ export default function Hero() {
       </svg>
 
       <div className="hero-left">
-        <div className="hero-eyebrow">
-          <span className="hero-dot" />Creatividad en la era de la IA
+        <div
+          className="hero-eyebrow"
+          data-tina-field={tinaRef && tinaField(tinaRef, 'eyebrow')}
+        >
+          <span className="hero-dot" />{data.eyebrow}
         </div>
 
         <h1>
-          Tu inversión digital<br />
-          <span className="accent-blue">convertida en</span><br />
-          <span className="accent-rose">resultados</span> reales.
+          <span data-tina-field={tinaRef && tinaField(tinaRef, 'title')}>{data.title}</span>
+          <br />
+          <span
+            className="accent-blue"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'accentBlue')}
+          >{data.accentBlue}</span>
+          <br />
+          <span
+            className="accent-rose"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'accentRose')}
+          >{data.accentRose}</span>
         </h1>
 
         <div className="hero-sub">
-          <div className="hero-subparrafo">
-            Combinamos <strong>IA, estrategia y ejecución ágil</strong> en Google Ads, Meta Ads, TikTok Ads y LinkedIn Ads.
-          </div>
-          <div className="hero-subparrafo">
-            El crecimiento real no se intuye. Se estructura. Se valida. <strong>Se logra.</strong>
-          </div>
+          <div
+            className="hero-subparrafo"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'sub1')}
+            dangerouslySetInnerHTML={{ __html: data.sub1 }}
+          />
+          <div
+            className="hero-subparrafo"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'sub2')}
+            dangerouslySetInnerHTML={{ __html: data.sub2 }}
+          />
         </div>
 
         <div className="hero-actions">
-          <a href="#contacto" className="btn-hero-primary">Quiero crecer con Manya →</a>
+          <a
+            href="#contacto"
+            className="btn-hero-primary"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'ctaPrimary')}
+          >{data.ctaPrimary}</a>
           <button
             className="btn-hero-ghost"
+            data-tina-field={tinaRef && tinaField(tinaRef, 'ctaSecondary')}
             onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Ver resultados ↓
+            {data.ctaSecondary}
           </button>
         </div>
       </div>
@@ -116,22 +137,21 @@ export default function Hero() {
           ))}
         </div>
         <div className="hero-stats">
-          <div className="hstat">
-            <div className="num">800<span className="rose-num">+</span></div>
-            <div className="label">Empresas escaladas</div>
-          </div>
-          <div className="hstat">
-            <div className="num">4.5<span className="rose-num">×</span></div>
-            <div className="label">ROAS promedio</div>
-          </div>
-          <div className="hstat">
-            <div className="num">6Mill<span className="rose-num">$</span></div>
-            <div className="label">De Inversión en pauta</div>
-          </div>
-          <div className="hstat">
-            <div className="num">14<span className="rose-num">+</span></div>
-            <div className="label">Años de ejecución</div>
-          </div>
+          {data.stats.map((stat) => (
+            <div key={stat.label} className="hstat">
+              <div className="num">
+                <span data-tina-field={tinaRef && tinaField(stat, 'number')}>{stat.number}</span>
+                <span
+                  className="rose-num"
+                  data-tina-field={tinaRef && tinaField(stat, 'suffix')}
+                >{stat.suffix}</span>
+              </div>
+              <div
+                className="label"
+                data-tina-field={tinaRef && tinaField(stat, 'label')}
+              >{stat.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

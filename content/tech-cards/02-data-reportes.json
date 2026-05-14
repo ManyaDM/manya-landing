@@ -1,0 +1,7 @@
+{
+  "label": "Data & Reportes",
+  "name": "BigQuery · Looker Studio",
+  "desc": "Dashboard en tiempo real que conecta 15+ fuentes de datos. KPIs de negocio visibles, no hojas de cálculo.",
+  "iconKey": "activity",
+  "order": 2
+}

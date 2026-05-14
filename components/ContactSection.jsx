@@ -1,22 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-const trustItems = [
-  'Análisis gratuito de tus cuentas actuales sin compromiso',
-  'Respuesta en menos de 24 horas hábiles',
-  'Recomendaciones accionables independientemente de si contratas',
-  'Reunión con especialista senior, no con un vendedor',
-  'NDA disponible para empresas con información sensible',
-]
-
-const OBJECTIVES = [
-  'Quiero escalar mis ventas de ecommerce',
-  'Quiero mejorar la calidad de mis leads',
-  'Quiero profundizar en la trazabilidad de mis resultados',
-  'Quiero expandir mi estrategia de medios digitales',
-  'Otro',
-]
-
 function countWords(text) {
   const t = text.trim()
   return t ? t.split(/\s+/).length : 0
@@ -30,7 +14,9 @@ function buildWAUrl(fields) {
   return `https://api.whatsapp.com/send/?phone=51912391850&text=${encodeURIComponent(msg)}`
 }
 
-export default function ContactSection() {
+export default function ContactSection({ data }) {
+  const { sectionTitle, sectionDesc, tagline, trustItems, objectives } = data
+
   const [fields, setFields] = useState({
     nombre: '',
     whatsapp: '',
@@ -140,11 +126,8 @@ export default function ContactSection() {
       <div className="contact-wrap">
         <div className="contact-info reveal">
           <div className="section-num">Diagnóstico</div>
-          <h2>Revisemos juntos tus objetivos</h2>
-          <p>
-            En 30 minutos identificamos las principales oportunidades en tus campañas actuales y
-            proyectamos el impacto potencial con la metodología Manya. Sin compromiso, con datos concretos.
-          </p>
+          <h2>{sectionTitle}</h2>
+          <p>{sectionDesc}</p>
           <div className="trust-list">
             {trustItems.map((item) => (
               <div key={item} className="trust-item">
@@ -153,7 +136,7 @@ export default function ContactSection() {
               </div>
             ))}
           </div>
-          <div className="contact-tag">Agenda una reunión para un diagnóstico profesional → </div>
+          <div className="contact-tag">{tagline}</div>
         </div>
 
         <form id="contacto" className="lead-form reveal">
@@ -164,7 +147,7 @@ export default function ContactSection() {
           <input type="hidden" id="utm_content" name="utm_content" value={utms.utm_content} readOnly />
 
           <div className="contact-info reveal">
-            <h2 className="title-mobile">Revisemos juntos tus objetivos</h2>
+            <h2 className="title-mobile">{sectionTitle}</h2>
             <p>El crecimiento real toma tiempo. Empieza hoy.<br />Llena tus datos y solicita una reunión por whatsapp.</p>
           </div>
 
@@ -245,7 +228,7 @@ export default function ContactSection() {
               className={errors.objetivo ? 'field-error' : ''}
             >
               <option value="">Selecciona tu objetivo</option>
-              {OBJECTIVES.map(opt => (
+              {objectives.map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>

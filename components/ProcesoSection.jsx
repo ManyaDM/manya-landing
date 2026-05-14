@@ -1,35 +1,4 @@
-const steps = [
-  {
-    num: '01',
-    title: 'Diagnóstico inicial',
-    desc: 'Analizamos tus cuentas actuales, identificamos pérdidas de inversión y establecemos benchmarks reales de tu industria.',
-    tag: 'Auditoría gratis',
-    active: false,
-  },
-  {
-    num: '02',
-    title: 'Kickoff & Investigación',
-    desc: 'Entendemos tu oferta, audiencia, competidores y objetivos. Definimos el mix de plataformas para bases sólidas.',
-    tag: 'Semana 1',
-    active: true,
-  },
-  {
-    num: '03',
-    title: 'Configuración inicial',
-    desc: 'Setup completo de tracking, pixels y conversiones. Configuramos las herramientas para trazabilidad de datos sin ruido.',
-    tag: 'Semanas 2–3',
-    active: false,
-  },
-  {
-    num: '04',
-    title: 'Estrategia de medios',
-    desc: 'Definimos objetivos SMART, planeamos el contenido, la estrategia del embudo y el plan de inversión para maximizar resultados.',
-    tag: 'En curso',
-    active: false,
-  },
-]
-
-export default function ProcesoSection() {
+export default function ProcesoSection({ steps }) {
   return (
     <section className="proceso-section" id="proceso">
       <div className="proceso-header reveal">
