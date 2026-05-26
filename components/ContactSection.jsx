@@ -25,6 +25,7 @@ export default function ContactSection({ data }) {
     presupuesto: '',
     objetivo: '',
     otroText: '',
+    sitioWeb: '',
     terms: false,
   })
   const [errors, setErrors] = useState({})
@@ -102,6 +103,7 @@ export default function ContactSection({ data }) {
       empresa: fields.empresa,
       presupuesto: fields.presupuesto,
       objetivo: finalObjetivo,
+      sitioWeb: fields.objetivo === 'Quiero escalar mis ventas de ecommerce' ? fields.sitioWeb : undefined,
       timestamp: new Date().toISOString(),
       ...utms,
     }
@@ -247,6 +249,18 @@ export default function ContactSection({ data }) {
               </div>
             )}
           </div>
+
+          {fields.objetivo === 'Quiero escalar mis ventas de ecommerce' && (
+            <div className="form-group">
+              <label>Sitio web de tu tienda</label>
+              <input
+                type="url"
+                placeholder="https://tutienda.com"
+                value={fields.sitioWeb}
+                onChange={e => setField('sitioWeb', e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="form-group terms-group">
             <label className="terms-label">

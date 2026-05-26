@@ -9,8 +9,8 @@ const trustItems = [
 ]
 
 const OBJECTIVES = [
-  'Quiero escalar mis ventas de ecommerce',
   'Quiero mejorar la calidad de mis leads',
+  'Quiero escalar mis ventas de ecommerce',
   'Quiero profundizar en la trazabilidad de mis resultados',
   'Quiero expandir mi estrategia de medios digitales',
   'Otro',
