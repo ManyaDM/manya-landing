@@ -1,4 +1,4 @@
-import client from '@/tina/__generated__/client'
+import { getServices } from '@/lib/content'
 import HomeClient from './home-client'
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
     'Agencia especializada en marketing de performance, branding, desarrollo web, SEO, automatizaciones y trazabilidad comercial para empresas que quieren crecer.',
 }
 
-export default async function HomePage() {
-  const services = await client.queries.serviceConnection({ sort: 'order' })
+export default function HomePage() {
+  const services = getServices()
   return <HomeClient services={services} />
 }

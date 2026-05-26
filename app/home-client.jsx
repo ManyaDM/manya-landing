@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { useTina } from 'tinacms/dist/react'
 
 const SERVICE_ICONS = {
   performance: (
@@ -43,12 +42,7 @@ const SERVICE_ICONS = {
   ),
 }
 
-export default function HomeClient({ services: servicesProp }) {
-  const { data } = useTina(servicesProp)
-
-  const services = data.serviceConnection.edges
-    .map((e) => e.node)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+export default function HomeClient({ services }) {
 
   return (
     <>
