@@ -6,6 +6,13 @@ function countWords(text) {
   return t ? t.split(/\s+/).length : 0
 }
 
+function normalizeSitioWeb(value) {
+  const clean = value.replace(/\s/g, '')
+  if (!clean) return ''
+  if (!/^https?:\/\//i.test(clean)) return `https://${clean}`
+  return clean
+}
+
 function buildWAUrl(fields) {
   const objetivo = fields.objetivo === 'Otro' ? fields.otroText : fields.objetivo
   const msg =
@@ -80,6 +87,10 @@ export default function ContactSection({ data }) {
     if (fields.objetivo === 'Otro') {
       if (!fields.otroText.trim()) e.otroText = 'Describe tu objetivo'
       else if (countWords(fields.otroText) > 50) e.otroText = 'Máximo 50 palabras'
+    }
+    if (fields.objetivo === 'Quiero escalar mis ventas de ecommerce' && fields.sitioWeb) {
+      const host = fields.sitioWeb.replace(/^https?:\/\//i, '')
+      if (!host.includes('.')) e.sitioWeb = 'Ingresa una URL válida (ej: tutienda.com)'
     }
     if (!fields.terms) e.terms = 'Debes aceptar los términos y condiciones'
     return e
@@ -257,8 +268,11 @@ export default function ContactSection({ data }) {
                 type="url"
                 placeholder="https://tutienda.com"
                 value={fields.sitioWeb}
-                onChange={e => setField('sitioWeb', e.target.value)}
+                onChange={e => setField('sitioWeb', e.target.value.replace(/\s/g, ''))}
+                onBlur={e => setField('sitioWeb', normalizeSitioWeb(e.target.value))}
+                className={errors.sitioWeb ? 'field-error' : ''}
               />
+              {errors.sitioWeb && <span className="error-msg">{errors.sitioWeb}</span>}
             </div>
           )}
 
