@@ -38,6 +38,7 @@ export default function ContactSection({ data }) {
   const [errors, setErrors] = useState({})
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [budgetWarning, setBudgetWarning] = useState(false)
   const [utms, setUtms] = useState({
     utm_source: '',
     utm_medium: '',
@@ -97,6 +98,11 @@ export default function ContactSection({ data }) {
   }
 
   const handleSubmit = async () => {
+    if (fields.presupuesto === 'Menos de S/ 1,000') {
+      setBudgetWarning(true)
+      return
+    }
+
     const e = validate()
     setErrors(e)
     if (Object.keys(e).length > 0) return
@@ -224,11 +230,11 @@ export default function ContactSection({ data }) {
               className={errors.presupuesto ? 'field-error' : ''}
             >
               <option value="">Selecciona un rango</option>
-              <option>Menos de S/ 3,000</option>
+              <option>Menos de S/ 1,000</option>
+              <option>S/ 1,000 – S/ 3,000</option>
               <option>S/ 3,000 – S/ 10,000</option>
               <option>S/ 10,000 – S/ 30,000</option>
-              <option>S/ 30,000 – S/ 100,000</option>
-              <option>Más de S/ 100,000</option>
+              <option>Más de S/ 30,000</option>
             </select>
             {errors.presupuesto && <span className="error-msg">{errors.presupuesto}</span>}
           </div>
@@ -316,6 +322,24 @@ export default function ContactSection({ data }) {
           </p>
         </form>
       </div>
+
+      {budgetWarning && (
+        <div className="budget-overlay" onClick={() => setBudgetWarning(false)}>
+          <div className="budget-modal" onClick={e => e.stopPropagation()}>
+            <div className="budget-modal-icon">⚠️</div>
+            <h3 className="budget-modal-title">Presupuesto insuficiente</h3>
+            <p className="budget-modal-body">
+              Para trabajar con Manya, la inversión mínima en pauta publicitaria es de <strong>S/ 1,000 mensuales</strong>, aparte del costo de servicio de agencia.
+            </p>
+            <p className="budget-modal-body">
+              Si estás comenzando, te recomendamos empezar con un presupuesto de S/ 1,000 – S/ 3,000 y escalar con base en los resultados.
+            </p>
+            <button className="budget-modal-btn" onClick={() => setBudgetWarning(false)}>
+              Entendido, ajustaré mi presupuesto
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

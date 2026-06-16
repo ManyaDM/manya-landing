@@ -227,11 +227,11 @@ export default function ContactSection() {
               className={errors.presupuesto ? 'field-error' : ''}
             >
               <option value="">Selecciona un rango</option>
-              <option>Menos de S/ 3,000</option>
+              <option>Menos de S/ 1,000</option>
+              <option>S/ 1,000 – S/ 3,000</option>
               <option>S/ 3,000 – S/ 10,000</option>
               <option>S/ 10,000 – S/ 30,000</option>
-              <option>S/ 30,000 – S/ 100,000</option>
-              <option>Más de S/ 100,000</option>
+              <option>Más de S/ 30,000</option>
             </select>
             {errors.presupuesto && <span className="error-msg">{errors.presupuesto}</span>}
           </div>
