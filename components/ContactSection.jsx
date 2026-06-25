@@ -18,7 +18,7 @@ function buildWAUrl(fields) {
   const msg =
     `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${objetivo}. ` +
     `Mi presupuesto para campañas está en un intervalo de ${fields.presupuesto}`
-  return `https://api.whatsapp.com/send/?phone=51912391850&text=${encodeURIComponent(msg)}`
+  return `https://api.whatsapp.com/send/?phone=51997510692&text=${encodeURIComponent(msg)}`
 }
 
 export default function ContactSection({ data }) {
