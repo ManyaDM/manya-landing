@@ -34,6 +34,7 @@ export default function ContactSection({ data }) {
     otroText: '',
     sitioWeb: '',
     terms: false,
+    bitacora: false,
   })
   const [errors, setErrors] = useState({})
   const [sending, setSending] = useState(false)
@@ -121,6 +122,7 @@ export default function ContactSection({ data }) {
       presupuesto: fields.presupuesto,
       objetivo: finalObjetivo,
       sitioWeb: fields.objetivo === 'Quiero escalar mis ventas de ecommerce' ? fields.sitioWeb : undefined,
+      bitacora: fields.bitacora,
       timestamp: new Date().toISOString(),
       ...utms,
     }
@@ -290,12 +292,31 @@ export default function ContactSection({ data }) {
                 onChange={e => setField('terms', e.target.checked)}
               />
               <span className="terms-checkbox-ui" />
-              Acepto los{' '}
-              <a href="https://manya.pe/terminos-y-condiciones/" target="_blank" rel="noopener noreferrer">
-                términos y condiciones
-              </a>
+              <span className="terms-text">
+                Acepto los{' '}
+                <a href="https://manya.pe/terminos-y-condiciones/" target="_blank" rel="noopener noreferrer">
+                  términos y condiciones
+                </a>
+              </span>
             </label>
             {errors.terms && <span className="error-msg">{errors.terms}</span>}
+          </div>
+
+          <div className="form-group bitacora-group">
+            <label className="terms-label">
+              <input
+                type="checkbox"
+                checked={fields.bitacora}
+                onChange={e => setField('bitacora', e.target.checked)}
+              />
+              <span className="terms-checkbox-ui" />
+              <span className="terms-text">
+                Acepto recibir, por correo electrónico, la newsletter "Bitácora Manya" con contenido editorial sobre marketing digital y tendencias, bajo esta{' '}
+                <a href="https://manya.pe/politica-de-consentimiento-bitacora-manya/" target="_blank" rel="noopener noreferrer" className="terminos-link">
+                  política de consentimiento
+                </a>.
+              </span>
+            </label>
           </div>
 
           <div className="form-footer">

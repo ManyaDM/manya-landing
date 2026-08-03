@@ -651,15 +651,17 @@ section{padding:6rem 5%}
 /* ── TERMS CHECKBOX ── */
 .terms-group{margin-top:.25rem}
 .terms-label{
-  display:flex;align-items:center;gap:.7rem;cursor:pointer;
+  display:flex;align-items:flex-start;gap:.7rem;cursor:pointer;
   font-size:.85rem;color:var(--navy);user-select:none;
 }
+.form-group .terms-label{text-transform:none;font-weight:400;letter-spacing:normal}
 .terms-label input[type="checkbox"]{display:none}
 .terms-checkbox-ui{
   width:18px;height:18px;flex-shrink:0;border-radius:5px;
   border:1.5px solid var(--border);background:var(--white);
   display:flex;align-items:center;justify-content:center;
   transition:background .15s,border-color .15s;
+  margin-top:.15rem;
 }
 .terms-label input:checked ~ .terms-checkbox-ui{
   background:var(--blue);border-color:var(--blue);
@@ -670,8 +672,10 @@ section{padding:6rem 5%}
   border:2px solid var(--white);border-top:none;border-right:none;
   transform:rotate(-45deg);margin-top:-1px;
 }
+.terms-text{flex:1;min-width:0}
 .terms-label a{color:var(--blue);text-decoration:underline}
 .terms-label a:hover{color:var(--navy)}
+.bitacora-group{margin-top:.6rem}
 
 .form-footer{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding-top: 1rem;}
 .btn-submit{
