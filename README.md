@@ -27,6 +27,54 @@ Luego abrir: http://localhost:3000/admin/index.html
 
 El admin te dejará editar cualquier colección. Al guardar, TinaCMS escribe el JSON directamente en content/, que es lo que leen los componentes.
 
+## Contact form → Make → Kommo
+
+Component: `components/ContactSection.jsx` (used on `/marketing-de-performance`).
+
+### Flow
+
+1. **Step 1 – Tus datos:** name, WhatsApp, email, company. Pushes `form_step1_complete` to the dataLayer.
+2. **Step 2 – Tu proyecto:** monthly ad spend, objective, terms, Bitácora opt-in.
+3. **Submit:** POSTs the payload below to the Make webhook (scenario *Manya_Go_Kommo [Leads Whatsapp - Landing Marketing]*).
+   - `segmento: "calificado"` → opens WhatsApp and pushes `whatsapp_form_submit` (Ads conversion).
+   - `segmento: "nurture"` → shows a thank-you modal, does **not** open WhatsApp, pushes `lead_nurture_submit` (not a conversion).
+
+### Webhook payload
+
+| Field | Type | Notes |
+|---|---|---|
+| `nombre` | string | First and last name required |
+| `whatsapp` | string | `+51` + 9 digits starting with 9 |
+| `email` | string | |
+| `emailCorporativo` | boolean | `false` for free providers (gmail, hotmail, outlook, yahoo, live, icloud, msn) |
+| `empresa` | string | Junk values ("no tengo", "independiente", "-", …) are rejected client-side |
+| `presupuesto` | string | One of the exact values below |
+| `segmento` | `"calificado"` \| `"nurture"` | Derived from `presupuesto` |
+| `objetivo` | string | Option from `content/contact.json`, or free text when "Otro" |
+| `sitioWeb` | string? | Only for the ecommerce objective |
+| `bitacora` | boolean | Newsletter opt-in |
+| `timestamp` | ISO string | |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` | string | `utm_source`/`utm_medium` fall back to gclid / fbclid / ttclid |
+
+### `presupuesto` values (exact strings)
+
+The separator is an **en dash `–` (U+2013)**, not a hyphen `-`. Make filters and Kommo field options must match byte for byte.
+
+| Value | `segmento` |
+|---|---|
+| `Menos de S/ 2,000` | nurture |
+| `S/ 2,000 – S/ 5,000` | calificado |
+| `S/ 5,000 – S/ 10,000` | calificado |
+| `S/ 10,000 – S/ 30,000` | calificado |
+| `Más de S/ 30,000` | calificado |
+| `Todavía no invierto en pauta` | nurture |
+
+Prefer filtering on `segmento` in Make so budget ranges can change without touching the scenario.
+
+### Testing locally
+
+Local submissions hit the **production** webhook and fire real GTM tags. Use obvious test data (e.g. "Manya Prueba") and delete it from Kommo, Sheets, Brevo and Bitácora afterwards.
+
 ### Cómo migrar a TinaCloud cuando sea necesario
 
 Crear cuenta en app.tina.io y conectar el repositorio GitHub
