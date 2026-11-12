@@ -578,6 +578,7 @@ section{padding:6rem 5%}
   font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;text-transform:uppercase;
   letter-spacing:-.04em;line-height:1.1;margin-bottom:1rem;color:var(--navy);
 }
+.contact-info .section-num{justify-content:flex-start}
 .contact-info p{color:var(--muted);line-height:1.75;margin-bottom:1.5rem;font-size:.95rem}
 .contact-info em {color:#fff;background: #2196F3;padding: 0.0em;font-style: normal;}
 .trust-list{display:flex;flex-direction:column;gap:.85rem}
@@ -610,6 +611,12 @@ section{padding:6rem 5%}
 .form-group textarea:focus{border-color:var(--blue)}
 .form-group input::placeholder,
 .form-group textarea::placeholder{color:#b0b9cc}
+.form-group select{
+  appearance:none;-webkit-appearance:none;cursor:pointer;
+  padding-right:2.75rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23182345' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 1rem center;background-size:14px;
+}
 .form-group select option{background:var(--white);color:var(--navy)}
 .form-group textarea{min-height:100px}
 
@@ -687,6 +694,54 @@ section{padding:6rem 5%}
 .btn-submit:hover{background:#1da851}
 .btn-submit.sent{background:#0f6638;cursor:default}
 .form-note{font-size:.7rem;color:var(--muted);margin-top:.5rem;line-height:1.5}
+
+/* ── FORM STEPPER ── */
+.form-step{display:flex;flex-direction:column;gap:1.2rem;min-width:0;animation:formStepIn .35s ease}
+@keyframes formStepIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.form-step{animation:none}}
+.form-progress{display:flex;flex-direction:column;gap:.6rem}
+.form-progress-label{display:flex;align-items:baseline;gap:.6rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase}
+.form-progress-count{font-weight:700;color:var(--blue)}
+.form-progress-title{font-weight:600;color:var(--navy)}
+.form-progress-track{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.form-progress-seg{height:4px;border-radius:4px;background:var(--border);transition:background .3s}
+.form-progress-seg.active{background:var(--blue)}
+.label-row{display:flex;align-items:center;gap:.45rem}
+.info-tip{position:relative;display:inline-flex}
+.info-tip-btn{
+  width:18px;height:18px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid var(--blue);background:transparent;color:var(--blue);
+  font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:.7rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+  transition:background .2s,color .2s;
+}
+.info-tip-btn:hover,.info-tip-btn:focus-visible,.info-tip-btn[aria-expanded="true"]{background:var(--blue);color:var(--white)}
+.info-tip-bubble{
+  position:absolute;z-index:20;top:calc(100% + 10px);right:-12px;
+  width:min(300px,80vw);padding:.85rem 1rem;border-radius:10px;
+  background:var(--navy);color:var(--white);
+  font-size:.78rem;line-height:1.55;font-weight:400;
+  box-shadow:0 12px 32px rgba(24,35,69,.25);
+}
+.info-tip-bubble::before{
+  content:'';position:absolute;top:-6px;right:16px;
+  width:12px;height:12px;background:var(--navy);transform:rotate(45deg);
+}
+.info-tip-bubble strong{color:var(--white);font-weight:700}
+.helper-text{font-size:.75rem;color:var(--muted);line-height:1.5;margin-top:.15rem}
+.btn-next{
+  background:var(--navy);color:var(--white);border:none;
+  padding:1rem 2.2rem;border-radius:50px;font-size:.95rem;
+  font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;
+  transition:background .2s;display:flex;align-items:center;gap:.6rem;
+}
+.btn-next:hover{background:var(--blue)}
+.btn-back{
+  background:none;border:none;padding:.5rem 0;cursor:pointer;
+  font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:600;color:var(--muted);
+}
+.btn-back:hover{color:var(--navy)}
+.btn-back:disabled{opacity:.5;cursor:default}
 
 /* ── FOOTER ── */
 footer{
@@ -825,7 +880,7 @@ footer p{color:rgba(255,255,255,.35);font-size:.78rem}
   .proceso-steps::before{display:none}
   .form-row{grid-template-columns:1fr}
   .lead-form,.form-group,.wa-input-wrap{width:100%;max-width:100%}
-  .btn-submit{width:100%;justify-content:center}
+  .btn-submit,.btn-next{width:100%;justify-content:center}
   .form-footer{flex-direction:column;align-items:stretch}
   footer{flex-direction:column;text-align:center}
   .services-grid{grid-template-columns:1fr 1fr}
