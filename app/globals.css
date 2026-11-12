@@ -936,3 +936,9 @@ footer p{color:rgba(255,255,255,.35);font-size:.78rem}
   transition:background .2s;
 }
 .budget-modal-btn:hover{background:var(--blue)}
+.budget-modal-link{
+  background:none;border:none;padding:.25rem;cursor:pointer;align-self:center;
+  font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:600;
+  color:var(--blue);text-decoration:underline;
+}
+.budget-modal-link:hover{color:var(--navy)}
