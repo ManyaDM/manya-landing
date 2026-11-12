@@ -2,16 +2,16 @@
 import { useState, useEffect, useRef } from 'react'
 
 const BUDGET_OPTIONS = [
-  'Menos de S/ 2,000',
-  'S/ 2,000 – S/ 5,000',
-  'S/ 5,000 – S/ 10,000',
-  'S/ 10,000 – S/ 30,000',
-  'Más de S/ 30,000',
+  'Menos de US$500',
+  'US$500 – US$1,500',
+  'US$1,500 – US$3,000',
+  'US$3,000 – US$9,000',
+  'Más de US$9,000',
   'Todavía no invierto en pauta',
 ]
 
 // Budgets below the agency minimum go to a nurture funnel instead of WhatsApp.
-const NURTURE_BUDGETS = ['Todavía no invierto en pauta', 'Menos de S/ 2,000']
+const NURTURE_BUDGETS = ['Menos de US$500', 'Todavía no invierto en pauta']
 
 const ECOMMERCE_OBJECTIVE = 'Quiero escalar mis ventas de ecommerce'
 
@@ -106,6 +106,8 @@ export default function ContactSection({ data }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [nurtureModal, setNurtureModal] = useState(false)
+  // Budget of the nurture lead already sent, so a later resubmission can reference it.
+  const [nurtureSentBudget, setNurtureSentBudget] = useState('')
   const [utms, setUtms] = useState({
     utm_source: '',
     utm_medium: '',
@@ -206,6 +208,14 @@ export default function ContactSection({ data }) {
     if (Object.keys(e).length > 0) return
 
     const isNurture = NURTURE_BUDGETS.includes(fields.presupuesto)
+
+    // Already sent as nurture: don't create another low-budget lead, just show the modal again.
+    if (isNurture && nurtureSentBudget) {
+      setField('presupuesto', '')
+      setNurtureModal(true)
+      return
+    }
+
     setSending(true)
 
     // Separate events so low-budget leads don't count as Ads conversions.
@@ -219,6 +229,7 @@ export default function ContactSection({ data }) {
       email: fields.email,
       empresa: fields.empresa,
       presupuesto: fields.presupuesto,
+      presupuestoAnterior: nurtureSentBudget || undefined,
       segmento: isNurture ? 'nurture' : 'calificado',
       emailCorporativo: !isFreeEmail(fields.email),
       objetivo: finalObjetivo,
@@ -239,8 +250,10 @@ export default function ContactSection({ data }) {
     setSending(false)
 
     if (isNurture) {
+      // Keep the form editable: only the budget resets so the user can pick another range.
+      setNurtureSentBudget(fields.presupuesto)
+      setField('presupuesto', '')
       setNurtureModal(true)
-      setSent(true)
       return
     }
 
@@ -253,6 +266,11 @@ export default function ContactSection({ data }) {
     if (sent || sending) return
     if (step === 1) goToStep2()
     else handleSubmit()
+  }
+
+  const changeBudgetAnswer = () => {
+    setNurtureModal(false)
+    requestAnimationFrame(() => document.getElementById('cf-presupuesto')?.focus())
   }
 
   const wordCount = countWords(fields.otroText)
@@ -549,13 +567,16 @@ export default function ContactSection({ data }) {
               ¡Gracias por tu interés en Manya{firstName ? `, ${firstName}` : ''}!
             </h3>
             <p className="budget-modal-body">
-              Nos alegra que pienses en nosotros para hacer crecer tu negocio. Nuestros planes de performance están pensados para inversiones en pauta desde <strong>S/ 2,000 mensuales</strong>: con ese volumen las campañas generan datos suficientes para optimizar y dar resultados.
+              Nos alegra que pienses en nosotros para hacer crecer tu negocio. Nuestros planes de performance están pensados para inversiones en pauta desde <strong>US$500 mensuales</strong>: con ese volumen las campañas generan datos suficientes para optimizar y dar resultados.
             </p>
             <p className="budget-modal-body">
               Cuando estés listo para escalar, aquí estaremos.
             </p>
             <button className="budget-modal-btn" onClick={() => setNurtureModal(false)}>
               Entendido
+            </button>
+            <button type="button" className="budget-modal-link" onClick={changeBudgetAnswer}>
+              Cambiar mi respuesta
             </button>
           </div>
         </div>
