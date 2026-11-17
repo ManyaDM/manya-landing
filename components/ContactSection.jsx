@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import { captureUtms, EMPTY_UTMS } from '@/lib/utm'
 
 const BUDGET_OPTIONS = [
   'Menos de US$500',
@@ -108,37 +109,11 @@ export default function ContactSection({ data }) {
   const [nurtureModal, setNurtureModal] = useState(false)
   // Budget of the nurture lead already sent, so a later resubmission can reference it.
   const [nurtureSentBudget, setNurtureSentBudget] = useState('')
-  const [utms, setUtms] = useState({
-    utm_source: '',
-    utm_medium: '',
-    utm_campaign: '',
-    utm_term: '',
-    utm_content: '',
-  })
+  const [utms, setUtms] = useState(EMPTY_UTMS)
   const formRef = useRef(null)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const gclid = params.get('gclid')
-    const fbclid = params.get('fbclid')
-    const ttclid = params.get('ttclid')
-
-    let source = params.get('utm_source') || ''
-    let medium = params.get('utm_medium') || ''
-
-    if (!source) {
-      if (gclid) { source = 'google'; medium = medium || 'cpc' }
-      else if (fbclid) { source = 'meta'; medium = medium || 'paid_social' }
-      else if (ttclid) { source = 'tiktok'; medium = medium || 'paid_social' }
-    }
-
-    setUtms({
-      utm_source: source,
-      utm_medium: medium,
-      utm_campaign: params.get('utm_campaign') || '',
-      utm_term: params.get('utm_term') || '',
-      utm_content: params.get('utm_content') || '',
-    })
+    setUtms(captureUtms())
   }, [])
 
   const setField = (key, val) => {

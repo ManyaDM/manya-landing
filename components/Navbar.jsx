@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { captureUtms } from '@/lib/utm'
 
 const services = [
   { name: 'Marketing de Performance', href: '/marketing-de-performance' },
@@ -35,6 +36,9 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => { setDropOpen(false) }, [pathname])
+
+  // Persist landing UTMs so they survive in-site navigation (e.g. "Reunámonos" drops the query string).
+  useEffect(() => { captureUtms() }, [pathname])
 
   return (
     <nav>
