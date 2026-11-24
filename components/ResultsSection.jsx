@@ -47,11 +47,11 @@ export default function ResultsSection({ cards }) {
           <div>
             <div className="section-num">Resultados</div>
             <h2 className="results-reveal-h2">
-              La innovación no es inspiración.<br />
-              <span>Es metodología que demuestra resultados</span>
+              No reportamos clics.<br />
+              <span>Reportamos revenue.</span>
             </h2>
             <p className="section-sub" style={{ marginTop: '.5rem' }}>
-              No reportamos clics. Reportamos revenue. Cada caso de éxito conecta inversión
+              Cada caso de éxito conecta inversión
               publicitaria con crecimiento real del negocio.
             </p>
           </div>

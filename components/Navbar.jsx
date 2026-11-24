@@ -42,14 +42,15 @@ export default function Navbar() {
 
   return (
     <nav>
-      <Link href="/" className="nav-logo">
+      {/* Logo scrolls to the top of the current page — no exit to the site under construction. */}
+      <a href="#" className="nav-logo" aria-label="Volver al inicio">
         <img
           src="https://manya.pe/wp-content/uploads/2025/03/manyalogoblue.svg"
           alt="Manya"
           loading="lazy"
           height="32"
         />
-      </Link>
+      </a>
 
       {/*<ul className="nav-links">
         <li ref={dropRef} className="nav-services-item">

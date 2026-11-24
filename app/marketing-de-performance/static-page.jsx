@@ -2,7 +2,6 @@ import Hero from '@/components/Hero'
 import LogosBar from '@/components/LogosBar'
 import PainSection from '@/components/PainSection'
 import SistemaSection from '@/components/SistemaSection'
-import TechSection from '@/components/TechSection'
 import ResultsSection from '@/components/ResultsSection'
 import TestimonialsSection from '@/components/TestimonialsSection'
 import CtaBand from '@/components/CtaBand'
@@ -12,7 +11,6 @@ import {
   getHero,
   getPainCards,
   getSistemaCards,
-  getTechCards,
   getResultCards,
   getTestimonials,
   getProcesoSteps,
@@ -31,7 +29,6 @@ export default function StaticMarketingPage() {
       <CtaBand />
       <ContactSection data={getContact()} />
       <ProcesoSection steps={getProcesoSteps()} />
-      <TechSection cards={getTechCards()} />
     </>
   )
 }
