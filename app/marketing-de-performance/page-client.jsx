@@ -4,7 +4,6 @@ import Hero from '@/components/Hero'
 import LogosBar from '@/components/LogosBar'
 import PainSection from '@/components/PainSection'
 import SistemaSection from '@/components/SistemaSection'
-import TechSection from '@/components/TechSection'
 import ResultsSection from '@/components/ResultsSection'
 import TestimonialsSection from '@/components/TestimonialsSection'
 import CtaBand from '@/components/CtaBand'
@@ -30,7 +29,6 @@ export default function MarketingPageClient({
   const { data: heroData } = useTina(hero)
   const { data: painData } = useTina(painCards)
   const { data: sistemaData } = useTina(sistemaCards)
-  const { data: techData } = useTina(techCards)
   const { data: resultsData } = useTina(results)
   const { data: testiData } = useTina(testimonials)
   const { data: procesoData } = useTina(procesoSteps)
@@ -47,7 +45,6 @@ export default function MarketingPageClient({
       <CtaBand />
       <ContactSection data={contactData.contact} />
       <ProcesoSection steps={sortByOrder(procesoData.procesoStepConnection.edges)} />
-      <TechSection cards={sortByOrder(techData.techCardConnection.edges)} />
     </>
   )
 }
