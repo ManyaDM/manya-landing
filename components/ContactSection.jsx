@@ -65,11 +65,6 @@ function sanitizeWhatsapp(raw) {
   return digits.slice(0, 9)
 }
 
-function countWords(text) {
-  const t = text.trim()
-  return t ? t.split(/\s+/).length : 0
-}
-
 function normalizeSitioWeb(value) {
   const clean = value.replace(/\s/g, '')
   if (!clean) return ''
@@ -78,9 +73,10 @@ function normalizeSitioWeb(value) {
 }
 
 function buildWAUrl(fields) {
-  const objetivo = fields.objetivo === 'Otro' ? fields.otroText : fields.objetivo
+  // "Otro" carries no meaningful sentence, so it is left out of the WhatsApp message.
+  const objetivo = fields.objetivo === 'Otro' ? '' : `${fields.objetivo}. `
   const msg =
-    `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${objetivo}. ` +
+    `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${objetivo}` +
     `Mi inversión mensual en pauta está en el rango de ${fields.presupuesto}`
   return `https://api.whatsapp.com/send/?phone=51997510692&text=${encodeURIComponent(msg)}`
 }
@@ -96,7 +92,6 @@ export default function ContactSection({ data }) {
     empresa: '',
     presupuesto: '',
     objetivo: '',
-    otroText: '',
     sitioWeb: '',
     terms: false,
     bitacora: false,
@@ -139,10 +134,6 @@ export default function ContactSection({ data }) {
     const e = {}
     if (!fields.presupuesto) e.presupuesto = 'Selecciona un rango'
     if (!fields.objetivo) e.objetivo = 'Selecciona un objetivo'
-    if (fields.objetivo === 'Otro') {
-      if (!fields.otroText.trim()) e.otroText = 'Describe tu objetivo'
-      else if (countWords(fields.otroText) > 50) e.otroText = 'Máximo 50 palabras'
-    }
     if (fields.objetivo === ECOMMERCE_OBJECTIVE && fields.sitioWeb) {
       const host = fields.sitioWeb.replace(/^https?:\/\//i, '')
       if (!host.includes('.')) e.sitioWeb = 'Ingresa una URL válida (ej: tutienda.com)'
@@ -197,7 +188,6 @@ export default function ContactSection({ data }) {
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({ event: isNurture ? 'lead_nurture_submit' : 'whatsapp_form_submit' })
 
-    const finalObjetivo = fields.objetivo === 'Otro' ? fields.otroText : fields.objetivo
     const payload = {
       nombre: fields.nombre,
       whatsapp: `+51${fields.whatsapp}`,
@@ -207,7 +197,8 @@ export default function ContactSection({ data }) {
       presupuestoAnterior: nurtureSentBudget || undefined,
       segmento: isNurture ? 'nurture' : 'calificado',
       emailCorporativo: !isFreeEmail(fields.email),
-      objetivo: finalObjetivo,
+      // Must match the Kommo Salesbot conditions exactly, so it is always one of the listed options.
+      objetivo: fields.objetivo,
       sitioWeb: fields.objetivo === ECOMMERCE_OBJECTIVE ? fields.sitioWeb : undefined,
       bitacora: fields.bitacora,
       timestamp: new Date().toISOString(),
@@ -248,7 +239,6 @@ export default function ContactSection({ data }) {
     requestAnimationFrame(() => document.getElementById('cf-presupuesto')?.focus())
   }
 
-  const wordCount = countWords(fields.otroText)
   const firstName = fields.nombre.trim().split(/\s+/)[0] || ''
 
   return (
@@ -438,19 +428,6 @@ export default function ContactSection({ data }) {
                   ))}
                 </select>
                 {errors.objetivo && <span className="error-msg">{errors.objetivo}</span>}
-                {fields.objetivo === 'Otro' && (
-                  <div className="otro-wrap">
-                    <textarea
-                      className={`otro-textarea${errors.otroText ? ' field-error' : ''}`}
-                      placeholder="Describe tu objetivo... (máximo 50 palabras)"
-                      value={fields.otroText}
-                      onChange={e => setField('otroText', e.target.value)}
-                      rows={3}
-                    />
-                    <div className={`word-count${wordCount > 50 ? ' over' : ''}`}>{wordCount}/50 palabras</div>
-                    {errors.otroText && <span className="error-msg">{errors.otroText}</span>}
-                  </div>
-                )}
               </div>
 
               {fields.objetivo === ECOMMERCE_OBJECTIVE && (
