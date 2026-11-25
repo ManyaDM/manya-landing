@@ -73,10 +73,8 @@ function normalizeSitioWeb(value) {
 }
 
 function buildWAUrl(fields) {
-  // "Otro" carries no meaningful sentence, so it is left out of the WhatsApp message.
-  const objetivo = fields.objetivo === 'Otro' ? '' : `${fields.objetivo}. `
   const msg =
-    `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${objetivo}` +
+    `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${fields.objetivo}. ` +
     `Mi inversión mensual en pauta está en el rango de ${fields.presupuesto}`
   return `https://api.whatsapp.com/send/?phone=51997510692&text=${encodeURIComponent(msg)}`
 }
