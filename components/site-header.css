@@ -1,0 +1,93 @@
+/* Site header: copy of the "Mapa de Fugas" landing header (site-head).
+   Large and transparent at the top; after 60px of scroll it condenses into a light fixed capsule
+   and the CTA gets a light sheen. All rules are scoped to .site-head* class names. */
+.site-head{
+  --sh-navy:#182345;
+  --sh-blue:#2396FE;
+  --sh-cta:#2396FE;
+  --sh-cta-hover:#1a7fd4;
+  --sh-alice:#DEEAFB;
+  --sh-ease:cubic-bezier(.16,1,.3,1);
+  --sh-gutter:clamp(16px,4vw,48px);
+  --hp-top:calc((min(1420px,100% - 20px) - min(1380px,100% - 2 * var(--sh-gutter))) / 2);
+  position:fixed;top:10px;left:0;right:0;z-index:100;
+  margin:0 auto;width:min(1420px,calc(100% - 20px));
+  padding:16px var(--hp-top);border:0;border-radius:999px;
+  background:transparent;color:#fff;isolation:isolate;
+}
+.site-head::before{
+  content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+  background:rgba(248,250,255,.96);border:1px solid rgba(24,35,69,.14);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
+  opacity:0;transform:scale(1.02,1.12);
+}
+.site-head-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:60px}
+
+.site-head-logo{display:flex;align-items:center;min-height:44px;color:var(--sh-blue);line-height:0;text-decoration:none}
+.site-head-logo svg{display:block;height:26px;width:auto;transform-origin:0 50%;scale:1.15}
+
+.site-head-cta{
+  --bg:var(--sh-cta);--fg:#fff;
+  position:relative;overflow:hidden;isolation:isolate;
+  display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+  min-height:44px;padding:0 20px;border-radius:999px;border:0;
+  background:var(--bg);color:var(--fg);font-weight:700;font-size:.9rem;line-height:1.15;
+  text-decoration:none;cursor:pointer;white-space:nowrap;
+  transform-origin:100% 50%;scale:1.08;
+  transition:background-color .2s var(--sh-ease),transform .2s var(--sh-ease),box-shadow .2s;
+}
+.site-head-cta:hover{--bg:var(--sh-cta-hover)}
+.site-head-cta:active{transform:scale(.98)}
+.site-head-cta svg{display:block;width:18px;height:18px;transition:transform .25s var(--sh-ease)}
+.site-head-cta:hover svg{transform:translateX(3px)}
+/* sheen: a band of light crosses the CTA each time the header condenses */
+.site-head-cta::after{
+  content:"";position:absolute;top:-2px;bottom:-2px;left:0;width:40%;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45) 50%,rgba(255,255,255,0));
+  transform:translateX(-170%) skewX(-20deg);opacity:0;
+}
+
+.site-head :focus-visible{outline:2px solid var(--sh-cta);outline-offset:3px;border-radius:4px}
+.site-head:not(.is-scrolled) :focus-visible{outline-color:var(--sh-alice)}
+
+/* condensed capsule */
+.site-head.is-scrolled{padding:0 8px 0 22px;color:var(--sh-navy)}
+.site-head.is-scrolled::before{opacity:1;transform:none}
+.site-head.is-scrolled .site-head-logo svg,.site-head.is-scrolled .site-head-cta{scale:1}
+
+/* transitions only after the first paint, so the initial state does not animate */
+.site-head.is-ready{transition:padding .32s var(--sh-ease)}
+.site-head.is-ready::before{transition:opacity .32s var(--sh-ease),transform .32s var(--sh-ease)}
+.site-head.is-ready .site-head-logo svg{transition:scale .32s var(--sh-ease)}
+.site-head.is-ready .site-head-cta{transition:background-color .2s var(--sh-ease),transform .2s var(--sh-ease),scale .32s var(--sh-ease)}
+
+@media (prefers-reduced-motion:no-preference){
+  .site-head.is-ready.is-scrolled .site-head-cta::after{animation:siteHeadSheen 1.9s cubic-bezier(.45,0,.25,1) .28s both}
+  @keyframes siteHeadSheen{
+    0%{transform:translateX(-170%) skewX(-20deg);opacity:1}
+    42%{transform:translateX(340%) skewX(-20deg);opacity:1}
+    43%,57%{transform:translateX(340%) skewX(-20deg);opacity:0}
+    58%{transform:translateX(-170%) skewX(-20deg);opacity:.5}
+    100%{transform:translateX(340%) skewX(-20deg);opacity:.5}
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .site-head.is-ready,.site-head.is-ready::before,.site-head.is-ready .site-head-logo svg,.site-head.is-ready .site-head-cta,
+  .site-head-cta,.site-head-cta svg{transition:none}
+  .site-head-cta::after{display:none}
+}
+
+/* mobile: only a modest change in height */
+@media (max-width:760px){
+  .site-head{padding:6px 6px 6px 16px}
+  .site-head.is-scrolled{padding:0 6px 0 16px}
+  .site-head-row{min-height:54px}
+  .site-head-logo svg{scale:1.06}
+  .site-head-cta{min-height:44px;padding:0 14px;font-size:.875rem;scale:1}
+}
+@media (max-width:400px){
+  .site-head-row{gap:8px}
+  .site-head-logo svg{height:24px}
+  .site-head-cta{padding:0 14px;font-size:.875rem;gap:4px}
+  .site-head-cta svg{width:14px;height:14px}
+}

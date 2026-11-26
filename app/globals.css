@@ -14,15 +14,7 @@
 html{scroll-behavior:smooth}
 body{font-family:'Poppins',sans-serif;background:var(--ghost);color:var(--navy);overflow-x:hidden;line-height:1.6}
 
-/* ── NAVBAR ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 5%;
-  background:rgba(248,250,255,0.92);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-}
+/* ── NAVBAR ── (site header styles live in components/site-header.css) */
 .nav-logo{display:flex;align-items:center;gap:0.5rem}
 .logo-mark{
   width:38px;height:38px;background:var(--navy);border-radius:8px;
