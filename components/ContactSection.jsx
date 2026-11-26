@@ -11,9 +11,6 @@ const BUDGET_OPTIONS = [
   'Todavía no invierto en pauta',
 ]
 
-// Budgets below the agency minimum. They still go to WhatsApp (the Kommo Salesbot can only
-// reply to contacts who wrote first), but are tagged so they don't count as Ads conversions.
-const NURTURE_BUDGETS = ['Menos de US$500', 'Todavía no invierto en pauta']
 
 const ECOMMERCE_OBJECTIVE = 'Quiero escalar mis ventas de ecommerce'
 
@@ -169,13 +166,10 @@ export default function ContactSection({ data }) {
     setErrors(e)
     if (Object.keys(e).length > 0) return
 
-    const isNurture = NURTURE_BUDGETS.includes(fields.presupuesto)
-
     setSending(true)
 
-    // Separate events so low-budget leads don't count as Ads conversions.
     window.dataLayer = window.dataLayer || []
-    window.dataLayer.push({ event: isNurture ? 'lead_nurture_submit' : 'whatsapp_form_submit' })
+    window.dataLayer.push({ event: 'whatsapp_form_submit' })
 
     const payload = {
       nombre: fields.nombre,
@@ -183,7 +177,8 @@ export default function ContactSection({ data }) {
       email: fields.email,
       empresa: fields.empresa,
       presupuesto: fields.presupuesto,
-      segmento: isNurture ? 'nurture' : 'calificado',
+      // Every lead follows the same WhatsApp → Kommo flow; kept constant so existing Make filters still pass.
+      segmento: 'calificado',
       emailCorporativo: !isFreeEmail(fields.email),
       // Must match the Kommo Salesbot conditions exactly, so it is always one of the listed options.
       objetivo: fields.objetivo,

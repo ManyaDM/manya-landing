@@ -36,9 +36,8 @@ Component: `components/ContactSection.jsx` (used on `/marketing-de-performance`)
 1. **Step 1 – Tus datos:** name, WhatsApp, email, company. Pushes `form_step1_complete` to the dataLayer.
 2. **Step 2 – Tu proyecto:** monthly ad spend, objective, terms, Bitácora opt-in.
 3. **Submit:** POSTs the payload below to the Make webhook (scenario *Manya_Go_Kommo [Leads Whatsapp - Landing Marketing]*).
-   - `segmento: "calificado"` → opens WhatsApp and pushes `whatsapp_form_submit` (Ads conversion).
-   - `segmento: "nurture"` → shows a thank-you modal, does **not** open WhatsApp, pushes `lead_nurture_submit` (not a conversion). The form stays editable: only the budget resets, and the modal offers "Cambiar mi respuesta". Picking a nurture budget again does not send another request.
-   - A resubmission after a nurture lead sends `presupuestoAnterior` with the first budget, so Make can update the existing lead instead of treating it as unrelated.
+   - Every lead, whatever the budget, opens WhatsApp and pushes `whatsapp_form_submit` (Ads conversion).
+   - The Kommo Salesbot can only message contacts who wrote first, so the lead must send that WhatsApp message for the bot to reply.
 
 ### Webhook payload
 
@@ -50,9 +49,8 @@ Component: `components/ContactSection.jsx` (used on `/marketing-de-performance`)
 | `emailCorporativo` | boolean | `false` for free providers (gmail, hotmail, outlook, yahoo, live, icloud, msn) |
 | `empresa` | string | Junk values ("no tengo", "independiente", "-", …) are rejected client-side |
 | `presupuesto` | string | One of the exact values below |
-| `presupuestoAnterior` | string? | Only on a resubmission after a nurture lead: the budget sent first |
-| `segmento` | `"calificado"` \| `"nurture"` | Derived from `presupuesto` |
-| `objetivo` | string | Option from `content/contact.json`, or free text when "Otro" |
+| `segmento` | `"calificado"` | Always `"calificado"`; kept so existing Make filters keep passing |
+| `objetivo` | string | One of the options in `content/contact.json`; must match the Kommo Salesbot conditions exactly |
 | `sitioWeb` | string? | Only for the ecommerce objective |
 | `bitacora` | boolean | Newsletter opt-in |
 | `timestamp` | ISO string | |
@@ -62,16 +60,12 @@ Component: `components/ContactSection.jsx` (used on `/marketing-de-performance`)
 
 The separator is an **en dash `–` (U+2013)**, not a hyphen `-`. Make filters and Kommo field options must match byte for byte.
 
-| Value | `segmento` |
-|---|---|
-| `Menos de US$500` | nurture |
-| `US$500 – US$1,500` | calificado |
-| `US$1,500 – US$3,000` | calificado |
-| `US$3,000 – US$9,000` | calificado |
-| `Más de US$9,000` | calificado |
-| `Todavía no invierto en pauta` | nurture |
-
-Prefer filtering on `segmento` in Make so budget ranges can change without touching the scenario.
+- `Menos de US$500`
+- `US$500 – US$1,500`
+- `US$1,500 – US$3,000`
+- `US$3,000 – US$9,000`
+- `Más de US$9,000`
+- `Todavía no invierto en pauta`
 
 ### Testing locally
 
