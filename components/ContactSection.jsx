@@ -8,7 +8,6 @@ const BUDGET_OPTIONS = [
   'US$1,500 – US$3,000',
   'US$3,000 – US$9,000',
   'Más de US$9,000',
-  'Todavía no invierto en pauta',
 ]
 
 
@@ -340,7 +339,7 @@ export default function ContactSection({ data }) {
             <div className="form-step" key="step-2">
               <div className="form-group">
                 <div className="label-row">
-                  <label htmlFor="cf-presupuesto">¿Cuál es tu inversión mensual en publicidad (pauta)?</label>
+                  <label htmlFor="cf-presupuesto">¿Cuánto planeas invertir en pauta publicitaria al mes?</label>
                   <div
                     className="info-tip"
                     onMouseEnter={() => setBudgetInfo(true)}
@@ -360,7 +359,7 @@ export default function ContactSection({ data }) {
                     </button>
                     {budgetInfo && (
                       <div id="cf-presupuesto-info" role="tooltip" className="info-tip-bubble">
-                        Es el dinero que destinas cada mes a anuncios en plataformas como Google, Meta o TikTok.
+                        Es el dinero que planeas destinar cada mes a anuncios en plataformas como Google, Meta o TikTok.
                         <strong> No es lo que pagarías a Manya</strong> por gestionar tus campañas: el fee de la agencia va aparte.
                       </div>
                     )}

@@ -65,7 +65,6 @@ The separator is an **en dash `–` (U+2013)**, not a hyphen `-`. Make filters a
 - `US$1,500 – US$3,000`
 - `US$3,000 – US$9,000`
 - `Más de US$9,000`
-- `Todavía no invierto en pauta`
 
 ### Testing locally
 
