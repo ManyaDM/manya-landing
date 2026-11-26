@@ -129,7 +129,11 @@ export default function Navbar() {
         </li>
       </ul>*/}
 
-      <Link href="/marketing-de-performance#contacto" className="site-head-cta" data-cta="header">
+      <Link
+        href={pathname === '/mapa-de-fugas' ? '#agendar' : '/marketing-de-performance#contacto'}
+        className="site-head-cta"
+        data-cta="header"
+      >
         Agendar evaluación
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path
