@@ -1,4 +1,13 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+
+// Pages that must not show the floating WhatsApp button (they have their own form).
+const HIDDEN_ON = ['/mapa-de-fugas']
+
 export default function WhatsAppFab() {
+  const pathname = usePathname()
+  if (HIDDEN_ON.includes(pathname)) return null
   return (
     <a
       id="wa-fab"

@@ -21,8 +21,9 @@
   -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
   opacity:0;transform:scale(1.02,1.12);
 }
-/* at the top, logo and CTA line up with the page sections' 5% side gutter (section{padding:… 5%}) */
-.site-head:not(.is-scrolled){width:calc(100% - 20px);padding-left:calc(5% - 10px);padding-right:calc(5% - 10px)}
+/* .is-wide (every page except /mapa-de-fugas): at the top, logo and CTA line up with the
+   page sections' 5% side gutter (section{padding:… 5%}) */
+.site-head.is-wide:not(.is-scrolled){width:calc(100% - 20px);padding-left:calc(5% - 10px);padding-right:calc(5% - 10px)}
 .site-head-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:60px}
 
 .site-head-logo{display:flex;align-items:center;min-height:44px;color:var(--sh-blue);line-height:0;text-decoration:none}
@@ -52,10 +53,18 @@
 .site-head :focus-visible{outline:2px solid var(--sh-cta);outline-offset:3px;border-radius:4px}
 .site-head:not(.is-scrolled) :focus-visible{outline-color:var(--sh-alice)}
 
-/* condensed capsule */
+/* condensed capsule (original Mapa de Fugas design, used as is on /mapa-de-fugas) */
 .site-head.is-scrolled{padding:0 8px 0 22px;color:var(--sh-navy)}
 .site-head.is-scrolled::before{opacity:1;transform:none}
 .site-head.is-scrolled .site-head-logo svg,.site-head.is-scrolled .site-head-cta{scale:1}
+/* .is-wide condensed capsule: shrinks only half as much as the original design
+   (width, height, padding and logo/CTA scale sit halfway between the top state and the full condense) */
+.site-head.is-wide.is-scrolled{
+  width:calc((100% - 20px + min(1420px,100% - 20px)) / 2);
+  padding:8px calc((5% - 10px + 8px) / 2) 8px calc((5% - 10px + 22px) / 2);
+}
+.site-head.is-wide.is-scrolled .site-head-logo svg{scale:1.075}
+.site-head.is-wide.is-scrolled .site-head-cta{scale:1.04}
 
 /* transitions only after the first paint, so the initial state does not animate */
 .site-head.is-ready{transition:padding .32s var(--sh-ease),width .32s var(--sh-ease)}
@@ -83,6 +92,9 @@
 @media (max-width:760px){
   .site-head{padding:6px 6px 6px 16px}
   .site-head.is-scrolled{padding:0 6px 0 16px}
+  .site-head.is-wide.is-scrolled{padding:3px calc((5% - 10px + 6px) / 2) 3px calc((5% - 10px + 16px) / 2)}
+  .site-head.is-wide.is-scrolled .site-head-logo svg{scale:1.03}
+  .site-head.is-wide.is-scrolled .site-head-cta{scale:1}
   .site-head-row{min-height:54px}
   .site-head-logo svg{scale:1.06}
   .site-head-cta{min-height:44px;padding:0 14px;font-size:.875rem;scale:1}

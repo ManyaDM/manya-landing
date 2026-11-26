@@ -84,7 +84,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`site-head${scrolled ? ' is-scrolled' : ''}${ready ? ' is-ready' : ''}`}
+      className={`site-head${pathname === '/mapa-de-fugas' ? '' : ' is-wide'}${scrolled ? ' is-scrolled' : ''}${ready ? ' is-ready' : ''}`}
     >
       <div className="site-head-row">
       {/* Logo scrolls to the top of the current page — no exit to the site under construction. */}
