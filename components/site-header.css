@@ -21,6 +21,8 @@
   -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
   opacity:0;transform:scale(1.02,1.12);
 }
+/* at the top, logo and CTA line up with the page sections' 5% side gutter (section{padding:… 5%}) */
+.site-head:not(.is-scrolled){width:calc(100% - 20px);padding-left:calc(5% - 10px);padding-right:calc(5% - 10px)}
 .site-head-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:60px}
 
 .site-head-logo{display:flex;align-items:center;min-height:44px;color:var(--sh-blue);line-height:0;text-decoration:none}
@@ -56,7 +58,7 @@
 .site-head.is-scrolled .site-head-logo svg,.site-head.is-scrolled .site-head-cta{scale:1}
 
 /* transitions only after the first paint, so the initial state does not animate */
-.site-head.is-ready{transition:padding .32s var(--sh-ease)}
+.site-head.is-ready{transition:padding .32s var(--sh-ease),width .32s var(--sh-ease)}
 .site-head.is-ready::before{transition:opacity .32s var(--sh-ease),transform .32s var(--sh-ease)}
 .site-head.is-ready .site-head-logo svg{transition:scale .32s var(--sh-ease)}
 .site-head.is-ready .site-head-cta{transition:background-color .2s var(--sh-ease),transform .2s var(--sh-ease),scale .32s var(--sh-ease)}
