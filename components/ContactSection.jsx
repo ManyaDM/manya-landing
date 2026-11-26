@@ -72,7 +72,7 @@ function normalizeSitioWeb(value) {
 function buildWAUrl(fields) {
   const msg =
     `Hola, soy ${fields.nombre}, de la empresa ${fields.empresa}. ${fields.objetivo}. ` +
-    `Planeo invertir en pauta mensualmente en el rango de ${fields.presupuesto}`
+    `Mi inversión mensual en pauta está en el rango de ${fields.presupuesto}`
   return `https://api.whatsapp.com/send/?phone=51997510692&text=${encodeURIComponent(msg)}`
 }
 
@@ -339,7 +339,7 @@ export default function ContactSection({ data }) {
             <div className="form-step" key="step-2">
               <div className="form-group">
                 <div className="label-row">
-                  <label htmlFor="cf-presupuesto">¿Cuánto planeas invertir en pauta publicitaria neta al mes? Sin contar el fee de agencia.</label>
+                  <label htmlFor="cf-presupuesto">¿Cuánto planeas invertir en pauta publicitaria al mes?</label>
                   <div
                     className="info-tip"
                     onMouseEnter={() => setBudgetInfo(true)}
@@ -379,7 +379,7 @@ export default function ContactSection({ data }) {
                 </select>
                 {errors.presupuesto
                   ? <span className="error-msg">{errors.presupuesto}</span>
-                  : <span id="cf-presupuesto-help" className="helper-text">Solo lo que planeas invertir en anuncios (Google, Meta, TikTok).</span>}
+                  : <span id="cf-presupuesto-help" className="helper-text">Solo lo que inviertes en anuncios (Google, Meta, TikTok).</span>}
               </div>
 
               <div className="form-group">
