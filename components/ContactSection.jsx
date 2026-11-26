@@ -11,7 +11,8 @@ const BUDGET_OPTIONS = [
   'Todavía no invierto en pauta',
 ]
 
-// Budgets below the agency minimum go to a nurture funnel instead of WhatsApp.
+// Budgets below the agency minimum. They still go to WhatsApp (the Kommo Salesbot can only
+// reply to contacts who wrote first), but are tagged so they don't count as Ads conversions.
 const NURTURE_BUDGETS = ['Menos de US$500', 'Todavía no invierto en pauta']
 
 const ECOMMERCE_OBJECTIVE = 'Quiero escalar mis ventas de ecommerce'
@@ -99,9 +100,6 @@ export default function ContactSection({ data }) {
   const [budgetInfo, setBudgetInfo] = useState(false)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
-  const [nurtureModal, setNurtureModal] = useState(false)
-  // Budget of the nurture lead already sent, so a later resubmission can reference it.
-  const [nurtureSentBudget, setNurtureSentBudget] = useState('')
   const [utms, setUtms] = useState(EMPTY_UTMS)
   const formRef = useRef(null)
 
@@ -173,13 +171,6 @@ export default function ContactSection({ data }) {
 
     const isNurture = NURTURE_BUDGETS.includes(fields.presupuesto)
 
-    // Already sent as nurture: don't create another low-budget lead, just show the modal again.
-    if (isNurture && nurtureSentBudget) {
-      setField('presupuesto', '')
-      setNurtureModal(true)
-      return
-    }
-
     setSending(true)
 
     // Separate events so low-budget leads don't count as Ads conversions.
@@ -192,7 +183,6 @@ export default function ContactSection({ data }) {
       email: fields.email,
       empresa: fields.empresa,
       presupuesto: fields.presupuesto,
-      presupuestoAnterior: nurtureSentBudget || undefined,
       segmento: isNurture ? 'nurture' : 'calificado',
       emailCorporativo: !isFreeEmail(fields.email),
       // Must match the Kommo Salesbot conditions exactly, so it is always one of the listed options.
@@ -213,14 +203,6 @@ export default function ContactSection({ data }) {
 
     setSending(false)
 
-    if (isNurture) {
-      // Keep the form editable: only the budget resets so the user can pick another range.
-      setNurtureSentBudget(fields.presupuesto)
-      setField('presupuesto', '')
-      setNurtureModal(true)
-      return
-    }
-
     window.open(buildWAUrl(fields), '_blank')
     setSent(true)
   }
@@ -232,12 +214,6 @@ export default function ContactSection({ data }) {
     else handleSubmit()
   }
 
-  const changeBudgetAnswer = () => {
-    setNurtureModal(false)
-    requestAnimationFrame(() => document.getElementById('cf-presupuesto')?.focus())
-  }
-
-  const firstName = fields.nombre.trim().split(/\s+/)[0] || ''
 
   return (
     <section className="results-section">
@@ -510,27 +486,6 @@ export default function ContactSection({ data }) {
         </form>
       </div>
 
-      {nurtureModal && (
-        <div className="budget-overlay" onClick={() => setNurtureModal(false)}>
-          <div className="budget-modal" role="dialog" aria-modal="true" aria-labelledby="nurture-title" onClick={e => e.stopPropagation()}>
-            <h3 id="nurture-title" className="budget-modal-title">
-              ¡Gracias por tu interés en Manya{firstName ? `, ${firstName}` : ''}!
-            </h3>
-            <p className="budget-modal-body">
-              Nos alegra que pienses en nosotros para hacer crecer tu negocio. Nuestros planes de performance están pensados para inversiones en pauta desde <strong>US$500 mensuales</strong>: con ese volumen las campañas generan datos suficientes para optimizar y dar resultados.
-            </p>
-            <p className="budget-modal-body">
-              Cuando estés listo para escalar, aquí estaremos.
-            </p>
-            <button className="budget-modal-btn" onClick={() => setNurtureModal(false)}>
-              Entendido
-            </button>
-            <button type="button" className="budget-modal-link" onClick={changeBudgetAnswer}>
-              Cambiar mi respuesta
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
