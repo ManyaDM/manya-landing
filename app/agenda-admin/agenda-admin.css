@@ -101,7 +101,13 @@
 .agadm-staff-body{display:grid;gap:22px;padding:20px clamp(16px,2.2vw,24px) 22px;border-top:1px solid var(--line)}
 .agadm-staff-body[hidden]{display:none}
 .agadm-connect-note{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:.88rem}
-.agadm-staff-foot .agadm-danger-link{margin-left:auto}
+.agadm-staff-foot .agadm-danger-group{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px}
+.agadm-btn.danger{background:var(--danger);color:var(--white)}
+.agadm-btn.danger:hover{background:#c62828}
+.agadm-confirm{width:min(480px,calc(100vw - 32px))}
+.agadm-confirm p{line-height:1.5}
+.agadm-confirm-actions{justify-content:flex-end}
+.agadm-table td > .agadm-removed{display:inline;margin-left:6px;font-size:.78rem}
 .agadm-danger-link{background:none;border:0;color:var(--danger);font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;padding:8px 4px;opacity:.85}
 .agadm-danger-link:hover{opacity:1;text-decoration:underline}
 .agadm-danger-link[disabled]{opacity:.4;cursor:default}
