@@ -1452,11 +1452,14 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .plan-price.is-quote .plan-per{font-size:.86rem;color:var(--ink-mute)}
 .mdf .plan-label{color:var(--ink-mute);letter-spacing:.12em}
 .mdf .plan-feats svg,.mdf .plan.is-featured .plan-feats svg{width:16px;height:16px;margin-top:3px;padding:0;border-radius:0;background:none;color:var(--blue-ink)}
-.mdf .plan.is-featured .plan-feats svg{color:var(--ice)}
+/* featured plan: fuchsia accents (checks + credit) so it stands out from the two secondary plans */
+.mdf .plan.is-featured .plan-feats svg{color:#ff3d8b}
 .mdf .plan-feats li,.mdf .plan-meta dd{font-size:.9rem}
 .mdf .plan.is-featured .plan-credit{padding:12px 14px;border:1px solid rgba(222,234,251,.18);border-radius:6px;background:rgba(255,255,255,.05);color:#fff;font-size:.88rem}
-.mdf .plan.is-featured .plan-credit svg{color:var(--ice)}
-.mdf .plan-credit.is-soft,.mdf .plan-credit.is-ghost{border-radius:6px;background:var(--paper-tint);color:var(--ink-soft);font-size:.88rem;font-weight:500}
+.mdf .plan.is-featured .plan-credit{border-color:rgba(255,0,110,.45);background:rgba(255,0,110,.08)}
+.mdf .plan.is-featured .plan-credit svg{color:#ff3d8b}
+.mdf .plan-credit.is-soft,.mdf .plan-credit.is-ghost{flex-wrap:nowrap;align-items:flex-start;gap:10px;border-radius:6px;background:var(--paper-tint);color:var(--ink-soft);font-size:.88rem;font-weight:500}
+.mdf .plan-credit.is-soft svg,.mdf .plan-credit.is-ghost svg{width:18px;height:18px;margin-top:1px;color:var(--blue-ink)}
 .mdf .plan-credit.is-soft .plan-minus{font-weight:700;color:var(--navy)}
 
 /* 5 · casos: sin etiquetas de año/proyecto; cita un paso más chica y con aire parejo arriba y abajo */
