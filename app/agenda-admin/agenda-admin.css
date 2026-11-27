@@ -129,6 +129,23 @@
 .agadm-ovr-meta .agadm-link{padding:4px 0}
 .agadm-badge.is-custom{background:rgba(35,150,254,.12);color:#0b63b8}
 
+/* top bar user */
+.agadm-bar-user{display:flex;align-items:center;gap:12px;min-width:0}
+.agadm-bar-email{font-size:.86rem;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32ch}
+
+/* google sign-in */
+.agadm-google{gap:10px;background:var(--white);color:var(--navy);border:1.5px solid var(--field)}
+.agadm a.agadm-google{color:var(--navy)}
+.agadm-google:hover{background:var(--alice)}
+
+/* accesos */
+.agadm-access-add{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.agadm-access-add .agadm-field{flex:1 1 280px;max-width:440px}
+.agadm-access{list-style:none;margin:0;padding:0;display:grid}
+.agadm-access li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.agadm-access-id{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.agadm-access-id b{font-weight:600;overflow-wrap:anywhere}
+
 /* bookings table */
 .agadm-table-wrap{padding:0;overflow-x:auto}
 .agadm-table{width:100%;border-collapse:collapse;font-size:.88rem}
@@ -151,6 +168,9 @@
   .agadm-bar-brand{gap:10px}
   .agadm-bar-brand img{height:18px}
   .agadm-bar h1{font-size:.92rem}
+  .agadm-bar{flex-wrap:wrap;row-gap:6px}
+  .agadm-bar-user{gap:8px;margin-left:auto}
+  .agadm-bar-email{max-width:20ch;font-size:.8rem}
   .agadm-section-head{flex-direction:column;align-items:stretch}
   .agadm-section-head .agadm-btn{align-self:flex-start}
   .agadm-staff-head{grid-template-columns:auto minmax(0,1fr)}

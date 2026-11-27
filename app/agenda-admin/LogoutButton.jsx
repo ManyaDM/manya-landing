@@ -5,5 +5,5 @@ export default function LogoutButton() {
     await fetch('/api/agenda/admin/logout', { method: 'POST' }).catch(() => {})
     window.location.href = '/agenda-admin'
   }
-  return <button type="button" className="agadm-btn quiet sm" onClick={logout}>Salir</button>
+  return <button type="button" className="agadm-btn quiet sm" onClick={logout}>Cerrar sesión</button>
 }

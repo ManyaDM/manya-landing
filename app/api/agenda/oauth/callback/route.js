@@ -1,33 +1,76 @@
 import { NextResponse } from 'next/server'
 import { OAUTH_COOKIE, adminUrl } from '@/lib/agenda/admin'
+import { checkLoginIdentity, readState, statePurpose } from '@/lib/agenda/auth'
 import { adminConfigured, env, oauthConfigured } from '@/lib/agenda/config'
 import { encrypt } from '@/lib/agenda/crypto'
 import { db } from '@/lib/agenda/db'
-import { SCOPES, exchangeCode, forgetAccessToken, revokeToken } from '@/lib/agenda/google'
-import { isAdmin } from '@/lib/agenda/session'
-import { safeEqual, verifyToken } from '@/lib/agenda/sign'
+import { SCOPES, exchangeCode, fetchUserInfo, forgetAccessToken, revokeToken } from '@/lib/agenda/google'
+import { SESSION_COOKIE, isAdmin, isAllowedEmail, newSessionToken, sessionCookieOptions } from '@/lib/agenda/session'
+import { safeEqual } from '@/lib/agenda/sign'
 import { invalidateAvailability } from '@/lib/agenda/service'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-function done(request, status) {
-  const res = NextResponse.redirect(adminUrl(request, { oauth: status }))
+function redirect(request, params) {
+  const res = NextResponse.redirect(adminUrl(request, params))
   res.headers.set('Cache-Control', 'no-store')
   res.cookies.set(OAUTH_COOKIE, '', { httpOnly: true, path: '/api/agenda/oauth', maxAge: 0 })
   return res
 }
+const done = (request, status) => redirect(request, { oauth: status })
+const loginDone = (request, status) => redirect(request, status ? { login: status } : {})
 
-/** GET /api/agenda/oauth/callback?code&state — stores the staff member's encrypted refresh token. */
+/**
+ * GET /api/agenda/oauth/callback?code&state — one redirect URI for two flows, told apart by the signed
+ * state's purpose: 'login' (admin sign-in) or 'connect' (store a staff member's calendar refresh token).
+ */
 export async function GET(request) {
-  if (!adminConfigured() || !isAdmin()) return done(request, 'login')
-  if (!oauthConfigured()) return done(request, 'not_configured')
+  if (!adminConfigured()) return loginDone(request, 'error')
   const q = new URL(request.url).searchParams
+  const purpose = statePurpose(q.get('state'), env.sessionSecret)
+  if (purpose === 'login') return login(request, q)
+  if (purpose === 'connect') return connect(request, q)
+  return q.get('error') ? loginDone(request, 'cancelled') : loginDone(request, 'state')
+}
+
+function checkNonce(request, state) {
+  const nonce = request.cookies.get(OAUTH_COOKIE)?.value
+  return Boolean(state && nonce && safeEqual(state.n, nonce))
+}
+
+async function login(request, q) {
+  if (q.get('error')) return loginDone(request, 'cancelled')
+  const state = readState(q.get('state'), env.sessionSecret, 'login')
+  if (!checkNonce(request, state)) return loginDone(request, 'state')
+  const code = q.get('code')
+  if (!code || code.length > 2048) return loginDone(request, 'error')
+
+  let claims
+  try {
+    const tokens = await exchangeCode(code)
+    // The short-lived access token is used once and discarded. It is NOT revoked: Google revokes the whole
+    // grant for this client, which would also disconnect the admin's own calendar if they are staff.
+    claims = await fetchUserInfo(tokens.accessToken)
+  } catch (e) {
+    console.error('[agenda] admin login exchange failed', e.code || e.message)
+    return loginDone(request, 'error')
+  }
+  const id = checkLoginIdentity(claims)
+  if (!id.ok || !(await isAllowedEmail(id.email))) return loginDone(request, 'denied')
+
+  const res = loginDone(request, '')
+  res.cookies.set(SESSION_COOKIE, newSessionToken(id.email), sessionCookieOptions())
+  return res
+}
+
+async function connect(request, q) {
+  if (!(await isAdmin())) return done(request, 'login')
+  if (!oauthConfigured()) return done(request, 'not_configured')
   if (q.get('error')) return done(request, 'denied')
 
-  const state = verifyToken(q.get('state'), env.sessionSecret)
-  const nonce = request.cookies.get(OAUTH_COOKIE)?.value
-  if (!state || !nonce || !safeEqual(state.n, nonce)) return done(request, 'state')
+  const state = readState(q.get('state'), env.sessionSecret, 'connect')
+  if (!checkNonce(request, state)) return done(request, 'state')
   const code = q.get('code')
   if (!code || code.length > 2048) return done(request, 'error')
 

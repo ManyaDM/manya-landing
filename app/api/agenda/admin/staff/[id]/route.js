@@ -7,7 +7,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function PATCH(request, { params }) {
-  const denied = guardAdmin(request, { mutating: true })
+  const denied = await guardAdmin(request, { mutating: true })
   if (denied) return denied
   if (!UUID_RE.test(params.id)) return json({ error: 'not_found' }, 404)
   const v = validateStaffPatch(await readJson(request, 8192))

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 /** PUT { ids: [staffId...] } → rewrites priority as 10, 20, 30… in that order. */
 export async function PUT(request) {
-  const denied = guardAdmin(request, { mutating: true })
+  const denied = await guardAdmin(request, { mutating: true })
   if (denied) return denied
   const v = validateOrder(await readJson(request, 16 * 1024))
   if (!v.ok) return json({ error: 'invalid', fields: v.errors }, 400)

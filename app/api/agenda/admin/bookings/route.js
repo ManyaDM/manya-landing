@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 /** Upcoming (or ongoing) bookings, soonest first, max 100. Read-only; only the lead fields the list shows. */
 export async function GET(request) {
-  const denied = guardAdmin(request)
+  const denied = await guardAdmin(request)
   if (denied) return denied
   const { data, error } = await db().from('agenda_bookings')
     .select('id,starts_at,ends_at,status,meet_link,lead,staff:agenda_staff(name,email)')

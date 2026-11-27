@@ -10,7 +10,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request, { params }) {
-  const denied = guardAdmin(request, { mutating: true })
+  const denied = await guardAdmin(request, { mutating: true })
   if (denied) return denied
   if (!UUID_RE.test(params.id)) return json({ error: 'not_found' }, 404)
   const { data: row, error } = await db().from('agenda_staff').select('id,refresh_token_enc').eq('id', params.id).maybeSingle()

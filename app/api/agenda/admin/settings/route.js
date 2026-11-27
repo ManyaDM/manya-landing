@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic'
  * (no 'defaults' row): the hardcoded defaults are returned, which is also what the booking flow uses then.
  */
 export async function GET(request) {
-  const denied = guardAdmin(request)
+  const denied = await guardAdmin(request)
   if (denied) return denied
   const [assignment, defaults] = await Promise.all([readSetting(ASSIGNMENT_KEY), readSetting(DEFAULTS_KEY)])
   if (assignment.failed || defaults.failed) return json({ error: 'db_error' }, 502)
@@ -28,7 +28,7 @@ export async function GET(request) {
 
 /** PUT { policy: 'priority' | 'round_robin' } or { defaults: { meeting_minutes, ... } } (partial allowed). */
 export async function PUT(request) {
-  const denied = guardAdmin(request, { mutating: true })
+  const denied = await guardAdmin(request, { mutating: true })
   if (denied) return denied
   const body = await readJson(request, 2048)
   if (body && typeof body === 'object' && 'defaults' in body) return putDefaults(body.defaults)

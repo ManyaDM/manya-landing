@@ -10,7 +10,7 @@ const list = (cols) => db().from('agenda_staff').select(cols)
 
 /** → { staff: [...] ordered by priority, migration_required } */
 export async function GET(request) {
-  const denied = guardAdmin(request)
+  const denied = await guardAdmin(request)
   if (denied) return denied
   const { data, error, legacy } = await selectStaff((cols) => {
     const q = list(cols)
@@ -21,7 +21,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const denied = guardAdmin(request, { mutating: true })
+  const denied = await guardAdmin(request, { mutating: true })
   if (denied) return denied
   const v = validateNewStaff(await readJson(request, 4096))
   if (!v.ok) return json({ error: 'invalid', fields: v.errors }, 400)
