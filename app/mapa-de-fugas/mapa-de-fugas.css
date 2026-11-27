@@ -188,7 +188,8 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fc-row b{font-size:clamp(2.4rem,3.4vw,3.2rem);font-weight:900;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff}
 .mdf .fc-bar{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
 .mdf .fc-bar::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--blue);transition:width .6s var(--ease-out)}
-.mdf .fc-loss{font-family:var(--mono);font-size:.78rem;color:#FF006E}
+/* lighter rose on navy: #FF006E only reaches ~4.2:1 there; #ff6fa6 is ~6:1 */
+.mdf .fc-loss{font-family:var(--mono);font-size:.78rem;font-weight:500;color:#ff6fa6}
 .mdf .fc-loss[data-state="start"]{color:var(--ice)}
 .mdf .fugas-tabs .tab-prog{position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p,0) * 100%);background:var(--blue)}
 @media (min-width:901px){
@@ -305,6 +306,8 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 /* notas a mano sobre cada ejemplo */
 .mdf .fuga-mock{overflow:visible}
 .mdf .mk-hand{position:absolute;left:50%;translate:-50% 0;bottom:calc(100% + 36px);display:flex;align-items:center;gap:12px;margin:0;font-family:var(--mdf-caveat),cursive;font-weight:700;font-size:1.9rem;line-height:1;color:var(--magenta);rotate:-3deg;white-space:nowrap;pointer-events:none}
+/* inside the fugas panels, sit the note in the middle of the free band above the example */
+.mdf .fugas-panels .mk-hand{bottom:calc(100% + 22px)}
 .mdf .mh-loss{position:relative;padding:2px 12px;font-size:2.3rem}
 .mdf .mh-loss svg{position:absolute;inset:-6px -10px;width:calc(100% + 20px);height:calc(100% + 12px);overflow:visible}
 .mdf .mh-loss path{fill:none;stroke:var(--magenta);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
@@ -944,8 +947,9 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fugas-count{grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:16px;row-gap:6px;padding:10px 18px}
 
 .mdf .fugas-count .fc-row{display:contents}
-.mdf .fugas-count .fc-row b{grid-row:1 / span 3;font-size:clamp(2.2rem,3vw,2.8rem)}
-.mdf .fugas-count [data-count-label]{grid-column:2;font-size:.86rem;line-height:1.25;color:var(--on-navy-soft);min-height:2.5em;display:flex;align-items:center}
+.mdf .fugas-count .fc-row b{grid-row:1 / span 3;align-self:center;font-size:clamp(2.2rem,3vw,2.8rem)}
+/* one-line label so label, bar and loss stack evenly against the number */
+.mdf .fugas-count [data-count-label]{grid-column:2;font-size:.86rem;line-height:1.25;color:var(--on-navy-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mdf .fugas-count .fc-bar,.mdf .fugas-count .fc-loss{grid-column:2}
 .mdf .fuga-panel{padding:clamp(18px,1.8vw,24px)}
 .mdf .fuga-copy,.mdf .fuga-panel .fuga-mock{margin-top:20px}
