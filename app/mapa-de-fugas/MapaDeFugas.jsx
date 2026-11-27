@@ -377,15 +377,34 @@ export default function MapaDeFugas() {
       })
 
       /* cada campo acepta solo los caracteres que le corresponden */
-      /* WhatsApp: el +51 es fijo (adorno); el campo recibe solo el celular peruano: 9 dígitos que empiezan con 9 */
-      const phoneDigits = (v) => { let d = v.replace(/\D/g, ''); if (d.length > 9 && d.startsWith('51')) d = d.slice(2); return d.slice(0, 9) }
-      const phoneOk = (v) => /^9\d{8}$/.test(phoneDigits(v))
-      const phoneMask = (v) => (phoneDigits(v).match(/\d{1,3}/g) || []).join(' ') // 9XX XXX XXX
+      /* WhatsApp internacional: +51 por defecto; el selector ajusta largo esperado, formato y mensajes */
+      const PHONE_RULES = {
+        51: { len: 9, start: '9', ph: '9XX XXX XXX', hint: 'Tu número de 9 dígitos, sin el +51.' },
+        52: { len: 10, ph: 'XX XXXX XXXX', hint: 'Tu número de 10 dígitos, sin el +52.' },
+        56: { len: 9, ph: 'X XXXX XXXX', hint: 'Tu número de 9 dígitos, sin el +56.' },
+        57: { len: 10, ph: 'XXX XXX XXXX', hint: 'Tu número de 10 dígitos, sin el +57.' },
+        54: { len: 10, ph: 'XX XXXX XXXX', hint: 'Tu número de 10 dígitos, sin el +54.' },
+        593: { len: 9, ph: 'X XXXX XXXX', hint: 'Tu número de 9 dígitos, sin el +593.' },
+        34: { len: 9, ph: 'XXX XXX XXX', hint: 'Tu número de 9 dígitos, sin el +34.' },
+        1: { len: 10, ph: 'XXX XXX XXXX', hint: 'Tu número de 10 dígitos, sin el +1.' },
+      }
+      const phoneDigits = (v, cc = '51') => {
+        const r = PHONE_RULES[cc] || PHONE_RULES[51]
+        let d = String(v || '').replace(/\D/g, '')
+        if (cc === '51' && d.length > 9 && d.startsWith('51')) d = d.slice(2)
+        return d.slice(0, r.len)
+      }
+      const phoneOk = (v, cc = '51') => {
+        const r = PHONE_RULES[cc] || PHONE_RULES[51]
+        const d = phoneDigits(v, cc)
+        return d.length === r.len && (!r.start || d.startsWith(r.start))
+      }
+      const phoneMask = (v, cc = '51') => (phoneDigits(v, cc).match(/\d{1,3}/g) || []).join(' ') // 9XX XXX XXX
       const FIELD_RULES = {
         nombre: { strip: /[^\p{L}\p{M}\s'’\-]/gu, check: (v) => (v.match(/\p{L}/gu) || []).length >= 2 },
         empresa: { strip: /[\u0000-\u001f<>]/g, check: (v) => /[\p{L}\p{N}]/u.test(v) && v.trim().length >= 2 },
         correo: { strip: /[\s\u0000-\u001f<>()[\],;:"\\]/g, check: (v) => /^[^@\s]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v) },
-        telefono: { strip: /[^\d\s+]/g, fix: phoneMask, check: phoneOk },
+        telefono: { strip: /[^\d\s+]/g, fix: (v) => phoneMask(v, byId('pais').value), check: (v) => phoneOk(v, byId('pais').value) },
         web: { strip: /[^A-Za-z0-9\-._~:/?#@!$&'()*+,;=%]/g },
         facebook: { strip: /[^A-Za-z0-9\-._~:/?#@!$&'()*+,;=%]/g },
         linkedin: { strip: /[^A-Za-z0-9\-._~:/?#@!$&'()*+,;=%]/g },
@@ -409,6 +428,24 @@ export default function MapaDeFugas() {
           if (v !== el.value) { el.value = v; run(); syncAria(el) }
         })
       })
+
+      /* el país cambia el largo esperado y el formato del número (se guarda en E.164 al enviar) */
+      const paisSel = byId('pais'), telInput = byId('telefono')
+      if (paisSel && telInput) {
+        const syncPhone = () => {
+          const cc = paisSel.value, r = PHONE_RULES[cc] || PHONE_RULES[51]
+          telInput.maxLength = r.len + Math.floor((r.len - 1) / 3)
+          telInput.placeholder = r.ph
+          byId('h-tel').textContent = r.hint
+          byId('e-tel').textContent = cc === '51'
+            ? 'Escribe tu celular: 9 dígitos que empiezan con 9 (9XX XXX XXX).'
+            : 'Escribe tu número: ' + r.len + ' dígitos, sin el +' + cc + '.'
+          telInput.dispatchEvent(new Event('input'))
+          syncAria(telInput)
+        }
+        on(paisSel, 'change', syncPhone)
+        syncPhone()
+      }
 
       function validRequired(node) {
         let firstBad = null
@@ -857,7 +894,9 @@ export default function MapaDeFugas() {
         const v = Object.fromEntries(new FormData(form).entries())
         const honeypot = v.sitio || ''
         delete v.sitio
-        if (v.telefono) v.telefono = '+51' + phoneDigits(v.telefono) // se guarda como +519XXXXXXXX
+        const pais = v.pais || '51'
+        delete v.pais
+        if (v.telefono) v.telefono = '+' + pais + phoneDigits(v.telefono, pais) // E.164 con el país elegido
         if (v.correo) v.correo = v.correo.trim().toLowerCase()
         const { level, reason } = qualify(v)
         trackEvent('form_qualified', { level })
@@ -1875,8 +1914,20 @@ export default function MapaDeFugas() {
               <div className="hp" aria-hidden="true"><label htmlFor="sitio">No completar</label><input id="sitio" name="sitio" type="text" tabIndex={-1} autoComplete="off" /></div>
               <div className="row2">
                 <div className="field">{" "}
-                  <label htmlFor="telefono">WhatsApp{" "}<span className="visually-hidden">(Perú, +51)</span></label>{" "}
-                  <div className="tel-wrap"><span className="tel-cc" aria-hidden="true">+51</span><input id="telefono" name="telefono" type="tel" inputMode="numeric" autoComplete="tel-national" enterKeyHint="next" maxLength="11" required placeholder="9XX XXX XXX" data-error="e-tel" data-hint="h-tel" /></div>{" "}
+                  <label htmlFor="telefono">WhatsApp</label>{" "}
+                  <div className="tel-wrap">
+                    <select id="pais" name="pais" className="tel-cc is-select" aria-label="Código de país del WhatsApp" defaultValue="51">
+                      <option value="51">+51</option>
+                      <option value="52">+52</option>
+                      <option value="56">+56</option>
+                      <option value="57">+57</option>
+                      <option value="54">+54</option>
+                      <option value="593">+593</option>
+                      <option value="34">+34</option>
+                      <option value="1">+1</option>
+                    </select>
+                    <input id="telefono" name="telefono" type="tel" inputMode="numeric" autoComplete="tel-national" enterKeyHint="next" maxLength="11" required placeholder="9XX XXX XXX" data-error="e-tel" data-hint="h-tel" />
+                  </div>{" "}
                   <span className="hint" id="h-tel">Tu número de 9 dígitos, sin el +51.</span>{" "}
                   <span className="err" id="e-tel">Escribe tu celular: 9 dígitos que empiezan con 9 (9XX XXX XXX).</span>{" "}
                 </div>

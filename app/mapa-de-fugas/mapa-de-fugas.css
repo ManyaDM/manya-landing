@@ -1574,3 +1574,18 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .calc-cta{display:grid;gap:10px;justify-items:center;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);text-align:center}
 .mdf .calc-cta-note{margin:0;max-width:46ch;font-size:.9rem;line-height:1.5;color:var(--ink-soft)}
 .mdf .calc-cta-meta{font-size:.8rem;font-weight:600;color:var(--ink-mute)}
+
+/* WhatsApp internacional: selector de país compacto dentro del mismo campo */
+.mdf .tel-wrap .tel-cc.is-select{
+  position:absolute;left:1.5px;top:1.5px;bottom:1.5px;z-index:1;
+  width:auto;height:auto;min-height:0;padding:0 22px 0 12px;
+  border:0;border-right:1.5px solid var(--field);border-radius:9px 0 0 9px;
+  background-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23182345' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:10px 10px;
+  font:inherit;font-size:14px;font-weight:600;line-height:1;color:var(--navy);
+  -webkit-appearance:none;appearance:none;cursor:pointer;font-variant-numeric:tabular-nums;
+}
+.mdf .tel-wrap .tel-cc.is-select:hover{border-color:var(--field)}
+.mdf .tel-wrap .tel-cc.is-select:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;box-shadow:none}
+.mdf .tel-wrap input{padding-left:88px}
