@@ -522,13 +522,19 @@ export default function MapaDeFugas() {
         return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20)
       }
       const leadId = newId() // une el lead y la reserva en Make
-      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: -1, slot: null, view: 'calendar', month: null, booking: false, seq: 0 }
+      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: -1, slot: null, view: 'calendar', month: null, booking: false, seq: 0, minutes: 20 }
       const WEEKDAYS = [['Lu', 'lunes'], ['Ma', 'martes'], ['Mi', 'miércoles'], ['Ju', 'jueves'], ['Vi', 'viernes'], ['Sá', 'sábado'], ['Do', 'domingo']]
       const fmtMonth = new Intl.DateTimeFormat('es-PE', { timeZone: 'UTC', month: 'long', year: 'numeric' })
       const monthLabel = (mo) => cap(fmtMonth.format(new Date(Date.UTC(mo.y, mo.m - 1, 15))).replace(/ de /, ' '))
       const longDay = (ymdStr) => { const p = partsOf(fmtLong, dayDate(ymdStr)); return cap(p.weekday) + ' ' + p.day + ' de ' + p.month }
       const shortDay = (ymdStr) => { const p = partsOf(fmtDay, dayDate(ymdStr)); return cap(p.weekday) + ' ' + p.day + ' ' + p.month }
       const slotTime = (s) => s.time || fmtTime.format(new Date(s.start))
+      /* Duración de un horario: la de la persona que lo recibiría (puede diferir de la general). */
+      const slotMinutes = (s) => {
+        const m = Number(s.minutes) || Math.round((Date.parse(s.end) - Date.parse(s.start)) / 60000)
+        return m > 0 ? m : agenda.minutes
+      }
+      const odd = (s) => slotMinutes(s) !== agenda.minutes
 
       function waAgenda(text) {
         const l = agenda.lead || {}
@@ -645,6 +651,11 @@ export default function MapaDeFugas() {
         grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', 'dpDate dpTimesK')
         d.slots.forEach((s, i) => {
           const b = button('slot-time', slotTime(s), { slot: String(i) })
+          if (odd(s)) {
+            b.classList.add('has-dur')
+            b.append(mk('small', 'slot-dur', slotMinutes(s) + ' min'))
+            b.setAttribute('aria-label', slotTime(s) + ', ' + slotMinutes(s) + ' minutos')
+          }
           b.setAttribute('aria-pressed', String(agenda.slot === s))
           grid.append(b)
         })
@@ -661,7 +672,7 @@ export default function MapaDeFugas() {
 
       function slotText(s) {
         const p = partsOf(fmtLong, new Date(s.start))
-        return cap(p.weekday) + ' ' + p.day + ' de ' + p.month + ' · ' + slotTime(s)
+        return cap(p.weekday) + ' ' + p.day + ' de ' + p.month + ' · ' + slotTime(s) + (odd(s) ? ' · ' + slotMinutes(s) + ' min' : '')
       }
       function updatePick() {
         const pick = byId('slotsPick'), btn = slotsBody.querySelector('[data-action="book"]')
@@ -697,9 +708,11 @@ export default function MapaDeFugas() {
         agenda.day = -1
         agenda.view = 'calendar'
         agenda.month = firstMonth()
+        // Subtítulo: duración general (meeting_minutes); servidores antiguos no la envían → la del primer horario.
         const first = agenda.days[0].slots[0]
-        const mins = Math.round((Date.parse(first.end) - Date.parse(first.start)) / 60000)
-        if (mins > 0) slotsDur.textContent = mins + ' min'
+        const general = Number(data.meeting_minutes)
+        agenda.minutes = general > 0 ? general : Math.round((Date.parse(first.end) - Date.parse(first.start)) / 60000) || 20
+        slotsDur.textContent = agenda.minutes + ' min'
         renderAgendaAlt()
         renderReady()
       }
@@ -717,7 +730,10 @@ export default function MapaDeFugas() {
         const h = mk('h3', 'h3', '¡Listo' + (firstName ? ', ' + firstName : '') + '! Tu evaluación quedó agendada.')
         h.tabIndex = -1
         const when = mk('p', 'done-when')
-        when.append(mk('span', 'done-day', cap(p.weekday) + ' ' + p.day + ' de ' + p.month), mk('span', 'done-time', fmtTime.format(start)), mk('small', '', 'hora de Lima'))
+        // Duración real: la de la persona asignada (el servidor la devuelve; puede cambiar si se ocupó quien se mostraba).
+        const endMs = Date.parse(data.end)
+        const mins = Number(data.minutes) || (Number.isFinite(endMs) ? Math.round((endMs - start.getTime()) / 60000) : slotMinutes(slot))
+        when.append(mk('span', 'done-day', cap(p.weekday) + ' ' + p.day + ' de ' + p.month), mk('span', 'done-time', fmtTime.format(start)), mk('small', '', mins + ' min · hora de Lima'))
         box.append(ic, h, when, mk('p', '', 'Te enviamos la invitación a tu correo con el link de Meet.'))
         if (typeof data.meet_link === 'string' && data.meet_link.startsWith('https://meet.google.com/')) {
           const a = mk('a', 'link', 'Abrir el link de Meet')

@@ -716,6 +716,9 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px);scrol
 .mdf .slot-time{min-height:46px;border-radius:10px;background:#fff;border:1.5px solid var(--field);color:var(--ink);font-family:var(--mono);font-size:.95rem;font-weight:500;font-variant-numeric:tabular-nums;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s}
 .mdf .slot-time[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 .mdf .slot-time:focus-visible{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(35,150,254,.28)}
+.mdf .slot-time.has-dur{display:grid;place-content:center;gap:1px;line-height:1.15}
+.mdf .slot-dur{font-family:var(--sans);font-size:.68rem;font-weight:600;color:var(--blue-ink)}
+.mdf .slot-time[aria-pressed="true"] .slot-dur{color:rgba(255,255,255,.85)}
 .mdf .slots-confirm{display:grid;gap:10px;margin-top:6px;padding-top:16px;border-top:1px solid var(--line)}
 .mdf .formbox .slots-pick{font-size:.92rem;color:var(--ink-mute)}
 .mdf .formbox .slots-pick.is-on{color:var(--navy);font-weight:700}
