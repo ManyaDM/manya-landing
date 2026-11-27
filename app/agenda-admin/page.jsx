@@ -1,5 +1,5 @@
 import { adminConfigured, missingAdminVars, missingVars } from '@/lib/agenda/config'
-import { currentAdmin } from '@/lib/agenda/session'
+import { currentSession } from '@/lib/agenda/session'
 import AdminPanel from './AdminPanel'
 import LogoutButton from './LogoutButton'
 import './agenda-admin.css'
@@ -98,12 +98,13 @@ export default async function AgendaAdminPage({ searchParams }) {
       </Shell>
     )
   }
-  const email = await currentAdmin()
+  const session = await currentSession()
+  const email = session?.email
   if (!email) return <Shell><LoginScreen status={searchParams?.login} /></Shell>
   const notice = OAUTH_MESSAGES[searchParams?.oauth] || null
   return (
     <Shell email={email}>
-      <AdminPanel missing={missingVars()} notice={notice} me={email} />
+      <AdminPanel missing={missingVars()} notice={notice} me={email} myName={session.name} />
     </Shell>
   )
 }
