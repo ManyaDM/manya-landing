@@ -1522,7 +1522,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
   /* la figura sangra fuera del padding; el SVG (slice) recorta una franja horizontal del dibujo */
   .mdf .hero-art{width:100vw;max-width:none;margin-inline:calc(50% - 50vw);margin-top:64px}
   /* inclinación móvil por CSS (sin salto al recargar); el JS lee --rig-angle para la caída de las gotas */
-  .mdf .hero-art #pipeRig{--rig-angle:2;transform:rotate(calc(var(--rig-angle) * 1deg));transform-box:view-box;transform-origin:320px 245px}
+  .mdf .hero-art #pipeRig{--rig-angle:0;transform:rotate(calc(var(--rig-angle) * 1deg));transform-box:view-box;transform-origin:320px 245px}
   /* píldora, título y texto un poco más abajo (hero-copy es display:contents aquí: se mueve la grilla) */
   .mdf .hero-grid{margin-top:15px}
   .mdf .hero-art .pipe{aspect-ratio:572/352;overflow:hidden;-webkit-mask-image:linear-gradient(#000 95%,transparent);mask-image:linear-gradient(#000 95%,transparent)}
@@ -1530,9 +1530,9 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
   .mdf .hero-art .lens-clip{clip-path:none}
   /* como en desktop: "se fugan" y la nota arriba; entran / compran justo debajo de cada tramo del tubo */
   .mdf .hero-art .pipe .px-far{scale:1.2}
-  .mdf .hero-art .chip-in{translate:6px -61px}
+  .mdf .hero-art .chip-in{translate:6px -54px}
   .mdf .hero-art .chip-leak{translate:0 6px}
-  .mdf .hero-art .chip-out{translate:-8px -72px}
+  .mdf .hero-art .chip-out{translate:-8px -79px}
   .mdf .hero-art .leak-note:not(.leak-note-m){display:none}
   .mdf .hero-art .leak-note-m{display:inline}
 }
