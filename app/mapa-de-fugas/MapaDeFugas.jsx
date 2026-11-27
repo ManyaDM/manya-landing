@@ -15,13 +15,12 @@ const poppins = Poppins({
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['400', '500'], display: 'swap', variable: '--mdf-dmmono' })
 const caveat = Caveat({ subsets: ['latin'], weight: ['700'], display: 'swap', variable: '--mdf-caveat' })
 
-/* Configuración · completar antes de publicar */
+/* Configuración. La agenda y el envío a Make viven en el servidor (/api/agenda/*): el navegador no conoce esas URLs. */
 const MANYA_CONFIG = {
-  webhookEndpoint: '',
-  agendaEmbedUrl: '',
   whatsappPhone: '51997510692',
 }
-const DEV_SKIP_VALIDATION = true // TODO: poner en false antes de publicar (true = "Continuar" avanza sin completar campos)
+const DEV_SKIP_VALIDATION = false // true = "Continuar" avanza sin completar campos (solo para pruebas locales)
+const AGENDA_TZ = 'America/Lima'
 
 /* Analítica: dataLayer (GTM lo carga el layout); los eventos de esta landing llevan el prefijo mdf_ */
 const trackEvent = (event, data = {}) => {
@@ -298,7 +297,6 @@ export default function MapaDeFugas() {
       const stepLabel = byId('stepLabel')
       const statusBox = byId('status')
       const submitBtn = byId('submitBtn')
-      const submitHTML = submitBtn.innerHTML
 
       form.classList.toggle('dev-skip', DEV_SKIP_VALIDATION) // en modo dev no se muestran errores ni bordes rojos
       const supportsUserInvalid = CSS.supports('selector(:user-invalid)')
@@ -322,7 +320,6 @@ export default function MapaDeFugas() {
       on(root, 'change', (e) => { if (e.target.matches?.('#leadForm select')) touched.add(e.target); syncAria(e.target) }, true)
       on(root, 'invalid', (e) => { touched.add(e.target); syncAria(e.target) }, true)
 
-      const isDemo = !MANYA_CONFIG.webhookEndpoint || !MANYA_CONFIG.agendaEmbedUrl
       const LABELS = {
         1: ['Paso 1 de 4 · Tus datos', '25%'],
         2: ['Paso 2 de 4 · Tu negocio', '50%'],
@@ -380,6 +377,7 @@ export default function MapaDeFugas() {
       const FIELD_RULES = {
         nombre: { strip: /[^\p{L}\p{M}\s'’\-]/gu, check: (v) => (v.match(/\p{L}/gu) || []).length >= 2 },
         empresa: { strip: /[\u0000-\u001f<>]/g, check: (v) => /[\p{L}\p{N}]/u.test(v) && v.trim().length >= 2 },
+        correo: { strip: /[\s\u0000-\u001f<>()[\],;:"\\]/g, check: (v) => /^[^@\s]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v) },
         telefono: { strip: /[^\d\s+]/g, fix: phoneMask, check: phoneOk },
         web: { strip: /[^A-Za-z0-9\-._~:/?#@!$&'()*+,;=%]/g },
         facebook: { strip: /[^A-Za-z0-9\-._~:/?#@!$&'()*+,;=%]/g },
@@ -494,66 +492,277 @@ export default function MapaDeFugas() {
             waLink('Cuéntanos por WhatsApp', 'Hola, soy ' + lead.nombre + ' de ' + lead.empresa + '. Vi que el Mapa de Fugas no encaja con mi situación actual y quiero saber por dónde empezar.'), '.')
         }
       }
-      function renderAgenda(lead, leadId) {
-        const frame = byId('agendaFrame')
+      /* ---------- paso 4: agenda nativa (horarios desde /api/agenda/slots; el servidor asigna a la persona) ---------- */
+      const slotPicker = byId('slotPicker')
+      const slotsBody = byId('slotsBody')
+      const slotsHead = byId('slotsHead')
+      const slotsDur = byId('slotsDur')
+      const mk = (tag, cls, text) => {
+        const n = document.createElement(tag)
+        if (cls) n.className = cls
+        if (text != null) n.textContent = text
+        return n
+      }
+      const button = (cls, text, data) => {
+        const b = mk('button', cls, text); b.type = 'button'
+        Object.entries(data || {}).forEach(([k, v]) => { b.dataset[k] = v })
+        return b
+      }
+      const fmtDay = new Intl.DateTimeFormat('es-PE', { timeZone: AGENDA_TZ, weekday: 'short', day: 'numeric', month: 'short' })
+      const fmtLong = new Intl.DateTimeFormat('es-PE', { timeZone: AGENDA_TZ, weekday: 'long', day: 'numeric', month: 'long' })
+      const fmtTime = new Intl.DateTimeFormat('es-PE', { timeZone: AGENDA_TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+      const partsOf = (fmt, d) => Object.fromEntries(fmt.formatToParts(d).map((p) => [p.type, p.value.replace(/\.$/, '')]))
+      const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+      const dayDate = (ymd) => new Date(ymd + 'T12:00:00-05:00') // mediodía en Lima (sin horario de verano)
+      const newId = () => {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID()
+        const b = window.crypto.getRandomValues(new Uint8Array(16)); b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128
+        const h = [...b].map((x) => x.toString(16).padStart(2, '0')).join('')
+        return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20)
+      }
+      const leadId = newId() // une el lead y la reserva en Make
+      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: 0, slot: null, booking: false, seq: 0 }
+
+      function waAgenda(text) {
+        const l = agenda.lead || {}
+        return waLink(text, 'Hola, soy ' + (l.nombre || '') + ' de ' + (l.empresa || '') + '. Completé el formulario del Mapa de Fugas y quiero coordinar la evaluación.')
+      }
+      function renderAgendaAlt() {
         const alt = byId('agendaAlt')
-        if (MANYA_CONFIG.agendaEmbedUrl) {
-          const url = new URL(MANYA_CONFIG.agendaEmbedUrl)
-          url.searchParams.set('name', lead.nombre)
-          url.searchParams.set('a1', lead.empresa)
-          if (leadId) url.searchParams.set('utm_content', leadId)
-          const iframe = document.createElement('iframe')
-          iframe.title = 'Elige tu horario'; iframe.src = url.toString(); iframe.loading = 'lazy'
-          frame.replaceChildren(iframe)
-        }
         alt.textContent = ''
-        if (MANYA_CONFIG.whatsappPhone) {
-          alt.append('¿Ningún horario te sirve? ',
-            waLink('Escríbenos por WhatsApp', 'Hola, soy ' + lead.nombre + ' de ' + lead.empresa + '. Completé el formulario del Mapa de Fugas y quiero coordinar la evaluación.' + (leadId ? ' Referencia: ' + leadId : '')), '.')
+        if (MANYA_CONFIG.whatsappPhone) alt.append('¿Ningún horario te sirve? ', waAgenda('Escríbenos por WhatsApp'), '.')
+      }
+      function setBusy(v) { v ? slotPicker.setAttribute('aria-busy', 'true') : slotPicker.removeAttribute('aria-busy') }
+      function renderSkeleton() {
+        setBusy(true)
+        const days = mk('div', 'slots-days is-skel'), grid = mk('div', 'slots-grid is-skel')
+        for (let i = 0; i < 5; i++) days.append(mk('span', 'sk sk-day'))
+        for (let i = 0; i < 9; i++) grid.append(mk('span', 'sk sk-time'))
+        slotsBody.replaceChildren(mk('span', 'visually-hidden', 'Cargando horarios…'), days, grid)
+      }
+      function renderMessage(kind, title, text, action) {
+        setBusy(false)
+        const box = mk('div', 'slots-msg')
+        box.dataset.kind = kind
+        box.append(mk('b', '', title), mk('p', '', text))
+        if (action) box.append(action)
+        slotsBody.replaceChildren(box)
+      }
+      const waButton = () => {
+        const a = waAgenda('Escríbenos por WhatsApp')
+        a.className = 'btn wide'
+        return a
+      }
+      function renderUnavailable() {
+        renderMessage('off', 'La agenda en línea no está disponible ahora.', 'Escríbenos por WhatsApp y coordinamos tu evaluación en minutos.', MANYA_CONFIG.whatsappPhone ? waButton() : null)
+        byId('agendaAlt').textContent = ''
+      }
+      function renderEmpty() {
+        renderMessage('empty', 'No hay horarios disponibles en los próximos días.', 'Escríbenos por WhatsApp y buscamos un espacio para ti.', MANYA_CONFIG.whatsappPhone ? waButton() : null)
+        byId('agendaAlt').textContent = ''
+      }
+      function renderError() {
+        renderMessage('error', 'No pudimos cargar los horarios.', 'Revisa tu conexión e inténtalo de nuevo.', button('btn quiet wide', 'Reintentar', { action: 'retry' }))
+      }
+      function renderReady() {
+        setBusy(false)
+        const daysLabel = mk('p', 'slots-k', 'Día')
+        daysLabel.id = 'slotsDaysK'
+        const days = mk('div', 'slots-days')
+        days.setAttribute('role', 'group'); days.setAttribute('aria-labelledby', 'slotsDaysK')
+        agenda.days.forEach((d, i) => {
+          const p = partsOf(fmtDay, dayDate(d.date)), pl = partsOf(fmtLong, dayDate(d.date))
+          const b = button('slot-day', null, { day: String(i) })
+          b.setAttribute('aria-pressed', String(i === agenda.day))
+          b.setAttribute('aria-label', cap(pl.weekday) + ' ' + pl.day + ' de ' + pl.month)
+          b.append(mk('span', 'sd-w', cap(p.weekday)), mk('span', 'sd-d', p.day), mk('span', 'sd-m', p.month))
+          days.append(b)
+        })
+        const timesLabel = mk('p', 'slots-k', 'Hora')
+        timesLabel.id = 'slotsTimesK'
+        const grid = mk('div', 'slots-grid')
+        grid.id = 'slotsGrid'
+        grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', 'slotsTimesK')
+        const confirm = mk('div', 'slots-confirm')
+        const pick = mk('p', 'slots-pick', '')
+        pick.id = 'slotsPick'
+        const btn = button('btn wide', 'Confirmar horario', { action: 'book' })
+        const err = mk('p', 'inline-error hidden', '')
+        err.id = 'bookError'; err.setAttribute('role', 'alert')
+        confirm.append(pick, btn, err)
+        slotsBody.replaceChildren(daysLabel, days, timesLabel, grid, confirm)
+        renderTimes()
+      }
+      function renderTimes() {
+        const grid = byId('slotsGrid')
+        const d = agenda.days[agenda.day]
+        grid.replaceChildren(...d.slots.map((s, i) => {
+          const b = button('slot-time', s.time || fmtTime.format(new Date(s.start)), { slot: String(i) })
+          b.setAttribute('aria-pressed', String(agenda.slot === s))
+          return b
+        }))
+        updatePick()
+      }
+      function slotText(s) {
+        const p = partsOf(fmtLong, new Date(s.start))
+        return cap(p.weekday) + ' ' + p.day + ' de ' + p.month + ' · ' + (s.time || fmtTime.format(new Date(s.start)))
+      }
+      function updatePick() {
+        const pick = byId('slotsPick'), btn = slotsBody.querySelector('[data-action="book"]')
+        if (!pick || !btn) return
+        pick.textContent = agenda.slot ? slotText(agenda.slot) : 'Elige un día y una hora.'
+        pick.classList.toggle('is-on', Boolean(agenda.slot))
+        btn.disabled = !agenda.slot || agenda.booking
+      }
+      function showBookError(msg) {
+        const err = byId('bookError')
+        if (!err) return
+        err.textContent = msg
+        err.classList.toggle('hidden', !msg)
+      }
+
+      async function loadSlots() {
+        const seq = ++agenda.seq
+        agenda.slot = null
+        renderSkeleton()
+        let res = null, data = {}
+        try {
+          res = await fetch('/api/agenda/slots', { cache: 'no-store', headers: { Accept: 'application/json' } })
+          data = await res.json().catch(() => ({}))
+        } catch (_) { res = null }
+        if (!alive || seq !== agenda.seq) return
+        if (res && res.status === 503 && data.error === 'not_configured') { renderUnavailable(); return }
+        if (!res || !res.ok || !Array.isArray(data.days)) { renderError(); return }
+        agenda.days = data.days.filter((d) => d && /^\d{4}-\d{2}-\d{2}$/.test(d.date) && Array.isArray(d.slots) && d.slots.length)
+        const total = agenda.days.reduce((n, d) => n + d.slots.length, 0)
+        trackEvent('slots_loaded', { days: agenda.days.length, slots: total })
+        if (!total) { renderEmpty(); return }
+        agenda.day = 0
+        const first = agenda.days[0].slots[0]
+        const mins = Math.round((Date.parse(first.end) - Date.parse(first.start)) / 60000)
+        if (mins > 0) slotsDur.textContent = mins + ' min'
+        renderAgendaAlt()
+        renderReady()
+      }
+
+      function renderSuccess(data, slot) {
+        setBusy(false)
+        slotsHead.classList.add('hidden')
+        const start = new Date(data.start || slot.start)
+        const p = partsOf(fmtLong, start)
+        const box = mk('div', 'slots-done')
+        const ic = mk('span', 'done-ic')
+        ic.setAttribute('aria-hidden', 'true')
+        ic.innerHTML = '<svg><use href="#i-check" /></svg>'
+        const firstName = (agenda.lead.nombre || '').split(' ')[0]
+        const h = mk('h3', 'h3', '¡Listo' + (firstName ? ', ' + firstName : '') + '! Tu evaluación quedó agendada.')
+        h.tabIndex = -1
+        const when = mk('p', 'done-when')
+        when.append(mk('span', 'done-day', cap(p.weekday) + ' ' + p.day + ' de ' + p.month), mk('span', 'done-time', fmtTime.format(start)), mk('small', '', 'hora de Lima'))
+        box.append(ic, h, when, mk('p', '', 'Te enviamos la invitación a tu correo con el link de Meet.'))
+        if (typeof data.meet_link === 'string' && data.meet_link.startsWith('https://meet.google.com/')) {
+          const a = mk('a', 'link', 'Abrir el link de Meet')
+          a.href = data.meet_link; a.target = '_blank'; a.rel = 'noopener'
+          box.append(a)
         }
+        slotsBody.replaceChildren(box)
+        byId('agendaAlt').textContent = ''
+        stepLabel.textContent = 'Evaluación agendada'
+        h.focus({ preventScroll: true })
+      }
+
+      async function book() {
+        if (agenda.booking || !agenda.slot) return
+        agenda.booking = true
+        const slot = agenda.slot
+        const btn = slotsBody.querySelector('[data-action="book"]')
+        btn.disabled = true
+        btn.textContent = 'Agendando…'
+        showBookError('')
+        let res = null, data = {}
+        try {
+          res = await fetch('/api/agenda/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start: slot.start, lead: agenda.lead, utms: agenda.utms, page_url: location.href, honeypot: agenda.honeypot }),
+          })
+          data = await res.json().catch(() => ({}))
+        } catch (_) { res = null }
+        if (!alive) return
+        agenda.booking = false
+        if (res && res.ok && data.ok) {
+          trackEvent('booking_success', { date: agenda.days[agenda.day]?.date || '', time: slot.time || '' })
+          renderSuccess(data, slot)
+          return
+        }
+        const code = data.error || (res ? 'http_' + res.status : 'network')
+        trackEvent('booking_error', { reason: code })
+        if (code === 'not_configured') { renderUnavailable(); return }
+        if (code === 'slot_taken' || code === 'slot_unavailable') {
+          await loadSlots()
+          showBookError('Ese horario se acaba de ocupar. Elige otro, por favor.')
+          return
+        }
+        btn.textContent = 'Confirmar horario'
+        updatePick()
+        showBookError(code === 'rate_limited'
+          ? 'Hiciste varios intentos seguidos. Espera unos minutos o escríbenos por WhatsApp.'
+          : 'No pudimos agendar tu horario. Inténtalo de nuevo o escríbenos por WhatsApp.')
+      }
+
+      on(slotsBody, 'click', (e) => {
+        const t = e.target.closest && e.target.closest('button')
+        if (!t || t.disabled || !slotsBody.contains(t)) return
+        if (t.dataset.action === 'retry') { loadSlots(); return }
+        if (t.dataset.action === 'book') { book(); return }
+        if (t.dataset.day != null) {
+          agenda.day = Number(t.dataset.day)
+          agenda.slot = null
+          slotsBody.querySelectorAll('.slot-day').forEach((b) => b.setAttribute('aria-pressed', String(b === t)))
+          showBookError('')
+          renderTimes()
+          return
+        }
+        if (t.dataset.slot != null) {
+          agenda.slot = agenda.days[agenda.day].slots[Number(t.dataset.slot)]
+          slotsBody.querySelectorAll('.slot-time').forEach((b) => b.setAttribute('aria-pressed', String(b === t)))
+          showBookError('')
+          updatePick()
+          trackEvent('slot_selected', { date: agenda.days[agenda.day].date, time: agenda.slot.time || '' })
+        }
+      })
+
+      function startAgenda(lead, utms, honeypot) {
+        Object.assign(agenda, { lead, utms, honeypot })
+        slotsHead.classList.remove('hidden')
+        slotsDur.textContent = '20 min'
+        byId('agendaAlt').textContent = ''
+        loadSlots()
       }
 
       let sending = false
-      async function enviarLead() {
+      function enviarLead() {
         if (sending) return
         if (!stepOk(3)) return
         sending = true
-
         const v = Object.fromEntries(new FormData(form).entries())
+        const honeypot = v.sitio || ''
+        delete v.sitio
         if (v.telefono) v.telefono = '+51' + phoneDigits(v.telefono) // se guarda como +519XXXXXXXX
+        if (v.correo) v.correo = v.correo.trim().toLowerCase()
         const { level, reason } = qualify(v)
         trackEvent('form_qualified', { level })
+        const lead = { ...v, lead_id: leadId }
         // UTMs: los de la URL actual o, si no hay, los guardados por el sitio (last touch, 30 días)
-        const lead = { ...v, qualification: level, origin: 'landing_mapa_fugas_v22', ...captureUtms() }
-
-        if (isDemo) {
-          if (level === 'no_apto') { renderNoFit(reason, lead); show('nofit') }
-          else { renderAgenda(lead, ''); show('agenda') }
-          statusBox.classList.remove('hidden')
-          statusBox.innerHTML = '<b>Vista previa.</b>Calificación calculada: <code>' + level + '</code>. No se enviaron datos. Configura <code>webhookEndpoint</code> y <code>agendaEmbedUrl</code> para publicar.'
-          sending = false
-          return
-        }
-
-        submitBtn.disabled = true
-        submitBtn.textContent = 'Enviando…'
-        try {
-          const response = await fetch(MANYA_CONFIG.webhookEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lead) })
-          if (!response.ok) throw new Error('registro')
-          const data = await response.json()
-          if (!alive) return
-          if (level === 'no_apto') { renderNoFit(reason, lead); show('nofit'); return }
-          renderAgenda(lead, data.leadId)
-          show('agenda')
-        } catch (error) {
-          if (!alive) return
-          statusBox.classList.remove('hidden')
-          statusBox.innerHTML = '<b>No pudimos registrar tu solicitud.</b>Inténtalo de nuevo en unos minutos o escríbenos a hola@manya.pe. No mostramos el calendario porque aún no confirmamos que tus datos quedaran guardados.'
-        } finally {
-          sending = false
-          submitBtn.disabled = false
-          submitBtn.innerHTML = submitHTML
-        }
+        const utms = captureUtms()
+        // Todo formulario completo llega a Make vía el servidor (encaje o no); la reserva llega aparte con el mismo lead_id.
+        fetch('/api/agenda/lead', {
+          method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lead, utms, page_url: location.href, honeypot }),
+        }).catch(() => { /* el registro no bloquea la agenda */ })
+        if (level === 'no_apto') { renderNoFit(reason, lead); show('nofit') }
+        else { show('agenda'); startAgenda(lead, utms, honeypot) }
+        sending = false
       }
       on(submitBtn, 'click', enviarLead)
       on(form, 'submit', (e) => { e.preventDefault(); enviarLead() })
@@ -1464,6 +1673,14 @@ export default function MapaDeFugas() {
                 <input id="empresa" name="empresa" type="text" autoComplete="organization" autoCapitalize="words" enterKeyHint="next" maxLength="80" required placeholder="Nombre comercial" data-error="e-empresa" />{" "}
                 <span className="err" id="e-empresa">Escribe el nombre de tu empresa (al menos 2 caracteres).</span>{" "}
               </div>
+              <div className="field">{" "}
+                <label htmlFor="correo">Correo</label>{" "}
+                <input id="correo" name="correo" type="email" inputMode="email" autoComplete="email" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="120" required placeholder="nombre@empresa.com" data-error="e-correo" data-hint="h-correo" />{" "}
+                <span className="hint" id="h-correo">Aquí te llega la invitación con el link de Meet.</span>{" "}
+                <span className="err" id="e-correo">Escribe un correo válido (ej.: nombre@empresa.com).</span>{" "}
+              </div>
+              {/* Campo trampa para bots: las personas no lo ven ni lo completan */}
+              <div className="hp" aria-hidden="true"><label htmlFor="sitio">No completar</label><input id="sitio" name="sitio" type="text" tabIndex={-1} autoComplete="off" /></div>
               <div className="row2">
                 <div className="field">{" "}
                   <label htmlFor="telefono">WhatsApp{" "}<span className="visually-hidden">(Perú, +51)</span></label>{" "}
@@ -1606,11 +1823,12 @@ export default function MapaDeFugas() {
             </div>
           </form>
           <div id="step4" className="hidden">
-            <div className="agenda-frame" id="agendaFrame">
-              <div>
-                <h3 className="h3">Elige tu horario con Maddy</h3>
-                <p>Aquí se inserta la página de reserva de Maddy. Configura{" "}<code>agendaEmbedUrl</code>{" "}en el script.</p>
+            <div className="slots" id="slotPicker">
+              <div className="slots-head" id="slotsHead">
+                <h3 className="h3" id="slotsTitle" tabIndex={-1}>Elige tu horario</h3>
+                <p className="slots-sub">Videollamada por Google Meet{" "}·{" "}<span id="slotsDur">20 min</span>{" "}·{" "}hora de Lima</p>
               </div>
+              <div className="slots-body" id="slotsBody" aria-live="polite" />
             </div>
             <p className="agenda-alt" id="agendaAlt" />
           </div>
