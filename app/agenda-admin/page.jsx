@@ -2,6 +2,7 @@ import { adminConfigured, missingVars } from '@/lib/agenda/config'
 import { isAdmin } from '@/lib/agenda/session'
 import LoginForm from './LoginForm'
 import AdminPanel from './AdminPanel'
+import LogoutButton from './LogoutButton'
 import './agenda-admin.css'
 
 export const dynamic = 'force-dynamic'
@@ -23,22 +24,38 @@ const OAUTH_MESSAGES = {
   error: ['error', 'No se pudo conectar el calendario. Vuelve a intentar.'],
 }
 
+function Shell({ children, signedIn }) {
+  return (
+    <div className="agadm">
+      <header className="agadm-bar">
+        <div className="agadm-bar-brand">
+          <img src="https://manya.pe/wp-content/uploads/2025/03/manyalogoblue.svg" alt="Manya" width="72" height="24" />
+          <span className="agadm-bar-sep" aria-hidden="true" />
+          <h1>Agenda · Administración</h1>
+        </div>
+        {signedIn && <LogoutButton />}
+      </header>
+      <div className="agadm-main">{children}</div>
+    </div>
+  )
+}
+
 export default function AgendaAdminPage({ searchParams }) {
   if (!adminConfigured()) {
     return (
-      <div className="agadm">
+      <Shell>
         <div className="agadm-card agadm-narrow">
-          <h1>Agenda</h1>
+          <h2>Panel no configurado</h2>
           <p>Configura <code>AGENDA_ADMIN_PASSWORD</code> y <code>AGENDA_SESSION_SECRET</code> en el servidor para activar este panel.</p>
         </div>
-      </div>
+      </Shell>
     )
   }
-  if (!isAdmin()) return <div className="agadm"><LoginForm /></div>
+  if (!isAdmin()) return <Shell><LoginForm /></Shell>
   const notice = OAUTH_MESSAGES[searchParams?.oauth] || null
   return (
-    <div className="agadm">
+    <Shell signedIn>
       <AdminPanel missing={missingVars()} notice={notice} />
-    </div>
+    </Shell>
   )
 }

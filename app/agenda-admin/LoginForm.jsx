@@ -24,10 +24,10 @@ export default function LoginForm() {
 
   return (
     <form className="agadm-card agadm-narrow" onSubmit={submit}>
-      <h1>Agenda</h1>
-      <p className="agadm-muted">Panel interno para conectar calendarios y definir horarios.</p>
+      <h2>Ingresar</h2>
+      <p className="agadm-muted">Panel interno para conectar calendarios, definir horarios y ver las reservas.</p>
       <label className="agadm-field">
-        <span>Contraseña</span>
+        <span className="agadm-label">Contraseña</span>
         <input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required autoFocus />
       </label>
       {error && <p className="agadm-error" role="alert">{error}</p>}
