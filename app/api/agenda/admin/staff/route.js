@@ -1,7 +1,6 @@
-import { guardAdmin, presentStaff, validateNewStaff } from '@/lib/agenda/admin'
+import { guardAdmin, insertStaff, presentStaff, validateNewStaff } from '@/lib/agenda/admin'
 import { db, selectStaff } from '@/lib/agenda/db'
 import { json, readJson } from '@/lib/agenda/http'
-import { DEFAULT_WEEKLY_HOURS } from '@/lib/agenda/slots'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -25,12 +24,7 @@ export async function POST(request) {
   if (denied) return denied
   const v = validateNewStaff(await readJson(request, 4096))
   if (!v.ok) return json({ error: 'invalid', fields: v.errors }, 400)
-  // New people: Mon–Fri with the 13:30–14:30 lunch break, last in the priority order. Schedule fields are
-  // left out so they inherit the global defaults (column default null after supabase/agenda_003.sql).
-  const row = { ...v.value, weekly_hours: DEFAULT_WEEKLY_HOURS }
-  const { data: last, error: maxErr } = await db().from('agenda_staff').select('priority').order('priority', { ascending: false }).limit(1).maybeSingle()
-  if (!maxErr) row.priority = (Number(last?.priority) || 0) + 10
-  const { data, error } = await selectStaff((cols) => db().from('agenda_staff').insert(row).select(cols).single())
+  const { data, error } = await insertStaff(v.value)
   if (error) {
     if (error.code === '23505') return json({ error: 'email_exists' }, 409)
     console.error('[agenda] admin insert failed', error.code)
