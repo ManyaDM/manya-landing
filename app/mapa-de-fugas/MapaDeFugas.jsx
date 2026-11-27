@@ -1006,6 +1006,9 @@ export default function MapaDeFugas() {
       const toWorld = (x, y) => [320 + (x - 320) * CA - (y - 245) * SA, 245 + (x - 320) * SA + (y - 245) * CA]
       let fate = [], spawned = 0, sold = 0, leaked = 0, since = 0, hold = 0, last = 0, id = 0, running = false
       const balls = []
+      // Invariante de coherencia en cada frame: spawned = sold + leaked + bolas dentro del tubo (balls),
+      // así que "entran = compran + se fugan + los que siguen" se cumple siempre, no solo al final.
+      // Al cerrar el ciclo descansa 4.5 s con 100 / −88 / 12 antes de barajar y volver a empezar.
 
       function deal() { // exactamente 12 de cada 100 llegan a comprar
         fate = Array.from({ length: TOTAL }, (_, i) => i < SOLD)
@@ -1043,7 +1046,7 @@ export default function MapaDeFugas() {
           const gone = (b.state === 'fall' && b.y >= FLOOR) || (b.state === 'kept' && b.x >= EXIT)
           if (gone) { if (b.state === 'kept') { sold++; paint() } b.el.remove(); balls.splice(i, 1) }
         }
-        if (spawned >= TOTAL && !balls.length) { hold += dt; if (hold > 1.6) { hold = 0; since = 0; deal() } }
+        if (spawned >= TOTAL && !balls.length) { hold += dt; if (hold > 4.5) { hold = 0; since = 0; deal() } }
         id = raf(step)
       }
       function start() { if (running) return; running = true; last = 0; id = raf(step) }
