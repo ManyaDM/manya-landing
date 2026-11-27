@@ -15,7 +15,7 @@ const POLICIES = [
   ['priority', 'Cascada (por prioridad)', 'Siempre intenta primero con la persona de mayor prioridad; si no está libre, pasa a la siguiente.'],
   ['round_robin', 'Intercalado (por turnos)', 'Reparte las reuniones para que no siempre las lleve la misma persona: va a quien lleva más tiempo sin recibir una.'],
 ]
-const SECTIONS = [['personas', 'Personas'], ['general', 'Configuración general'], ['asignacion', 'Asignación'], ['reservas', 'Reservas']]
+const SECTIONS = [['personas', 'Personas'], ['general', 'Configuración general'], ['asignacion', 'Asignación'], ['reservas', 'Reservas'], ['accesos', 'Accesos']]
 const STATUS = { confirmed: 'Confirmada', pending: 'Pendiente', cancelled: 'Cancelada' }
 const ERRORS = {
   email_exists: 'Ese correo ya está registrado.',
@@ -24,6 +24,12 @@ const ERRORS = {
   not_configured: 'Faltan variables de entorno en el servidor.',
   migration_required: 'Falta ejecutar supabase/agenda_002.sql en Supabase.',
   migration_required_003: 'Falta ejecutar supabase/agenda_003.sql en Supabase.',
+  migration_required_004: 'Falta ejecutar supabase/agenda_004.sql en Supabase.',
+  invalid_admin_email: 'Usa una cuenta @manya.pe válida.',
+  admin_exists: 'Esa cuenta ya tiene acceso.',
+  cannot_remove_self: 'No puedes quitarte el acceso a ti mismo.',
+  cannot_remove_fixed: 'Esa cuenta está fija en el servidor (AGENDA_ADMIN_EMAILS).',
+  not_found: 'Ya no existe. Recarga la página.',
 }
 const REFRESH_MIN_MS = 3000
 const fmtWhen = new Intl.DateTimeFormat('es-PE', { timeZone: 'America/Lima', weekday: 'short', day: 'numeric', month: 'short' })
@@ -446,7 +452,76 @@ function BookingsSection() {
   )
 }
 
-export default function AdminPanel({ missing, notice }) {
+function AccessSection({ me }) {
+  const [data, setData] = useState(null)
+  const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [msg, setMsg] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const load = useCallback(async () => {
+    try { setData(await api('/api/agenda/admin/admins')); setError('') } catch (e) { setError(e.message) }
+  }, [])
+  useEffect(() => { load() }, [load])
+
+  async function add(e) {
+    e.preventDefault(); setMsg(null); setBusy(true)
+    try {
+      await api('/api/agenda/admin/admins', { method: 'POST', body: JSON.stringify({ email }) })
+      setEmail(''); setMsg(['ok', 'Acceso agregado.']); await load()
+    } catch (err) { setMsg(['error', err.message]) }
+    setBusy(false)
+  }
+  async function remove(target) {
+    if (!window.confirm('¿Quitar el acceso de ' + target + '?')) return
+    setMsg(null)
+    try { await api('/api/agenda/admin/admins', { method: 'DELETE', body: JSON.stringify({ email: target }) }); await load() } catch (err) { setMsg(['error', err.message]) }
+  }
+  const rows = data ? [
+    ...data.fixed.map((e) => ({ email: e, fixed: true })),
+    ...data.admins.map((a) => ({ email: a.email, added_by: a.added_by, fixed: false })),
+  ] : null
+
+  return (
+    <section className="agadm-section" aria-labelledby="sec-accesos">
+      <SectionHead
+        id="sec-accesos"
+        title="Accesos"
+        intro="Cuentas @manya.pe que pueden ingresar a este panel con Google. Las cuentas fijas vienen de la configuración del servidor y no se pueden quitar desde aquí."
+      />
+      {error && <p className="agadm-alert">{error}</p>}
+      {data?.migration_required && (
+        <p className="agadm-alert is-warn">Falta ejecutar <code>supabase/agenda_004.sql</code> en Supabase: mientras tanto solo ingresan las cuentas fijas.</p>
+      )}
+      <div className="agadm-card">
+        <form className="agadm-access-add" onSubmit={add}>
+          <Field label="Agregar acceso" help="Debe ser una cuenta de Google @manya.pe.">
+            <input type="email" value={email} maxLength={120} required placeholder="nombre@manya.pe" onChange={(e) => { setEmail(e.target.value); setMsg(null) }} disabled={data?.migration_required} />
+          </Field>
+          <button className="agadm-btn" type="submit" disabled={busy || data?.migration_required}>{busy ? 'Agregando…' : 'Agregar'}</button>
+        </form>
+        {msg && <p className={msg[0] === 'ok' ? 'agadm-ok' : 'agadm-error'} role="status">{msg[1]}</p>}
+        {rows === null ? <p className="agadm-muted">Cargando…</p> : (
+          <ul className="agadm-access">
+            {rows.map((r) => (
+              <li key={r.email}>
+                <span className="agadm-access-id">
+                  <b>{r.email}</b>
+                  {r.email === me && <span className="agadm-badge is-on">Tú</span>}
+                  {r.fixed && <span className="agadm-badge">Fijo</span>}
+                  {!r.fixed && r.added_by && <span className="agadm-muted">Agregado por {r.added_by}</span>}
+                </span>
+                {!r.fixed && r.email !== me && <button type="button" className="agadm-btn quiet sm" onClick={() => remove(r.email)}>Quitar</button>}
+              </li>
+            ))}
+            {!rows.length && <li className="agadm-muted">Aún no hay cuentas.</li>}
+          </ul>
+        )}
+      </div>
+    </section>
+  )
+}
+
+export default function AdminPanel({ missing, notice, me }) {
   const [section, setSection] = useState('personas')
   const [staff, setStaff] = useState(null)
   const [loadError, setLoadError] = useState('')
@@ -517,6 +592,7 @@ export default function AdminPanel({ missing, notice }) {
             onSaved={(p) => setSettings((cur) => ({ ...cur, assignment: { policy: p } }))} />
         )}
         {section === 'reservas' && <BookingsSection />}
+        {section === 'accesos' && <AccessSection me={me} />}
       </div>
     </div>
   )
