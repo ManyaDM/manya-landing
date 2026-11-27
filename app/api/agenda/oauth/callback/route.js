@@ -48,9 +48,9 @@ async function login(request, q) {
   const code = q.get('code')
   if (!code || code.length > 2048) return loginDone(request, 'error')
 
-  let claims
+  let claims, tokens
   try {
-    const tokens = await exchangeCode(code)
+    tokens = await exchangeCode(code)
     // The short-lived access token is used once and discarded. It is NOT revoked: Google revokes the whole
     // grant for this client, which would also disconnect the admin's own calendar if they are staff.
     claims = await fetchUserInfo(tokens.accessToken)
