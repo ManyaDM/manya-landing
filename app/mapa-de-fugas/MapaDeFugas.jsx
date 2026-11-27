@@ -147,7 +147,7 @@ export default function MapaDeFugas() {
         if (flowLoss) {
           const start = active === 0
           flowLoss.dataset.state = start ? 'start' : 'loss'
-          flowLoss.textContent = start ? 'Punto de partida' : LOSS[active] + ' acumulados'
+          flowLoss.textContent = start ? 'Punto de partida' : LOSS[active] + ' leads'
         }
       }
       function activate(i, track = true) {
@@ -1325,7 +1325,7 @@ export default function MapaDeFugas() {
                 <span className="fuga-ico" aria-hidden="true"><svg><use href="#s-captar" /></svg></span>{" "}
                 <h3 id="fuga-captar">Captar</h3>{" "}
                 <span className="fuga-step">2 de 5</span>{" "}
-                <span className="fuga-loss"><b>−36</b>{" "}acumulados</span>{" "}
+                <span className="fuga-loss"><b>−36</b>{" "}leads</span>{" "}
               </div>
               <div className="fuga-body">
                 <div className="fuga-copy">
@@ -1355,7 +1355,7 @@ export default function MapaDeFugas() {
                 <span className="fuga-ico" aria-hidden="true"><svg><use href="#s-atender" /></svg></span>{" "}
                 <h3 id="fuga-atender">Atender</h3>{" "}
                 <span className="fuga-step">3 de 5</span>{" "}
-                <span className="fuga-loss"><b>−59</b>{" "}acumulados</span>{" "}
+                <span className="fuga-loss"><b>−59</b>{" "}leads</span>{" "}
               </div>
               <div className="fuga-body">
                 <div className="fuga-copy">
@@ -1384,7 +1384,7 @@ export default function MapaDeFugas() {
                 <span className="fuga-ico" aria-hidden="true"><svg><use href="#s-acompanar" /></svg></span>{" "}
                 <h3 id="fuga-acompanar">Acompañar</h3>{" "}
                 <span className="fuga-step">4 de 5</span>{" "}
-                <span className="fuga-loss"><b>−72</b>{" "}acumulados</span>{" "}
+                <span className="fuga-loss"><b>−72</b>{" "}leads</span>{" "}
               </div>
               <div className="fuga-body">
                 <div className="fuga-copy">
@@ -1415,7 +1415,7 @@ export default function MapaDeFugas() {
                 <span className="fuga-ico" aria-hidden="true"><svg><use href="#s-cerrar" /></svg></span>{" "}
                 <h3 id="fuga-cerrar">Cerrar</h3>{" "}
                 <span className="fuga-step">5 de 5</span>{" "}
-                <span className="fuga-loss"><b>−88</b>{" "}acumulados</span>{" "}
+                <span className="fuga-loss"><b>−88</b>{" "}leads</span>{" "}
               </div>
               <div className="fuga-body">
                 <div className="fuga-copy">

@@ -186,8 +186,8 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fugas-count{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:6px;background:var(--navy);color:#fff}
 .mdf .fc-row{display:flex;align-items:baseline;gap:10px;margin:0;color:var(--on-navy-soft);font-size:.86rem;line-height:1.25}
 .mdf .fc-row b{font-size:clamp(2.4rem,3.4vw,3.2rem);font-weight:900;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff}
-.mdf .fc-bar{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
-.mdf .fc-bar::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--blue);transition:width .6s var(--ease-out)}
+/* fill and striped track are two layers of ONE background, so they always share the exact same box (no subpixel drift) */
+.mdf .fc-bar{display:block;height:8px;border-radius:2px;background:linear-gradient(var(--blue),var(--blue)) 0 0 / calc(var(--v) * 1%) 100% no-repeat,repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);transition:background-size .6s var(--ease-out)}
 /* lighter rose on navy: #FF006E only reaches ~4.2:1 there; #ff6fa6 is ~6:1 */
 .mdf .fc-loss{font-family:var(--mono);font-size:.78rem;font-weight:500;color:#ff6fa6}
 .mdf .fc-loss[data-state="start"]{color:var(--ice)}
@@ -210,8 +210,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .flow-nums li:first-child{border-left:0}
 .mdf .flow-nums li span{display:none;font-size:.82rem;font-weight:700;color:var(--ink-soft)}
 .mdf .flow-nums li b{font-size:clamp(2rem,3.4vw,3rem);font-weight:900;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--navy)}
-.mdf .flow-nums li i{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
-.mdf .flow-nums li i::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--blue)}
+.mdf .flow-nums li i{display:block;height:8px;border-radius:2px;background:linear-gradient(var(--blue),var(--blue)) 0 0 / calc(var(--v) * 1%) 100% no-repeat,repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px)}
 .mdf .flow-nums li.is-on{background:var(--navy)}
 .mdf .flow-nums li.is-on b,.mdf .flow-nums li.is-on span{color:#fff}
 .mdf .flow-loss{display:none;justify-self:end;padding:5px 12px;border-radius:3px;background:var(--rose-tint);color:#b0004b;font-family:var(--mono);font-size:.8rem;font-weight:500;white-space:nowrap}
@@ -948,8 +947,8 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fugas-count{gap:16px;padding:10px 18px}
 .mdf .fc-num{flex:none;font-size:clamp(2.2rem,3vw,2.8rem);font-weight:900;line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff;text-box:trim-both cap alphabetic}
 .mdf .fc-meta{flex:1;min-width:0;display:grid;gap:6px}
-.mdf .fc-label{font-size:.86rem;line-height:1.25;color:var(--on-navy-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mdf .fc-meta .fc-loss{line-height:1.25}
+.mdf .fc-label{font-size:.86rem;line-height:18px;color:var(--on-navy-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mdf .fc-meta .fc-loss{line-height:16px}
 .mdf .fuga-panel{padding:clamp(18px,1.8vw,24px)}
 .mdf .fuga-copy,.mdf .fuga-panel .fuga-mock{margin-top:20px}
 .mdf .fuga-head h3{font-size:clamp(1.45rem,2vw,1.8rem)}
@@ -1468,9 +1467,49 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
   .mdf .case-quote blockquote{font-size:clamp(.92rem,1.1vw,.98rem)}
 }
 
-/* 6 · pestañas de fugas en móvil: la fila llega al borde de la pantalla y se funde mientras haya más */
-@media (max-width:900px){
-  .mdf.js .fugas-tabs{margin-inline:calc(-1 * var(--gutter));padding:2px var(--gutter);scroll-padding-inline:var(--gutter)}
-  .mdf.js .fugas-tabs button{min-width:104px}
-  .mdf.js .fugas-tabs[data-more="true"]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent)}
+/* 6 · fugas hasta 1000px: pestañas (fila completa) → contador → panel.
+   La fila de pestañas llega a los bordes de la pantalla: la siguiente tarjeta queda cortada por el borde. */
+@media (max-width:1000px){
+  .mdf.js .fugas-top{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:0 0 14px}
+  .mdf.js .fugas-tabs{display:flex;flex:none;gap:6px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-inline:calc(-1 * var(--gutter));padding:2px var(--gutter);scroll-padding-inline:var(--gutter)}
+  .mdf.js .fugas-tabs::-webkit-scrollbar{display:none}
+  .mdf.js .fugas-tabs button{flex:1 0 auto;min-width:140px;min-height:56px;scroll-snap-align:start}
+  /* pista suave sólo sobre el margen: no tapa la tarjeta que asoma */
+  .mdf.js .fugas-tabs[data-more="true"]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - var(--gutter)),rgba(0,0,0,.35));mask-image:linear-gradient(to right,#000 calc(100% - var(--gutter)),rgba(0,0,0,.35))}
+  /* contador: franja horizontal; número | etiqueta arriba, barra + pérdida abajo */
+  .mdf.js .fugas-count{display:flex;align-items:center;gap:14px;padding:10px 16px}
+  .mdf.js .fc-num{font-size:2.2rem}
+  .mdf.js .fc-meta{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;row-gap:6px}
+  .mdf.js .fc-label{grid-column:1 / -1;white-space:normal;overflow:visible}
+  .mdf.js .fc-bar{grid-column:1}
+  .mdf.js .fc-meta .fc-loss{grid-column:2;white-space:nowrap}
+  /* la franja ya dice cuántos siguen: fuera la cifra duplicada del panel */
+  .mdf.js .fuga-panel .fuga-fig{display:none}
+  /* pastilla de pérdida: siempre al borde derecho de la cabecera (también si baja de línea) */
+  .mdf .fuga-panel .fuga-loss{display:block;margin-left:auto}
+}
+@media (max-width:720px){
+  .mdf.js .fugas-tabs button{min-width:calc((100vw - var(--gutter)) / 3.6 - 6px)}
+}
+@media (max-width:520px){
+  .mdf.js .fugas-tabs button{min-width:calc((100vw - var(--gutter)) / 2.6 - 6px)}
+}
+/* 7 · fugas hasta 1000px: cada panel mide lo suyo (los inactivos no reservan alto) */
+@media (max-width:1000px){
+  .mdf.js .fugas-panels > .fuga-panel{grid-area:auto}
+  .mdf.js .fuga-panel.is-off{display:none}
+}
+@media (max-width:1000px) and (prefers-reduced-motion:no-preference){
+  .mdf.js .fuga-panel:not(.is-off){animation:mdf-fuga-in .35s var(--ease-out)}
+  @starting-style{
+    .mdf .fuga-panel:not(.is-off) .mk-hand > *{opacity:0;translate:0 8px}
+    .mdf .fuga-panel:not(.is-off) .mh-loss path{stroke-dashoffset:1}
+  }
+}
+@keyframes mdf-fuga-in{from{opacity:0}}
+/* nota a mano hasta 1000px: fuera de la caja del ejemplo, centrada justo encima (el margen del ejemplo le reserva el sitio;
+   así tampoco choca con la pastilla de la cabecera) */
+@media (max-width:1000px){
+  .mdf .fugas-panels .mk-hand{position:absolute;left:50%;right:auto;bottom:calc(100% + 18px);translate:-50% 0;margin:0;flex-wrap:nowrap;white-space:nowrap}
+  .mdf .fuga-panel .fuga-mock{margin-top:70px}
 }
