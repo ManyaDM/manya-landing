@@ -10,6 +10,9 @@ const BUDGET_OPTIONS = [
   'Más de US$9,000',
 ]
 
+// Below this range we can't deliver results, so the lead is stopped before Make/WhatsApp.
+const LOW_BUDGET = BUDGET_OPTIONS[0]
+
 
 const ECOMMERCE_OBJECTIVE = 'Quiero escalar mis ventas de ecommerce'
 
@@ -98,6 +101,16 @@ export default function ContactSection({ data }) {
   const [sent, setSent] = useState(false)
   const [utms, setUtms] = useState(EMPTY_UTMS)
   const formRef = useRef(null)
+  const lowBudgetRef = useRef(null)
+
+  const openLowBudget = () => {
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({ event: 'form_low_budget' })
+    lowBudgetRef.current?.showModal()
+  }
+
+  // Clear the range so the user can pick another one if they chose it by mistake.
+  const onLowBudgetClose = () => setField('presupuesto', '')
 
   useEffect(() => {
     setUtms(captureUtms())
@@ -161,6 +174,10 @@ export default function ContactSection({ data }) {
   }
 
   const handleSubmit = async () => {
+    if (fields.presupuesto === LOW_BUDGET) {
+      openLowBudget()
+      return
+    }
     const e = validateStep2()
     setErrors(e)
     if (Object.keys(e).length > 0) return
@@ -368,7 +385,10 @@ export default function ContactSection({ data }) {
                 <select
                   id="cf-presupuesto"
                   value={fields.presupuesto}
-                  onChange={e => setField('presupuesto', e.target.value)}
+                  onChange={e => {
+                    setField('presupuesto', e.target.value)
+                    if (e.target.value === LOW_BUDGET) openLowBudget()
+                  }}
                   className={errors.presupuesto ? 'field-error' : ''}
                   aria-describedby="cf-presupuesto-help"
                 >
@@ -479,6 +499,31 @@ export default function ContactSection({ data }) {
           )}
         </form>
       </div>
+
+      <dialog
+        ref={lowBudgetRef}
+        className="low-budget-dialog"
+        aria-labelledby="low-budget-title"
+        closedby="any"
+        onClose={onLowBudgetClose}
+      >
+        <h1 id="low-budget-title">Gracias por tu interés</h1>
+        <p>
+          Hoy trabajamos con inversiones en pauta desde US$500 al mes. Con un monto menor es difícil
+          lograr resultados que de verdad muevan tu negocio, y no queremos prometerte algo que no
+          podamos cumplir.
+        </p>
+        <p>
+          Por ahora no podríamos acompañarte, pero nos encantaría volver a conversar más adelante,
+          cuando tu inversión crezca.
+        </p>
+        <p className="low-budget-note">
+          ¿Elegiste ese rango por error? Al cerrar este mensaje puedes elegir otro.
+        </p>
+        <form method="dialog">
+          <button className="btn-hero-primary" autoFocus>Entendido</button>
+        </form>
+      </dialog>
 
     </section>
   )

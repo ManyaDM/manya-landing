@@ -647,6 +647,32 @@ section{padding:6rem 5%}
 .word-count{font-size:.72rem;color:var(--muted);text-align:right}
 .word-count.over{color:#e53e3e;font-weight:600}
 
+/* ── LOW BUDGET DIALOG ── */
+.low-budget-dialog{
+  /* the global reset sets margin:0, which un-centers native modals */
+  margin:auto;width:min(440px,calc(100% - 2rem));padding:2rem 1.75rem 1.75rem;
+  border:none;border-radius:18px;background:var(--white);color:var(--navy);
+  font-family:'Poppins',sans-serif;box-shadow:0 24px 60px rgba(24,35,69,.25);
+}
+.low-budget-dialog:modal{overscroll-behavior:contain}
+.low-budget-dialog::backdrop{
+  background:rgba(24,35,69,.55);overflow:hidden;overscroll-behavior:contain;
+}
+.low-budget-dialog h1{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;margin:0 0 .9rem}
+.low-budget-dialog p{font-size:.95rem;line-height:1.6;margin:0 0 .8rem}
+.low-budget-dialog .low-budget-note{font-size:.82rem;color:var(--muted);margin-bottom:1.4rem}
+.low-budget-dialog form{margin:0}
+.low-budget-dialog .btn-hero-primary{width:100%;justify-content:center}
+
+/* iOS Safari zooms in on focus when a field's font-size is below 16px */
+@media (max-width:768px){
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .wa-input-wrap input,
+  .otro-textarea{font-size:16px}
+}
+
 /* ── TERMS CHECKBOX ── */
 .terms-group{margin-top:.25rem}
 .terms-label{
