@@ -332,7 +332,7 @@ export default function MapaDeFugas() {
         2: ['Paso 2 de 4 · Tu negocio', '50%'],
         3: ['Paso 3 de 4 · Tu operación', '75%'],
         4: ['Paso 4 de 4 · Tu horario', '100%'],
-        0: ['Resultado de tu evaluación', '100%'],
+        0: ['Resultado de tu solicitud', '100%'],
       }
 
       let step1Tracked = false
@@ -452,7 +452,7 @@ export default function MapaDeFugas() {
         const MSG = {
           pauta: { nada: ['no', 'Aún no inviertes en pauta.'], bajo: ['no', 'Menos de USD 500 al mes: poca evidencia que revisar.'], _: ['ok', 'Inviertes lo suficiente para tener evidencia.'] },
           equipo: { nadie: ['no', 'Hoy nadie atiende de forma consistente.'], _: ['ok', 'Hay quien atiende las oportunidades.'] },
-          urgencia: { ya: ['ok', 'Es prioridad este mes.'], pronto: ['ok', 'Lo quieres listo el próximo mes.'], validar: ['warn', 'Lo validamos contigo en la evaluación.'], explorando: ['warn', 'Estás explorando: la evaluación te aclara el alcance.'] },
+          urgencia: { ya: ['ok', 'Es prioridad este mes.'], pronto: ['ok', 'Lo quieres listo el próximo mes.'], validar: ['warn', 'Lo validamos contigo en la llamada.'], explorando: ['warn', 'Estás explorando: la llamada te aclara el alcance.'] },
         }
         const base = {}
         box.querySelectorAll('[data-fit]').forEach((li) => { base[li.dataset.fit] = li.querySelector('em').textContent })
@@ -466,7 +466,7 @@ export default function MapaDeFugas() {
           })
           const [vs, vt] = st.includes('no') ? ['no', 'Por ahora no encaja. Al final te decimos por qué y qué te falta.']
             : st.includes('wait') ? ['wait', st.every((x) => x === 'wait') ? 'Aquí verás si el Mapa de Fugas encaja contigo.' : 'Vas bien. Completa las preguntas para ver el resultado.']
-              : st.includes('warn') ? ['warn', 'Encaja, con un punto que vemos en la evaluación.']
+              : st.includes('warn') ? ['warn', 'Encaja, con un punto que vemos en la llamada.']
                 : ['ok', 'Encaja. Al terminar eliges tu horario con Maddy.']
           verdict.dataset.state = vs; verdict.textContent = vt
         }
@@ -544,7 +544,7 @@ export default function MapaDeFugas() {
 
       function waAgenda(text) {
         const l = agenda.lead || {}
-        return waLink(text, 'Hola, soy ' + (l.nombre || '') + ' de ' + (l.empresa || '') + '. Completé el formulario del Mapa de Fugas y quiero coordinar la evaluación.')
+        return waLink(text, 'Hola, soy ' + (l.nombre || '') + ' de ' + (l.empresa || '') + '. Completé el formulario del Mapa de Fugas y quiero coordinar la llamada.')
       }
       function renderAgendaAlt() {
         const alt = byId('agendaAlt')
@@ -572,7 +572,7 @@ export default function MapaDeFugas() {
         return a
       }
       function renderUnavailable() {
-        renderMessage('off', 'La agenda en línea no está disponible ahora.', 'Escríbenos por WhatsApp y coordinamos tu evaluación en minutos.', MANYA_CONFIG.whatsappPhone ? waButton() : null)
+        renderMessage('off', 'La agenda en línea no está disponible ahora.', 'Escríbenos por WhatsApp y coordinamos tu llamada en minutos.', MANYA_CONFIG.whatsappPhone ? waButton() : null)
         byId('agendaAlt').textContent = ''
       }
       function renderEmpty() {
@@ -733,7 +733,7 @@ export default function MapaDeFugas() {
         ic.setAttribute('aria-hidden', 'true')
         ic.innerHTML = '<svg><use href="#i-check" /></svg>'
         const firstName = (agenda.lead.nombre || '').split(' ')[0]
-        const h = mk('h3', 'h3', '¡Listo' + (firstName ? ', ' + firstName : '') + '! Tu evaluación quedó agendada.')
+        const h = mk('h3', 'h3', '¡Listo' + (firstName ? ', ' + firstName : '') + '! Tu llamada quedó agendada.')
         h.tabIndex = -1
         const when = mk('p', 'done-when')
         // Duración real: la de la persona asignada (el servidor la devuelve; puede cambiar si se ocupó quien se mostraba).
@@ -748,7 +748,7 @@ export default function MapaDeFugas() {
         }
         slotsBody.replaceChildren(box)
         byId('agendaAlt').textContent = ''
-        stepLabel.textContent = 'Evaluación agendada'
+        stepLabel.textContent = 'Llamada agendada'
         h.focus({ preventScroll: true })
       }
 
@@ -1146,8 +1146,8 @@ export default function MapaDeFugas() {
       <div className="wrap hero-grid">
         <div className="hero-copy">
           <ul className="price-pills is-dark" aria-label="Precio">
-            <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg><span>Evaluación gratis<span className="pill-sep">{" "}·{" "}</span><b>20 min</b></span></li>
-            <li className="pill pill-price"><span>Mapa de Fugas<span className="pill-sep">{" "}·{" "}</span><b>USD 600 + IGV</b></span></li>
+            <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg><span>Llamada sin costo<span className="pill-sep">{" "}·{" "}</span><b>20 min</b></span></li>
+            <li className="pill pill-price"><span>Mapa de Fugas<span className="pill-sep">{" "}·{" "}</span><b>USD 600 + IGV</b><span className="pill-sub">se acreditan íntegros si corriges con nosotros</span></span></li>
           </ul>
           <h1 id="hero-title"><span className="ln">No te faltan leads.</span>{" "}<span className="hot">Te sobran{" "}<mark className="hl">fugas.</mark></span></h1>
           <p className="lead">En{" "}<strong>7 días</strong>{" "}encontramos dónde se escapan tus ventas y qué corregir primero.</p>
@@ -1160,13 +1160,18 @@ export default function MapaDeFugas() {
             </ul>
           </div>
           <div className="hero-ctas">{" "}
-            <a className="btn hero-btn" href="#agendar" data-cta="hero">Agendar evaluación gratis</a>{" "}
+            <a className="btn hero-btn" href="#agendar" data-cta="hero">Agendar llamada de 20 min</a>{" "}
             <a className="text-link" href="#fugas">Ver cómo funciona{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
           </div>
+          <p className="hero-meta-mobile">
+            <span>Mapa de Fugas: USD 600 + IGV · se acreditan íntegros si corriges con nosotros</span>
+            <span>Para negocios con pauta activa desde USD 500/mes</span>
+          </p>
           <ul className="trust" aria-label="Credenciales de Manya">
             <li><b>+16</b><span>años</span></li>
             <li><b>+800</b><span>clientes</span></li>
             <li><b>Kommo</b><span>partner certificado</span></li>
+            <li className="trust-fit"><span>Para negocios con pauta activa desde{" "}<b>USD 500/mes</b></span></li>
           </ul>
         </div>
         <figure className="hero-art">{" "}
@@ -1332,7 +1337,7 @@ export default function MapaDeFugas() {
                   <div className="ad-card">{" "}
                     <span className="ad-tag">Patrocinado</span>{" "}
                     <span className="ad-url">tunegocio.pe › implantes</span>{" "}
-                    <b className="ad-title">Implantes dentales en Lima | Evaluación gratis</b>{" "}
+                    <b className="ad-title">Implantes dentales en Lima | Consulta gratis</b>{" "}
                   </div>
                   <div className="ad-metrics mono"><span>Clics{" "}<b>100</b></span><span>CTR{" "}<b>6.2%</b></span><span>CPC{" "}<b>S/ 2.40</b></span><span className="mk-miss">Ventas{" "}<b>?</b></span></div>
                   <p className="mk-flag">La plataforma no ve qué pasa después del clic.</p>
@@ -1655,6 +1660,7 @@ export default function MapaDeFugas() {
           <h2 className="h2" id="inv-title">USD 600.{" "}<span className="lite">Y si corriges con nosotros, vuelven a ti.</span></h2>
           <p className="lead">Precio cerrado, alcance cerrado. Sabes dónde pierdes ventas antes de comprometerte con un servicio mensual.</p>
         </div>
+        <p className="plans-lead">Los tres caminos empiezan con la misma llamada de 20 min.</p>
         <div className="plans">
           <article className="plan is-featured" aria-labelledby="plan-1">
             <header className="plan-head">
@@ -1677,7 +1683,7 @@ export default function MapaDeFugas() {
             </div>
             <div className="plan-end">
               <p className="plan-credit"><svg aria-hidden="true"><use href="#i-check" /></svg><span>Se acredita al 100% si corriges con nosotros<span className="credit-cond">Es crédito, no devolución de efectivo, si contratas la corrección dentro de los 15 días posteriores a la entrega.</span></span></p>{" "}
-              <a className="btn wide" href="#agendar" data-cta="inversion">Agendar evaluación gratis{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
+              <a className="btn wide" href="#agendar" data-cta="inversion">Agendar llamada de 20 min{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
             </div>
           </article>
           <article className="plan" aria-labelledby="plan-2">
@@ -1699,7 +1705,7 @@ export default function MapaDeFugas() {
             </div>
             <div className="plan-end">
               <p className="plan-credit is-soft"><svg aria-hidden="true"><use href="#i-tag" /></svg><span><span className="plan-minus">− USD 600</span>{" "}si la contratas dentro de 15 días</span></p>{" "}
-              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-correccion">Empieza por el Mapa{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
+              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-correccion">Agendar llamada de 20 min{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
             </div>
           </article>
           <article className="plan" aria-labelledby="plan-3">
@@ -1722,7 +1728,7 @@ export default function MapaDeFugas() {
             </div>
             <div className="plan-end">
               <p className="plan-credit is-ghost"><svg aria-hidden="true"><use href="#i-cycle" /></svg><span>Después de corregir</span></p>{" "}
-              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-gestion">Empieza por el Mapa{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
+              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-gestion">Agendar llamada de 20 min{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
             </div>
           </article>
         </div>{" "}
@@ -1739,12 +1745,12 @@ export default function MapaDeFugas() {
       <div className="faq">
         <div className="faq-list">
           <details>
-            <summary>¿La evaluación es lo mismo que el Mapa de Fugas?</summary>
-            <p>No. La evaluación es una reunión gratuita de 20 minutos para entender tu negocio y ver si el alcance encaja. El Mapa es el diagnóstico de USD 600 + IGV.</p>
+            <summary>¿Qué me llevo de la llamada y qué me llevo del Mapa?</summary>
+            <p>En la llamada de 20 minutos conversamos sobre cómo llegan y cómo se atienden tus leads hoy. Con eso te doy una hipótesis de en cuál de las cinco etapas está tu fuga principal, y te digo si el Mapa aplica a tu caso. Lo que no hago es entrar a tus datos: en 20 minutos no se puede, y una cifra sin revisar no te sirve para decidir nada. El Mapa de Fugas es lo contrario: 7 días hábiles dentro de tu cuenta de pauta, tu CRM y tus conversaciones reales, para convertir esa hipótesis en evidencia con tus propios números, y decirte qué corregir primero.</p>
           </details>
           <details>
             <summary>¿Por qué pagar si otras agencias lo dan gratis?</summary>
-            <p>Un diagnóstico gratuito suele ser una presentación de ventas. Este tiene alcance definido, horas asignadas y cada hallazgo clasificado por evidencia. Y si corriges con nosotros, se acredita al 100%.</p>
+            <p>Un diagnóstico que se regala suele ser una presentación de ventas. Este tiene alcance definido, horas asignadas y cada hallazgo clasificado por evidencia. Y si corriges con nosotros, se acredita al 100%.</p>
           </details>
           <details>
             <summary>¿Necesito CRM o cambiar de agencia?</summary>
@@ -1766,9 +1772,9 @@ export default function MapaDeFugas() {
       <section className="section" id="agendar-sec" aria-labelledby="agendar-form-title">
       <div className="wrap capture" id="agendar">
         <div>
-          <p className="kicker">Evaluación gratuita</p>
+          <p className="kicker">Llamada de 20 min</p>
           <h2 className="h2" id="agendar-form-title">¿Es para ti?{" "}<span className="lite">Responde y agenda con{" "}<mark className="hl">Maddy.</mark></span></h2>
-          <p className="lead">Si encaja, eliges tu horario en la misma pantalla. Si no, te lo decimos ahora y no pierdes una reunión.</p>
+          <p className="lead">Si encaja, eliges tu horario en la misma pantalla. Si no, te lo decimos ahora y no pierdes la llamada.</p>
           <div className="fit-live" aria-live="polite">
             <p className="fit-verdict" data-state="wait">Aquí verás si el Mapa de Fugas encaja contigo.</p>
             <ul className="fit-checks">
@@ -1785,12 +1791,12 @@ export default function MapaDeFugas() {
               <img src="foto-maddy.jpg" alt="Maddy" width="48" height="48">
               <span><b>Maddy</b><small>Consultora comercial · Manya</small></span>
             </div> */}{" "}
-            <b>Agenda tu evaluación gratuita</b>{" "}
+            <b>Agenda tu llamada de 20 min</b>{" "}
             <ul className="price-pills" aria-label="Precio">
-              <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg>Consulta gratis · 20 min</li>
+              <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg>Llamada sin costo · 20 min</li>
               <li className="pill pill-price">Mapa de Fugas · USD 600 + IGV</li>
             </ul>{" "}
-            <span>Respondes unas preguntas y eliges tu horario al final.</span>{" "}
+            <span>Respondes unas preguntas y eliges tu horario al final. La llamada no es el Mapa: es para ver si el Mapa aplica a tu caso.</span>{" "}
           </div>
           <div className="stepper">{" "}
             <span className="step-label" id="stepLabel">Paso 1 de 4 · Tus datos</span>{" "}
@@ -1839,7 +1845,7 @@ export default function MapaDeFugas() {
               <div className="actions-row">{" "}
                 <button className="btn wide" type="button" data-next="2">Continuar{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></button>{" "}
               </div>
-              <p className="privacy">Al continuar aceptas que Manya use estos datos para contactarte sobre esta evaluación. No los compartimos con terceros.</p>
+              <p className="privacy">Al continuar aceptas que Manya use estos datos para contactarte sobre esta llamada. No los compartimos con terceros.</p>
             </div>
             <div id="step2" className="fieldset hidden">
               <div className="row2">

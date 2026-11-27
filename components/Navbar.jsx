@@ -137,7 +137,7 @@ export default function Navbar() {
         className="site-head-cta"
         data-cta="header"
       >
-        Agendar evaluación
+        {pathname === '/mapa-de-fugas' ? 'Agendar llamada · 20 min' : 'Agendar evaluación'}
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path
             d="M4 12h15M13 6l6 6-6 6"
