@@ -14,7 +14,7 @@
 .agadm-bar-brand img{display:block;height:22px;width:auto}
 .agadm-bar-sep{width:1px;height:22px;background:var(--line)}
 .agadm-bar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.agadm-main{max-width:1180px;margin:0 auto;padding:clamp(20px,3vw,36px) clamp(16px,3vw,32px) 64px}
+.agadm-main{max-width:1540px;margin:0 auto;padding:clamp(20px,3vw,36px) clamp(16px,3vw,32px) 64px}
 
 /* layout: sidebar + content */
 .agadm-layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
@@ -57,7 +57,7 @@
 .agadm-btn.sm{min-height:38px;padding:0 14px;font-size:.85rem}
 .agadm-btn.quiet{background:var(--white);color:var(--navy);border:1.5px solid var(--field)}
 .agadm-btn.quiet:hover{background:var(--alice)}
-.agadm-link{background:none;border:0;color:#0b63b8;font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;padding:6px 4px}
+.agadm-link{white-space:nowrap;background:none;border:0;color:#0b63b8;font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;padding:6px 4px}
 .agadm-icon{width:30px;height:30px;display:grid;place-items:center;border:1.5px solid var(--field);border-radius:8px;background:var(--white);color:var(--navy);font:inherit;font-size:.9rem;cursor:pointer;line-height:1}
 .agadm-icon:hover:not([disabled]){background:var(--alice)}
 .agadm-icon[disabled]{opacity:.35;cursor:default}
@@ -96,7 +96,8 @@
 .agadm-day{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .agadm-day:first-of-type{border-top:0}
 .agadm-day-name{font-weight:600;font-size:.88rem}
-.agadm-ranges{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.agadm-ranges{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;min-width:0}
+.agadm-range{flex:none}
 .agadm-range{display:inline-flex;align-items:center;gap:6px;background:var(--ghost);border:1px solid var(--line);border-radius:9px;padding:4px 6px}
 .agadm-range input{min-height:36px;border:1.5px solid var(--field);border-radius:7px;padding:2px 6px;font:inherit;font-size:.88rem;color:var(--navy);background:var(--white)}
 .agadm-x{border:0;background:none;color:var(--muted);font-size:1.2rem;line-height:1;cursor:pointer;width:28px;height:28px;border-radius:6px}
@@ -155,6 +156,7 @@
   .agadm-staff-head{grid-template-columns:auto minmax(0,1fr)}
   .agadm-staff-actions{grid-column:1 / -1;justify-content:flex-start}
   .agadm-day{grid-template-columns:1fr;gap:6px}
+  .agadm-ranges{flex-wrap:wrap}
   .agadm-grid{grid-template-columns:1fr}
   .agadm-table thead{display:none}
   .agadm-table,.agadm-table tbody,.agadm-table tr,.agadm-table td{display:block}
