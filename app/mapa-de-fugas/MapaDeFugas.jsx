@@ -1036,9 +1036,17 @@ export default function MapaDeFugas() {
       }
       const start = () => { if (!running) { running = true; id = raf(frame) } }
       const stop = () => { running = false; caf(id) }
+      // en móvil no hay lente (la oculta el CSS): el bucle no corre
+      const narrow = matchMedia('(max-width: 720px)')
+      let inView = false
+      const sync = () => {
+        if (narrow.matches) [...mid, ...far].forEach((g) => g.removeAttribute('transform'))
+        inView && !document.hidden && !narrow.matches ? start() : stop()
+      }
       cleanups.push(stop)
-      observe(IntersectionObserver, ([e]) => { e.isIntersecting && !document.hidden ? start() : stop() }, { threshold: 0.1 }).observe(svg)
-      on(document, 'visibilitychange', () => { document.hidden ? stop() : start() })
+      observe(IntersectionObserver, ([e]) => { inView = e.isIntersecting; sync() }, { threshold: 0.1 }).observe(svg)
+      on(document, 'visibilitychange', sync)
+      on(narrow, 'change', sync)
     })()
 
     /* ---------- calculadora: la fórmula en vivo ---------- */
@@ -1151,7 +1159,7 @@ export default function MapaDeFugas() {
           </ul>
         </div>
         <figure className="hero-art">{" "}
-          <svg className="pipe" viewBox="36 0 572 492" role="img" aria-labelledby="heroArtTitle heroArtDesc" xmlns="http://www.w3.org/2000/svg">
+          <svg className="pipe" viewBox="36 0 572 492" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="heroArtTitle heroArtDesc" xmlns="http://www.w3.org/2000/svg">
             <title id="heroArtTitle">La tubería de ventas, cortada en dos</title>
             <desc id="heroArtDesc">Entran 100 oportunidades por una tubería azul. Dentro avanzan los leads azules; por el corte se escapan 88 leads rojos y solo 12 llegan a comprar.</desc>
             <defs>
@@ -1171,7 +1179,7 @@ export default function MapaDeFugas() {
             </defs>
             <g className="px-near">
             <circle id="lensBg" cx="320" cy="245" r="232" fill="#ffffff" />
-            <g clipPath="url(#pipeLens)">
+            <g className="lens-clip" clipPath="url(#pipeLens)">
               <g id="pipeRig" data-angle="6" transform="rotate(6 320 245)">
                 {/* 1 · interior del tubo */}
                 <path d="M-30 184H286L297 199L284 213L299 229L286 244L301 261L290 276H-30Z" fill="#0d55ad" />
@@ -1241,18 +1249,23 @@ export default function MapaDeFugas() {
               <path d="M426 134C420 166 372 186 326 200" fill="none" stroke="#FF006E" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" markerEnd="url(#leakArrow)" />
               <text x="402" y="114" fontSize="32" fontWeight="700" fill="#FF006E" transform="rotate(-8 402 114)" style={{ fontFamily: "var(--mdf-caveat), cursive" }}>la fuga</text>
             </g></g>
+            {/* móvil: la nota va abajo a la izquierda y apunta a lo que cae */}
+            <g className="px-mid"><g className="leak-note leak-note-m">
+              <path d="M200 352C236 346 260 330 272 306" fill="none" stroke="#FF006E" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" markerEnd="url(#leakArrow)" />
+              <text x="96" y="376" fontSize="34" fontWeight="700" fill="#FF006E" transform="rotate(-8 96 376)" style={{ fontFamily: "var(--mdf-caveat), cursive" }}>la fuga</text>
+            </g></g>
             {/* etiquetas */}
-            <g className="px-far"><g>
+            <g className="px-far"><g className="chip-in">
               <rect x="62" y="330" width="104" height="58" rx="12" fill="#0f1830" stroke="#2396FE" strokeWidth=".75" />
               <text x="114" y="359" textAnchor="middle" fontSize="25" fontWeight="800" fill="#fff" id="pv-in" style={{ fontFamily: "var(--mdf-poppins), sans-serif" }}>100</text>
               <text x="114" y="376" textAnchor="middle" fontSize="9" letterSpacing="1.6" fill="#8fd0ff" style={{ fontFamily: "var(--mdf-dmmono), monospace" }}>ENTRAN</text>
             </g></g>
-            <g className="px-far"><g>
+            <g className="px-far"><g className="chip-out">
               <rect x="474" y="384" width="104" height="58" rx="12" fill="#0f1830" stroke="#2396FE" strokeWidth=".75" />
               <text x="526" y="413" textAnchor="middle" fontSize="25" fontWeight="800" fill="#fff" id="pv-out" style={{ fontFamily: "var(--mdf-poppins), sans-serif" }}>12</text>
               <text x="526" y="430" textAnchor="middle" fontSize="9" letterSpacing="1.6" fill="#8fd0ff" style={{ fontFamily: "var(--mdf-dmmono), monospace" }}>COMPRAN</text>
             </g></g>
-            <g className="px-far"><g transform="translate(268 80)">
+            <g className="px-far"><g className="chip-leak" transform="translate(268 80)">
               <rect width="104" height="52" rx="11" fill="#FF006E" />
               <text x="52" y="24" textAnchor="middle" fontSize="20" fontWeight="800" fill="#fff" id="pv-leak" style={{ fontFamily: "var(--mdf-poppins), sans-serif" }}>−88</text>
               <text x="52" y="40" textAnchor="middle" fontSize="9" letterSpacing="1.4" fill="#ffe1ee" style={{ fontFamily: "var(--mdf-dmmono), monospace" }}>SE FUGAN</text>
