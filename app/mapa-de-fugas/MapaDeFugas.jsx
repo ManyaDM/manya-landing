@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react'
 import { Poppins, DM_Mono, Caveat } from 'next/font/google'
 import { captureUtms } from '@/lib/utm'
+import { addMonths, compareMonths, monthGrid, monthOf, todayIn } from '@/lib/agenda/calendar'
 import './mapa-de-fugas.css'
 
 // Same families/weights the source landing loaded from Google Fonts, scoped to this page via CSS variables.
@@ -521,7 +522,13 @@ export default function MapaDeFugas() {
         return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20)
       }
       const leadId = newId() // une el lead y la reserva en Make
-      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: 0, slot: null, booking: false, seq: 0 }
+      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: -1, slot: null, view: 'calendar', month: null, booking: false, seq: 0 }
+      const WEEKDAYS = [['Lu', 'lunes'], ['Ma', 'martes'], ['Mi', 'miércoles'], ['Ju', 'jueves'], ['Vi', 'viernes'], ['Sá', 'sábado'], ['Do', 'domingo']]
+      const fmtMonth = new Intl.DateTimeFormat('es-PE', { timeZone: 'UTC', month: 'long', year: 'numeric' })
+      const monthLabel = (mo) => cap(fmtMonth.format(new Date(Date.UTC(mo.y, mo.m - 1, 15))).replace(/ de /, ' '))
+      const longDay = (ymdStr) => { const p = partsOf(fmtLong, dayDate(ymdStr)); return cap(p.weekday) + ' ' + p.day + ' de ' + p.month }
+      const shortDay = (ymdStr) => { const p = partsOf(fmtDay, dayDate(ymdStr)); return cap(p.weekday) + ' ' + p.day + ' ' + p.month }
+      const slotTime = (s) => s.time || fmtTime.format(new Date(s.start))
 
       function waAgenda(text) {
         const l = agenda.lead || {}
@@ -535,10 +542,9 @@ export default function MapaDeFugas() {
       function setBusy(v) { v ? slotPicker.setAttribute('aria-busy', 'true') : slotPicker.removeAttribute('aria-busy') }
       function renderSkeleton() {
         setBusy(true)
-        const days = mk('div', 'slots-days is-skel'), grid = mk('div', 'slots-grid is-skel')
-        for (let i = 0; i < 5; i++) days.append(mk('span', 'sk sk-day'))
-        for (let i = 0; i < 9; i++) grid.append(mk('span', 'sk sk-time'))
-        slotsBody.replaceChildren(mk('span', 'visually-hidden', 'Cargando horarios…'), days, grid)
+        const first = mk('span', 'sk sk-first'), head = mk('span', 'sk sk-month'), grid = mk('div', 'dp-grid is-skel')
+        for (let i = 0; i < 35; i++) grid.append(mk('span', 'sk sk-cell'))
+        slotsBody.replaceChildren(mk('span', 'visually-hidden', 'Cargando horarios…'), first, head, grid)
       }
       function renderMessage(kind, title, text, action) {
         setBusy(false)
@@ -564,53 +570,103 @@ export default function MapaDeFugas() {
       function renderError() {
         renderMessage('error', 'No pudimos cargar los horarios.', 'Revisa tu conexión e inténtalo de nuevo.', button('btn quiet wide', 'Reintentar', { action: 'retry' }))
       }
-      function renderReady() {
+
+      /* Paso a paso: (1) día en un calendario mensual → (2) hora de ese día → confirmar. */
+      const dayIndex = (date) => agenda.days.findIndex((d) => d.date === date)
+      const firstMonth = () => monthOf(agenda.days[0].date)
+      const lastMonth = () => monthOf(agenda.days[agenda.days.length - 1].date)
+
+      function renderReady(focus) {
         setBusy(false)
-        const daysLabel = mk('p', 'slots-k', 'Día')
-        daysLabel.id = 'slotsDaysK'
-        const days = mk('div', 'slots-days')
-        days.setAttribute('role', 'group'); days.setAttribute('aria-labelledby', 'slotsDaysK')
-        agenda.days.forEach((d, i) => {
-          const p = partsOf(fmtDay, dayDate(d.date)), pl = partsOf(fmtLong, dayDate(d.date))
-          const b = button('slot-day', null, { day: String(i) })
-          b.setAttribute('aria-pressed', String(i === agenda.day))
-          b.setAttribute('aria-label', cap(pl.weekday) + ' ' + pl.day + ' de ' + pl.month)
-          b.append(mk('span', 'sd-w', cap(p.weekday)), mk('span', 'sd-d', p.day), mk('span', 'sd-m', p.month))
-          days.append(b)
+        const view = mk('div', 'dp-view')
+        view.id = 'dpView'
+        const err = mk('p', 'inline-error hidden', '')
+        err.id = 'bookError'; err.setAttribute('role', 'alert')
+        slotsBody.replaceChildren(view, err)
+        agenda.view === 'times' ? renderTimesView(focus) : renderCalendarView(focus)
+      }
+
+      function renderCalendarView(focus) {
+        const view = byId('dpView')
+        const first = agenda.days[0], s0 = first.slots[0]
+        const shortcut = button('dp-first', null, { action: 'first' })
+        shortcut.append(mk('span', 'dp-first-k', 'Primer horario disponible'), mk('span', 'dp-first-v', shortDay(first.date) + ' · ' + slotTime(s0)))
+        const arrow = mk('span', 'dp-first-go', '→'); arrow.setAttribute('aria-hidden', 'true')
+        shortcut.append(arrow)
+        shortcut.setAttribute('aria-label', 'Primer horario disponible: ' + longDay(first.date) + ' a las ' + slotTime(s0) + '. Elegirlo')
+
+        const mo = agenda.month
+        const head = mk('div', 'dp-head')
+        const prev = button('dp-nav', '‹', { action: 'prev-month' })
+        prev.setAttribute('aria-label', 'Mes anterior')
+        prev.disabled = compareMonths(mo, firstMonth()) <= 0
+        const next = button('dp-nav', '›', { action: 'next-month' })
+        next.setAttribute('aria-label', 'Mes siguiente')
+        next.disabled = compareMonths(mo, lastMonth()) >= 0
+        const title = mk('p', 'dp-month', monthLabel(mo))
+        title.id = 'dpMonth'; title.setAttribute('aria-live', 'polite')
+        head.append(prev, title, next)
+
+        const grid = mk('div', 'dp-grid')
+        grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', 'dpMonth')
+        WEEKDAYS.forEach(([abbr]) => { const w = mk('span', 'dp-wd', abbr); w.setAttribute('aria-hidden', 'true'); grid.append(w) })
+        const today = todayIn(AGENDA_TZ)
+        const chosen = agenda.day >= 0 ? agenda.days[agenda.day].date : ''
+        monthGrid(mo).flat().forEach((date, i) => {
+          if (!date) { grid.append(mk('span', 'dp-pad')); return }
+          const idx = dayIndex(date)
+          const b = button('dp-day', String(Number(date.slice(8))), idx >= 0 ? { date } : null)
+          const n = idx >= 0 ? agenda.days[idx].slots.length : 0
+          b.setAttribute('aria-label', cap(WEEKDAYS[i % 7][1]) + ' ' + Number(date.slice(8)) + (n ? ', ' + n + (n === 1 ? ' horario' : ' horarios') : ', sin horarios'))
+          if (idx < 0) b.disabled = true
+          else { b.classList.add('is-open'); b.setAttribute('aria-pressed', String(date === chosen)) }
+          if (date === today) { b.classList.add('is-today'); b.setAttribute('aria-current', 'date') }
+          grid.append(b)
         })
-        const timesLabel = mk('p', 'slots-k', 'Hora')
-        timesLabel.id = 'slotsTimesK'
+        const hint = mk('p', 'dp-hint')
+        const dot = mk('span', 'dp-dot'); dot.setAttribute('aria-hidden', 'true')
+        hint.append(dot, 'Días con horarios libres · hora de Lima')
+        view.replaceChildren(shortcut, head, grid, hint)
+        if (focus === 'month') (prev.disabled ? next : prev).focus({ preventScroll: true })
+        else if (focus === 'day') (grid.querySelector('.dp-day[aria-pressed="true"]') || shortcut).focus({ preventScroll: true })
+      }
+
+      function renderTimesView(focus) {
+        const view = byId('dpView')
+        const d = agenda.days[agenda.day]
+        const back = button('dp-back', null, { action: 'back' })
+        const arrow = mk('span', '', '←'); arrow.setAttribute('aria-hidden', 'true')
+        back.append(arrow, ' Cambiar día')
+        const title = mk('p', 'dp-date', longDay(d.date))
+        title.id = 'dpDate'; title.tabIndex = -1
+        const k = mk('p', 'slots-k', 'Elige la hora · Lima')
+        k.id = 'dpTimesK'
         const grid = mk('div', 'slots-grid')
-        grid.id = 'slotsGrid'
-        grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', 'slotsTimesK')
+        grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', 'dpDate dpTimesK')
+        d.slots.forEach((s, i) => {
+          const b = button('slot-time', slotTime(s), { slot: String(i) })
+          b.setAttribute('aria-pressed', String(agenda.slot === s))
+          grid.append(b)
+        })
         const confirm = mk('div', 'slots-confirm')
         const pick = mk('p', 'slots-pick', '')
         pick.id = 'slotsPick'
         const btn = button('btn wide', 'Confirmar horario', { action: 'book' })
-        const err = mk('p', 'inline-error hidden', '')
-        err.id = 'bookError'; err.setAttribute('role', 'alert')
-        confirm.append(pick, btn, err)
-        slotsBody.replaceChildren(daysLabel, days, timesLabel, grid, confirm)
-        renderTimes()
-      }
-      function renderTimes() {
-        const grid = byId('slotsGrid')
-        const d = agenda.days[agenda.day]
-        grid.replaceChildren(...d.slots.map((s, i) => {
-          const b = button('slot-time', s.time || fmtTime.format(new Date(s.start)), { slot: String(i) })
-          b.setAttribute('aria-pressed', String(agenda.slot === s))
-          return b
-        }))
+        confirm.append(pick, btn)
+        view.replaceChildren(back, title, k, grid, confirm)
         updatePick()
+        if (focus === 'confirm') btn.focus({ preventScroll: true })
+        else if (focus) title.focus({ preventScroll: true })
       }
+
       function slotText(s) {
         const p = partsOf(fmtLong, new Date(s.start))
-        return cap(p.weekday) + ' ' + p.day + ' de ' + p.month + ' · ' + (s.time || fmtTime.format(new Date(s.start)))
+        return cap(p.weekday) + ' ' + p.day + ' de ' + p.month + ' · ' + slotTime(s)
       }
       function updatePick() {
         const pick = byId('slotsPick'), btn = slotsBody.querySelector('[data-action="book"]')
         if (!pick || !btn) return
-        pick.textContent = agenda.slot ? slotText(agenda.slot) : 'Elige un día y una hora.'
+        pick.textContent = agenda.slot ? slotText(agenda.slot) : 'Elige una hora.'
         pick.classList.toggle('is-on', Boolean(agenda.slot))
         btn.disabled = !agenda.slot || agenda.booking
       }
@@ -634,10 +690,13 @@ export default function MapaDeFugas() {
         if (res && res.status === 503 && data.error === 'not_configured') { renderUnavailable(); return }
         if (!res || !res.ok || !Array.isArray(data.days)) { renderError(); return }
         agenda.days = data.days.filter((d) => d && /^\d{4}-\d{2}-\d{2}$/.test(d.date) && Array.isArray(d.slots) && d.slots.length)
+          .sort((a, b) => a.date.localeCompare(b.date))
         const total = agenda.days.reduce((n, d) => n + d.slots.length, 0)
         trackEvent('slots_loaded', { days: agenda.days.length, slots: total })
         if (!total) { renderEmpty(); return }
-        agenda.day = 0
+        agenda.day = -1
+        agenda.view = 'calendar'
+        agenda.month = firstMonth()
         const first = agenda.days[0].slots[0]
         const mins = Math.round((Date.parse(first.end) - Date.parse(first.start)) / 60000)
         if (mins > 0) slotsDur.textContent = mins + ' min'
@@ -675,6 +734,7 @@ export default function MapaDeFugas() {
         if (agenda.booking || !agenda.slot) return
         agenda.booking = true
         const slot = agenda.slot
+        const date = agenda.days[agenda.day]?.date || ''
         const btn = slotsBody.querySelector('[data-action="book"]')
         btn.disabled = true
         btn.textContent = 'Agendando…'
@@ -691,7 +751,7 @@ export default function MapaDeFugas() {
         if (!alive) return
         agenda.booking = false
         if (res && res.ok && data.ok) {
-          trackEvent('booking_success', { date: agenda.days[agenda.day]?.date || '', time: slot.time || '' })
+          trackEvent('booking_success', { date, time: slot.time || '' })
           renderSuccess(data, slot)
           return
         }
@@ -699,8 +759,12 @@ export default function MapaDeFugas() {
         trackEvent('booking_error', { reason: code })
         if (code === 'not_configured') { renderUnavailable(); return }
         if (code === 'slot_taken' || code === 'slot_unavailable') {
+          // Todas las personas libres a esa hora se ocuparon: recarga los horarios y vuelve al día si aún tiene cupos.
           await loadSlots()
-          showBookError('Ese horario se acaba de ocupar. Elige otro, por favor.')
+          if (!alive || !agenda.days.length) return
+          const idx = dayIndex(date)
+          if (idx >= 0) { agenda.day = idx; agenda.view = 'times'; agenda.month = monthOf(date); renderReady('title') }
+          showBookError('Ese horario acaba de ocuparse. Elige otro, por favor.')
           return
         }
         btn.textContent = 'Confirmar horario'
@@ -710,17 +774,40 @@ export default function MapaDeFugas() {
           : 'No pudimos agendar tu horario. Inténtalo de nuevo o escríbenos por WhatsApp.')
       }
 
+      function openDay(idx, slot) {
+        agenda.day = idx
+        agenda.slot = slot || null
+        agenda.view = 'times'
+        agenda.month = monthOf(agenda.days[idx].date)
+        showBookError('')
+        renderTimesView(slot ? 'confirm' : 'title')
+      }
+
       on(slotsBody, 'click', (e) => {
         const t = e.target.closest && e.target.closest('button')
         if (!t || t.disabled || !slotsBody.contains(t)) return
-        if (t.dataset.action === 'retry') { loadSlots(); return }
-        if (t.dataset.action === 'book') { book(); return }
-        if (t.dataset.day != null) {
-          agenda.day = Number(t.dataset.day)
-          agenda.slot = null
-          slotsBody.querySelectorAll('.slot-day').forEach((b) => b.setAttribute('aria-pressed', String(b === t)))
+        const action = t.dataset.action
+        if (action === 'retry') { loadSlots(); return }
+        if (action === 'book') { book(); return }
+        if (action === 'first') {
+          const s = agenda.days[0].slots[0]
+          openDay(0, s)
+          trackEvent('slot_selected', { date: agenda.days[0].date, time: s.time || '', via: 'first' })
+          return
+        }
+        if (action === 'prev-month' || action === 'next-month') {
+          agenda.month = addMonths(agenda.month, action === 'next-month' ? 1 : -1)
+          renderCalendarView('month')
+          return
+        }
+        if (action === 'back') {
+          agenda.view = 'calendar'
           showBookError('')
-          renderTimes()
+          renderCalendarView('day')
+          return
+        }
+        if (t.dataset.date) {
+          openDay(dayIndex(t.dataset.date))
           return
         }
         if (t.dataset.slot != null) {
