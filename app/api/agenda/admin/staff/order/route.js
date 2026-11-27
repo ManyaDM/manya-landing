@@ -1,5 +1,5 @@
 import { guardAdmin, validateOrder } from '@/lib/agenda/admin'
-import { db, isMissingSchema } from '@/lib/agenda/db'
+import { db, isMissingSchema, liveOnly, withArchive } from '@/lib/agenda/db'
 import { json, readJson } from '@/lib/agenda/http'
 
 export const runtime = 'nodejs'
@@ -11,7 +11,7 @@ export async function PUT(request) {
   if (denied) return denied
   const v = validateOrder(await readJson(request, 16 * 1024))
   if (!v.ok) return json({ error: 'invalid', fields: v.errors }, 400)
-  const { data: rows, error } = await db().from('agenda_staff').select('id')
+  const { data: rows, error } = await withArchive((a) => liveOnly(db().from('agenda_staff').select('id'), a))
   if (error) { console.error('[agenda] order lookup failed', error.code); return json({ error: 'db_error' }, 502) }
   const known = new Set((rows || []).map((r) => r.id))
   if (v.value.length !== known.size || !v.value.every((id) => known.has(id))) return json({ error: 'invalid', fields: ['ids'] }, 400)

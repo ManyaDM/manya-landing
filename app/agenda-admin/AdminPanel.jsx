@@ -30,6 +30,9 @@ const ERRORS = {
   cannot_remove_self: 'No puedes quitarte el acceso a ti mismo.',
   cannot_remove_fixed: 'Esa cuenta está fija en el servidor (AGENDA_ADMIN_EMAILS).',
   not_found: 'Ya no existe. Recarga la página.',
+  migration_required_005: 'Falta ejecutar supabase/agenda_005.sql en Supabase.',
+  cannot_delete_self: 'No puedes eliminarte a ti mismo.',
+  staff_archived: 'Tu perfil fue eliminado de la agenda. Pide que te vuelvan a invitar.',
 }
 const REFRESH_MIN_MS = 3000
 const fmtWhen = new Intl.DateTimeFormat('es-PE', { timeZone: 'America/Lima', weekday: 'short', day: 'numeric', month: 'short' })
@@ -104,12 +107,54 @@ function Switch({ id, checked, onChange, disabled }) {
 
 const connectUrlFor = (id) => '/api/agenda/oauth/start?staff=' + encodeURIComponent(id)
 
+/** "Eliminar persona" confirmation. Mounted only while open; Escape / Cancelar close it unless a request is running. */
+function DeleteDialog({ person, onClose, onDeleted }) {
+  const ref = useRef(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+  useEffect(() => { if (ref.current && !ref.current.open) ref.current.showModal() }, [])
+  const n = Number(person.upcoming_bookings) || 0
+  const titleId = 'delete-title-' + person.id
+  const descId = 'delete-desc-' + person.id
+
+  async function confirm() {
+    setBusy(true); setErr('')
+    try {
+      const res = await api('/api/agenda/admin/staff/' + person.id, { method: 'DELETE' })
+      onDeleted(res)
+    } catch (e) { setErr(e.message); setBusy(false) }
+  }
+
+  return (
+    <dialog ref={ref} className="agadm-dialog agadm-confirm" role="alertdialog" aria-labelledby={titleId} aria-describedby={descId}
+      onCancel={(e) => { if (busy) e.preventDefault() }} onClose={onClose}>
+      <div className="agadm-dialog-head">
+        <h1 id={titleId}>¿Eliminar a {person.name}?</h1>
+      </div>
+      <div className="agadm-dialog-body">
+        <p id={descId}>Se desconectará su calendario, perderá el acceso al panel y dejará de recibir reuniones. Esta acción no se puede deshacer.</p>
+        {n > 0 && (
+          <p className="agadm-alert is-warn">
+            {n === 1 ? 'Tiene 1 reunión próxima agendada.' : 'Tiene ' + n + ' reuniones próximas agendadas.'} Seguirán en su Google Calendar; avísale o reasígnalas manualmente.
+          </p>
+        )}
+        {err && <p className="agadm-error" role="alert">{err}</p>}
+        <div className="agadm-row agadm-confirm-actions">
+          <button type="button" className="agadm-btn quiet" onClick={() => ref.current?.close()} disabled={busy} autoFocus>Cancelar</button>
+          <button type="button" className="agadm-btn danger" onClick={confirm} disabled={busy}>{busy ? 'Eliminando…' : 'Eliminar'}</button>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
 // `initial` is the last server snapshot; `edits` holds only the fields the user changed. Untouched fields
 // always show the latest snapshot and are never sent, so a stale tab cannot overwrite newer data.
-function StaffCard({ initial, defaults, index, total, onSaved, onMove, expanded, onToggle, isMe }) {
+function StaffCard({ initial, defaults, index, total, onSaved, onMove, expanded, onToggle, isMe, onRemoved }) {
   const [edits, setEdits] = useState({})
   const [msg, setMsg] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [confirming, setConfirming] = useState(false)
 
   const s = { ...initial, ...edits }
   const patch = staffPatch(initial, edits)
@@ -238,9 +283,13 @@ function StaffCard({ initial, defaults, index, total, onSaved, onMove, expanded,
           {dirty && <button type="button" className="agadm-btn quiet" onClick={() => { setEdits((cur) => ('active' in cur ? { active: cur.active } : {})); setMsg(null) }} disabled={busy}>Descartar</button>}
           {dirty && !msg && <span className="agadm-muted">Cambios sin guardar</span>}
           {msg && <span className={msg[0] === 'ok' ? 'agadm-saved' : 'agadm-error'} role="status">{msg[0] === 'ok' ? '✓ ' : ''}{msg[1]}</span>}
-          {s.connected && <button type="button" className="agadm-danger-link" onClick={disconnect} disabled={busy}>Desconectar calendario</button>}
+          <span className="agadm-danger-group">
+            {s.connected && <button type="button" className="agadm-danger-link" onClick={disconnect} disabled={busy}>Desconectar calendario</button>}
+            {!isMe && <button type="button" className="agadm-danger-link" onClick={() => setConfirming(true)} disabled={busy}>Eliminar persona</button>}
+          </span>
         </div>
       </div>
+      {confirming && <DeleteDialog person={initial} onClose={() => setConfirming(false)} onDeleted={(res) => onRemoved(initial, res)} />}
     </article>
   )
 }
@@ -285,7 +334,7 @@ function ConnectDialog({ open, onClose, me, myName, ownRow, onConnectMe, onInvit
     try {
       const d = await api('/api/agenda/admin/staff/invite', { method: 'POST', body: JSON.stringify({ name, email }) })
       onInvited(d.staff)
-      setDone({ name: d.staff.name, email: d.staff.email, access: d.access }); setStep('done')
+      setDone({ name: d.staff.name, email: d.staff.email, access: d.access, restored: Boolean(d.restored) }); setStep('done')
     } catch (e2) { setErr(e2.message) }
     setBusy(false)
   }
@@ -364,7 +413,7 @@ function ConnectDialog({ open, onClose, me, myName, ownRow, onConnectMe, onInvit
 
       {step === 'done' && done && (
         <div className="agadm-dialog-body">
-          <p className="agadm-alert is-ok" role="status">{done.name} ya está en la lista{done.access === 'added' ? ' y tiene acceso al panel.' : '.'}</p>
+          <p className="agadm-alert is-ok" role="status">{done.name} {done.restored ? 'volvió a la lista con su configuración anterior' : 'ya está en la lista'}{done.access === 'added' ? ' y tiene acceso al panel.' : '.'}</p>
           {(done.access === 'already' || done.access === 'fixed') && <p className="agadm-help">Ya tenía acceso al panel.</p>}
           {done.access === 'migration_required' && <p className="agadm-alert is-warn">No se pudo darle acceso: falta ejecutar <code>supabase/agenda_004.sql</code>. Agrégala en <b>Accesos</b> cuando esté lista.</p>}
           {done.access === 'error' && <p className="agadm-alert">No se pudo darle acceso al panel. Agrégala en <b>Accesos</b>.</p>}
@@ -384,6 +433,7 @@ function ConnectDialog({ open, onClose, me, myName, ownRow, onConnectMe, onInvit
 function PeopleSection({ staff, setStaff, loadError, defaults, me, myName }) {
   const [dialog, setDialog] = useState(false)
   const [orderMsg, setOrderMsg] = useState('')
+  const [removedMsg, setRemovedMsg] = useState(null)
   const [open, setOpen] = useState(() => new Set())
   useEffect(() => {
     try { setOpen(new Set(JSON.parse(sessionStorage.getItem(OPEN_KEY) || '[]'))) } catch { /* storage blocked */ }
@@ -409,7 +459,14 @@ function PeopleSection({ staff, setStaff, loadError, defaults, me, myName }) {
     setStaff(next); setOrderMsg('')
     try { await api('/api/agenda/admin/staff/order', { method: 'PUT', body: JSON.stringify({ ids: next.map((x) => x.id) }) }) } catch (e) { setStaff(prev); setOrderMsg(e.message) }
   }
-  const saved = (row) => setStaff((cur) => cur.map((x) => (x.id === row.id ? row : x)))
+  const saved = (row) => setStaff((cur) => cur.map((x) => (x.id === row.id ? { ...row, upcoming_bookings: x.upcoming_bookings } : x)))
+  function removed(person, res) {
+    setStaff((cur) => cur.filter((x) => x.id !== person.id))
+    const extra = res.admin_access === 'fixed'
+      ? ' Su acceso al panel está fijo en el servidor (AGENDA_ADMIN_EMAILS): quítalo allí.'
+      : res.admin_access === 'error' ? ' No se pudo quitar su acceso al panel: quítalo en Accesos.' : ''
+    setRemovedMsg([res.admin_access === 'fixed' || res.admin_access === 'error' ? 'warn' : 'ok', 'Se eliminó a ' + person.name + '.' + extra])
+  }
 
   return (
     <section className="agadm-section" aria-labelledby="sec-personas">
@@ -431,12 +488,13 @@ function PeopleSection({ staff, setStaff, loadError, defaults, me, myName }) {
       <ConnectDialog open={dialog} onClose={() => setDialog(false)} me={me} myName={myName} ownRow={ownRow} onConnectMe={connectMe}
         onInvited={(row) => setStaff((cur) => [...(cur || []), row])} />
       {orderMsg && <p className="agadm-alert" role="alert">{orderMsg}</p>}
+      {removedMsg && <p className={'agadm-alert is-' + removedMsg[0]} role="status">{removedMsg[1]}</p>}
       {loadError && <p className="agadm-alert">{loadError}</p>}
       {staff === null
         ? <p className="agadm-muted">Cargando…</p>
         : staff.map((s, i) => (
           <StaffCard key={s.id} initial={s} defaults={defaults} index={i} total={staff.length} onSaved={saved} onMove={move}
-            expanded={open.has(s.id)} onToggle={() => toggle(s.id)} isMe={s.email === me} />
+            expanded={open.has(s.id)} onToggle={() => toggle(s.id)} isMe={s.email === me} onRemoved={removed} />
         ))}
       {staff && !staff.length && !loadError && <p className="agadm-empty">Aún no hay personas. Pulsa “Conectar calendario” para agregar la primera.</p>}
     </section>
@@ -573,7 +631,7 @@ function BookingsSection() {
                   <tr key={b.id}>
                     <td data-k="Fecha y hora"><b>{cap(fmtWhen.format(d))}</b><span className="agadm-mono">{fmtTime.format(d)}–{fmtTime.format(new Date(b.ends_at))}</span></td>
                     <td data-k="Cliente"><b>{b.lead.nombre || '—'}</b><span>{b.lead.empresa}</span>{b.lead.correo && <a href={'mailto:' + b.lead.correo}>{b.lead.correo}</a>}</td>
-                    <td data-k="Asignada a">{b.staff?.name || '—'}</td>
+                    <td data-k="Asignada a">{b.staff?.name || '—'}{b.staff?.archived && <span className="agadm-removed">(eliminada)</span>}</td>
                     <td data-k="Meet">{b.meet_link ? <a href={b.meet_link} target="_blank" rel="noopener noreferrer">Abrir Meet</a> : '—'}</td>
                     <td data-k="Estado"><span className={'agadm-badge st-' + b.status}>{STATUS[b.status] || b.status}</span></td>
                   </tr>
