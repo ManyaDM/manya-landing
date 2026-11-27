@@ -1178,7 +1178,7 @@ export default function MapaDeFugas() {
               </marker>
             </defs>
             <g className="px-near">
-            <circle id="lensBg" cx="320" cy="245" r="232" fill="#ffffff" />
+            <circle id="lensBg" cx="320" cy="245" r="232" fill="#e6eefb" />
             <g className="lens-clip" clipPath="url(#pipeLens)">
               <g id="pipeRig" data-angle="6" transform="rotate(6 320 245)">
                 {/* 1 · interior del tubo */}
