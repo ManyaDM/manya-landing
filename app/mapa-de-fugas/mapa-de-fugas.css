@@ -186,7 +186,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fugas-count{display:grid;align-content:center;gap:10px;padding:14px 20px;border-radius:6px;background:var(--navy);color:#fff}
 .mdf .fc-row{display:flex;align-items:baseline;gap:10px;margin:0;color:var(--on-navy-soft);font-size:.86rem;line-height:1.25}
 .mdf .fc-row b{font-size:clamp(2.4rem,3.4vw,3.2rem);font-weight:900;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff}
-.mdf .fc-bar{position:relative;display:block;height:8px;border-radius:2px;background:#FF006E;overflow:hidden}
+.mdf .fc-bar{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
 .mdf .fc-bar::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--blue);transition:width .6s var(--ease-out)}
 /* lighter rose on navy: #FF006E only reaches ~4.2:1 there; #ff6fa6 is ~6:1 */
 .mdf .fc-loss{font-family:var(--mono);font-size:.78rem;font-weight:500;color:#ff6fa6}
@@ -210,7 +210,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .flow-nums li:first-child{border-left:0}
 .mdf .flow-nums li span{display:none;font-size:.82rem;font-weight:700;color:var(--ink-soft)}
 .mdf .flow-nums li b{font-size:clamp(2rem,3.4vw,3rem);font-weight:900;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--navy)}
-.mdf .flow-nums li i{position:relative;display:block;height:8px;border-radius:2px;background:#FF006E;overflow:hidden}
+.mdf .flow-nums li i{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
 .mdf .flow-nums li i::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--blue)}
 .mdf .flow-nums li.is-on{background:var(--navy)}
 .mdf .flow-nums li.is-on b,.mdf .flow-nums li.is-on span{color:#fff}
@@ -481,7 +481,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .cv-row i{position:relative;display:block;height:14px;border-radius:2px;background:var(--paper-tint);overflow:hidden}
 .mdf .cv-row i::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:var(--blue);transition:width 1.1s var(--ease-out) .25s}
 .mdf .cv-row.is-low i::before{background:#9db4d6}
-.mdf .cv-row.is-before i::before{background:#FF006E}
+.mdf .cv-row.is-before i::before{background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px)}
 .mdf .cv-row b{font-family:var(--mono);font-weight:500;text-align:right;color:var(--navy)}
 @media (prefers-reduced-motion:no-preference){ .mdf.js .proof:not(.is-in) .cv-row i::before{width:0} }
 .mdf .case-more{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0;padding:14px 0 0;border-top:1px solid var(--line);font-size:.9rem;color:var(--ink-soft)}
