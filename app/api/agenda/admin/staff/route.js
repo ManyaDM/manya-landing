@@ -1,22 +1,35 @@
 import { guardAdmin, insertStaff, presentStaff, validateNewStaff } from '@/lib/agenda/admin'
-import { db, selectStaff } from '@/lib/agenda/db'
+import { db, liveOnly, selectStaff, withArchive } from '@/lib/agenda/db'
 import { json, readJson } from '@/lib/agenda/http'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const list = (cols) => db().from('agenda_staff').select(cols)
+const list = (cols, archive) => liveOnly(db().from('agenda_staff').select(cols), archive)
 
-/** → { staff: [...] ordered by priority, migration_required } */
+/** Future confirmed bookings per person → Map staffId → count (empty when the query fails). */
+async function upcomingCounts() {
+  const { data, error } = await db().from('agenda_bookings').select('staff_id')
+    .eq('status', 'confirmed').gte('starts_at', new Date().toISOString()).limit(2000)
+  const out = new Map()
+  if (error) { console.error('[agenda] upcoming count failed', error.code); return out }
+  for (const r of data || []) out.set(r.staff_id, (out.get(r.staff_id) || 0) + 1)
+  return out
+}
+
+/** → { staff: [...] ordered by priority (archived people excluded), migration_required } */
 export async function GET(request) {
   const denied = await guardAdmin(request)
   if (denied) return denied
-  const { data, error, legacy } = await selectStaff((cols) => {
-    const q = list(cols)
-    return cols.includes('priority') ? q.order('priority', { ascending: true }).order('created_at', { ascending: true }) : q.order('created_at', { ascending: true })
-  })
+  const [{ data, error, legacy }, upcoming] = await Promise.all([
+    selectStaff((cols) => withArchive((a) => {
+      const q = list(cols, a)
+      return cols.includes('priority') ? q.order('priority', { ascending: true }).order('created_at', { ascending: true }) : q.order('created_at', { ascending: true })
+    })),
+    upcomingCounts(),
+  ])
   if (error) { console.error('[agenda] admin list failed', error.code); return json({ error: 'db_error' }, 502) }
-  return json({ staff: (data || []).map(presentStaff), migration_required: legacy })
+  return json({ staff: (data || []).map((s) => ({ ...presentStaff(s), upcoming_bookings: upcoming.get(s.id) || 0 })), migration_required: legacy })
 }
 
 export async function POST(request) {

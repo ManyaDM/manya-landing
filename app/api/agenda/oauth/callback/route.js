@@ -4,7 +4,7 @@ import { OAUTH_COOKIE, adminUrl } from '@/lib/agenda/admin'
 import { ADMIN_DOMAIN, checkLoginIdentity, makeState, readState, statePurpose } from '@/lib/agenda/auth'
 import { adminConfigured, bookingConfigured, env, oauthConfigured } from '@/lib/agenda/config'
 import { encrypt } from '@/lib/agenda/crypto'
-import { db, isMissingSchema } from '@/lib/agenda/db'
+import { db, isMissingSchema, liveOnly, withArchive } from '@/lib/agenda/db'
 import { SCOPES, buildLoginUrl, exchangeCode, fetchUserInfo, forgetAccessToken, revokeToken } from '@/lib/agenda/google'
 import { hasCalendarScopes, planLoginStaff } from '@/lib/agenda/onboard'
 import { SESSION_COOKIE, isAdmin, isAllowedEmail, newSessionToken, sessionCookieOptions } from '@/lib/agenda/session'
@@ -90,7 +90,9 @@ async function login(request, q) {
 async function syncStaffOnLogin(email, name, tokens) {
   if (!bookingConfigured()) return null
   try {
-    const { data: existing, error } = await db().from('agenda_staff').select('id,refresh_token_enc').eq('email', email).maybeSingle()
+    // An archived person keeps their archived row: planLoginStaff writes nothing and never creates a new one.
+    const { data: existing, error } = await withArchive((a) => db().from('agenda_staff')
+      .select('id,refresh_token_enc' + (a ? ',archived_at' : '')).eq('email', email).maybeSingle())
     if (error) throw error
     let maxPriority = 0
     if (!existing) {
@@ -130,7 +132,7 @@ async function connect(request, q) {
   const code = q.get('code')
   if (!code || code.length > 2048) return done(request, 'error')
 
-  const { data: staff, error } = await db().from('agenda_staff').select('id,email').eq('id', state.sid).maybeSingle()
+  const { data: staff, error } = await withArchive((a) => liveOnly(db().from('agenda_staff').select('id,email').eq('id', state.sid), a).maybeSingle())
   if (error || !staff) return done(request, 'error')
 
   let tokens
