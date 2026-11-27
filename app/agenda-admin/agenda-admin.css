@@ -52,6 +52,7 @@
 .agadm-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:var(--blue);color:var(--white);
   font:inherit;font-weight:600;font-size:.9rem;cursor:pointer;text-decoration:none;white-space:nowrap}
 .agadm a.agadm-btn{color:var(--white)}
+.agadm a.agadm-btn.quiet{color:var(--navy)}
 .agadm-btn:hover{background:#1a7fd4}
 .agadm-btn[disabled]{opacity:.5;cursor:default}
 .agadm-btn.sm{min-height:38px;padding:0 14px;font-size:.85rem}

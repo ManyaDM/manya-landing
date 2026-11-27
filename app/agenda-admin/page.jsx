@@ -69,7 +69,7 @@ function LoginScreen({ status }) {
   if (status === 'denied') {
     return (
       <div className="agadm-card agadm-narrow" role="alert">
-        <h2>Tu cuenta no tiene acceso</h2>
+        <h2>Sin acceso al panel</h2>
         <p className="agadm-muted">Tu cuenta no tiene acceso. Pídele a un administrador que te agregue.</p>
         <p className="agadm-help">Solo pueden ingresar cuentas @manya.pe autorizadas en <b>Accesos</b>.</p>
         <a className="agadm-btn quiet" href="/api/agenda/admin/login">Probar con otra cuenta</a>
