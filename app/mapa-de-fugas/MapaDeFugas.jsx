@@ -952,7 +952,7 @@ export default function MapaDeFugas() {
       const narrowPipe = matchMedia('(max-width: 720px)'), BASE_ANGLE = +rig.dataset.angle || 0
       let CA = 1, SA = 0
       const setAngle = () => {
-        const deg = narrowPipe.matches ? 3.5 : BASE_ANGLE, a = deg * Math.PI / 180
+        const deg = narrowPipe.matches ? 2 : BASE_ANGLE, a = deg * Math.PI / 180
         rig.setAttribute('transform', `rotate(${deg} 320 245)`); CA = Math.cos(a); SA = Math.sin(a)
       }
       setAngle(); on(narrowPipe, 'change', setAngle)
@@ -1259,10 +1259,10 @@ export default function MapaDeFugas() {
               <path d="M426 134C420 166 372 186 326 200" fill="none" stroke="#FF006E" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" markerEnd="url(#leakArrow)" />
               <text x="402" y="114" fontSize="32" fontWeight="700" fill="#FF006E" transform="rotate(-8 402 114)" style={{ fontFamily: "var(--mdf-caveat), cursive" }}>la fuga</text>
             </g></g>
-            {/* móvil: la nota va abajo a la izquierda y apunta a lo que cae */}
+            {/* móvil: misma nota que en desktop (arriba a la derecha) pero con la flecha más corta, sin tocar el tubo */}
             <g className="px-mid"><g className="leak-note leak-note-m">
-              <path d="M200 352C236 346 260 330 272 306" fill="none" stroke="#FF006E" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" markerEnd="url(#leakArrow)" />
-              <text x="96" y="376" fontSize="34" fontWeight="700" fill="#FF006E" transform="rotate(-8 96 376)" style={{ fontFamily: "var(--mdf-caveat), cursive" }}>la fuga</text>
+              <path d="M426 134C422 152 396 164 362 170" fill="none" stroke="#FF006E" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" markerEnd="url(#leakArrow)" />
+              <text x="402" y="114" fontSize="32" fontWeight="700" fill="#FF006E" transform="rotate(-8 402 114)" style={{ fontFamily: "var(--mdf-caveat), cursive" }}>la fuga</text>
             </g></g>
             {/* etiquetas */}
             <g className="px-far"><g className="chip-in">

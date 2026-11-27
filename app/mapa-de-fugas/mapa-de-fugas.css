@@ -1528,7 +1528,9 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
   .mdf .hero-art .lens-clip{clip-path:none}
   /* como en desktop: "se fugan" y la nota arriba; entran / compran justo debajo de cada tramo del tubo */
   .mdf .hero-art .pipe .px-far{scale:1.2}
-  .mdf .hero-art .chip-in{translate:6px -52px}
+  .mdf .hero-art .chip-in{translate:6px -55px}
   .mdf .hero-art .chip-leak{translate:0 6px}
-  .mdf .hero-art .chip-out{translate:-8px -51px}
+  .mdf .hero-art .chip-out{translate:-8px -66px}
+  .mdf .hero-art .leak-note:not(.leak-note-m){display:none}
+  .mdf .hero-art .leak-note-m{display:inline}
 }
