@@ -3,7 +3,7 @@ import { json, readJson } from '@/lib/agenda/http'
 import { clientIp, createRateLimiter } from '@/lib/agenda/ratelimit'
 import { AgendaError, bookSlot } from '@/lib/agenda/service'
 import { scheduleOf } from '@/lib/agenda/slots'
-import { cleanPageUrl, cleanUtms, qualify, validateLead } from '@/lib/agenda/validation'
+import { cleanAttribution, cleanPageUrl, cleanUtms, qualify, validateLead } from '@/lib/agenda/validation'
 import { sendToMake } from '@/lib/agenda/webhook'
 
 export const runtime = 'nodejs'
@@ -33,11 +33,12 @@ export async function POST(request) {
   const fit = qualify(v.lead)
   if (fit.level === 'no_apto') return json({ error: 'not_eligible' }, 403)
   const utms = cleanUtms(body.utms)
+  const attribution = cleanAttribution(body.attribution)
   const pageUrl = cleanPageUrl(body.page_url) || cleanPageUrl(request.headers.get('referer'))
 
   let result
   try {
-    result = await bookSlot({ startMs, lead: v.lead, fit, utms, pageUrl })
+    result = await bookSlot({ startMs, lead: v.lead, fit, utms, attribution, pageUrl })
   } catch (e) {
     if (e instanceof AgendaError) return json({ error: e.code }, e.status)
     console.error('[agenda] booking failed', e.message)
@@ -63,6 +64,7 @@ export async function POST(request) {
       event_id: result.eventId,
     },
     utms,
+    attribution,
     page_url: pageUrl,
     created_at: new Date().toISOString(),
   })

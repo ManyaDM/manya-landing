@@ -1,6 +1,6 @@
 import { json, readJson } from '@/lib/agenda/http'
 import { clientIp, createRateLimiter } from '@/lib/agenda/ratelimit'
-import { cleanPageUrl, cleanUtms, isEmail } from '@/lib/agenda/validation'
+import { cleanAttribution, cleanPageUrl, cleanUtms, isEmail } from '@/lib/agenda/validation'
 import { sendToMake } from '@/lib/agenda/webhook'
 
 export const runtime = 'nodejs'
@@ -14,7 +14,7 @@ const pick = (list, v) => (typeof v === 'string' && list.includes(v) ? v : '')
 
 /**
  * POST /api/agenda/optin — leaves only an email from the "no encaja" screen, so Make can
- * notify this person when something for their stage exists. body: { email, answers, utms, page_url, honeypot }
+ * notify this person when something for their stage exists. body: { email, answers, utms, attribution, page_url, honeypot }
  */
 export async function POST(request) {
   const rl = limiter.check(clientIp(request))
@@ -36,6 +36,7 @@ export async function POST(request) {
       ticket: pick(TICKET, answers.ticket),
     },
     utms: cleanUtms(body.utms),
+    attribution: cleanAttribution(body.attribution),
     page_url: cleanPageUrl(body.page_url) || cleanPageUrl(request.headers.get('referer')),
     created_at: new Date().toISOString(),
   })
