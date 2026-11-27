@@ -1279,9 +1279,13 @@ export default function MapaDeFugas() {
             <button type="button" role="tab" id="tab-cerrar" aria-controls="panel-cerrar" aria-selected="false" tabIndex="-1" data-stage="cerrar"><small aria-hidden="true">05</small>Cerrar</button>{" "}
           </div>
           <div className="fugas-count" aria-hidden="true" style={{ "--v": "100" }}>
-            <p className="fc-row"><b data-count="">100</b><span data-count-label="">hacen clic en tu anuncio</span></p>{" "}
-            <i className="fc-bar" />{" "}
-            <span className="fc-loss" data-flow-loss="" data-state="start">Punto de partida</span>{" "}
+            <b className="fc-num" data-count="">100</b>{" "}
+            {/* label, bar and loss live in one box, centred as a block against the number */}
+            <div className="fc-meta">
+              <span className="fc-label" data-count-label="">hacen clic en tu anuncio</span>{" "}
+              <i className="fc-bar" />{" "}
+              <span className="fc-loss" data-flow-loss="" data-state="start">Punto de partida</span>{" "}
+            </div>
           </div>
           </div>
           <div className="fugas-panels">
