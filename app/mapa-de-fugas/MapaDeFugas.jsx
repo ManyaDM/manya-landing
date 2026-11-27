@@ -948,15 +948,16 @@ export default function MapaDeFugas() {
       const svg = $('.hero-art .pipe'), layer = byId('pipeFlow'), drop = byId('pipeDrop')
       const rig = byId('pipeRig')
       if (!rig) return
-      // móvil: la tubería se inclina menos (los cálculos de caída usan el mismo ángulo)
+      // El ángulo visible lo pone el CSS (en móvil --rig-angle sobrescribe el atributo desde el primer pintado,
+      // sin saltos al recargar); aquí sólo se lee para que las gotas caigan desde el corte correcto.
       const narrowPipe = matchMedia('(max-width: 720px)'), BASE_ANGLE = +rig.dataset.angle || 0
       let CA = 1, SA = 0
-      const setAngle = () => {
-        const deg = narrowPipe.matches ? 2 : BASE_ANGLE, a = deg * Math.PI / 180
-        rig.setAttribute('transform', `rotate(${deg} 320 245)`); CA = Math.cos(a); SA = Math.sin(a)
+      const readAngle = () => {
+        const css = parseFloat(getComputedStyle(rig).getPropertyValue('--rig-angle'))
+        const a = (narrowPipe.matches && !Number.isNaN(css) ? css : BASE_ANGLE) * Math.PI / 180
+        CA = Math.cos(a); SA = Math.sin(a)
       }
-      setAngle(); on(narrowPipe, 'change', setAngle)
-      cleanups.push(() => rig.setAttribute('transform', `rotate(${BASE_ANGLE} 320 245)`))
+      readAngle(); on(narrowPipe, 'change', readAngle)
       if (!svg || !layer || !drop || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return
       const NS = 'http://www.w3.org/2000/svg'
       const tIn = byId('pv-in'), tOut = byId('pv-out'), tLeak = byId('pv-leak')
