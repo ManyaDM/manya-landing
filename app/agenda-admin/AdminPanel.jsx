@@ -447,6 +447,8 @@ function PeopleSection({ staff, setStaff, loadError, defaults, me, myName }) {
   const ownRow = staff?.find((x) => x.email === me) || null
 
   async function connectMe(name) {
+    // No card yet: sign in again with the consent screen; the card is created only if the calendar is granted.
+    if (!ownRow) { window.location.assign('/api/agenda/admin/login?consent=1'); return }
     const { staff: row } = await api('/api/agenda/admin/staff/me', { method: 'POST', body: JSON.stringify(name ? { name } : {}) })
     setStaff((cur) => (cur?.some((x) => x.id === row.id) ? cur : [...(cur || []), row]))
     if (!row.connected) window.location.assign(connectUrlFor(row.id))

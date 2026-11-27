@@ -21,7 +21,9 @@ export async function GET(request) {
   if (!limiter.check(clientIp(request)).ok) return NextResponse.redirect(adminUrl(request, { login: 'rate_limited' }))
   const nonce = randomBytes(16).toString('base64url')
   const state = makeState('login', { n: nonce }, env.sessionSecret)
-  const res = NextResponse.redirect(buildLoginUrl({ state, domain: ADMIN_DOMAIN }))
+  // ?consent=1 ("Conectar mi calendario") forces the consent screen so Google asks for the calendar again.
+  const prompt = new URL(request.url).searchParams.get('consent') === '1' ? 'consent' : undefined
+  const res = NextResponse.redirect(buildLoginUrl({ state, domain: ADMIN_DOMAIN, prompt }))
   res.headers.set('Cache-Control', 'no-store')
   res.cookies.set(OAUTH_COOKIE, nonce, {
     httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/agenda/oauth', maxAge: 600,
