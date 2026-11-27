@@ -1675,7 +1675,7 @@ export default function MapaDeFugas() {
             </div>
             <div className="plan-end">
               <p className="plan-credit is-soft"><span className="plan-minus">− USD 600</span>si la contratas dentro de 15 días</p>{" "}
-              <a className="plan-link" href="#agendar">Empieza por el Mapa{" "}<span aria-hidden="true">→</span></a>{" "}
+              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-correccion">Empieza por el Mapa{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
             </div>
           </article>
           <article className="plan" aria-labelledby="plan-3">
@@ -1698,7 +1698,7 @@ export default function MapaDeFugas() {
             </div>
             <div className="plan-end">
               <p className="plan-credit is-ghost">Después de corregir</p>{" "}
-              <a className="plan-link" href="#agendar">Empieza por el Mapa{" "}<span aria-hidden="true">→</span></a>{" "}
+              <a className="btn wide btn-outline" href="#agendar" data-cta="inversion-gestion">Empieza por el Mapa{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>{" "}
             </div>
           </article>
         </div>{" "}

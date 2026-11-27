@@ -183,7 +183,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf #fugas{background:transparent}
 /* pestañas a la izquierda, contador que baja a la derecha */
 .mdf .fugas-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,300px);gap:12px;margin-bottom:16px}
-.mdf .fugas-count{display:grid;align-content:center;gap:10px;padding:14px 20px;border-radius:6px;background:var(--navy);color:#fff}
+.mdf .fugas-count{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:6px;background:var(--navy);color:#fff}
 .mdf .fc-row{display:flex;align-items:baseline;gap:10px;margin:0;color:var(--on-navy-soft);font-size:.86rem;line-height:1.25}
 .mdf .fc-row b{font-size:clamp(2.4rem,3.4vw,3.2rem);font-weight:900;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff}
 .mdf .fc-bar{position:relative;display:block;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#FF006E 0 5px,#ff4d94 5px 10px);overflow:hidden}
@@ -945,7 +945,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fugas-top{margin-bottom:12px}
 .mdf .fugas-tabs button{padding:11px 16px;gap:6px}
 /* counter: number + one box (label, bar, loss); the box is centred against the number as a whole */
-.mdf .fugas-count{display:flex;align-items:center;gap:16px;padding:10px 18px}
+.mdf .fugas-count{gap:16px;padding:10px 18px}
 .mdf .fc-num{flex:none;font-size:clamp(2.2rem,3vw,2.8rem);font-weight:900;line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#fff;text-box:trim-both cap alphabetic}
 .mdf .fc-meta{flex:1;min-width:0;display:grid;gap:6px}
 .mdf .fc-label{font-size:.86rem;line-height:1.25;color:var(--on-navy-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1113,8 +1113,12 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 }
 
 /* B · planes: cajas después de la lista, checks fucsia, precio alineado */
-.mdf .plan-end{display:grid;gap:10px;margin-top:auto;padding-top:6px}
-.mdf .plan-end .btn{margin-top:0}
+/* plan-end fills its (subgrid) row, so pinning the button to its bottom lines up all three buttons */
+.mdf .plan-end{display:flex;flex-direction:column;gap:10px;padding-top:6px}
+.mdf .plan-end .btn{margin-top:auto}
+/* outline version of the main CTA (same size and shape) for the secondary plans */
+.mdf .btn.btn-outline{--bg:transparent;--fg:var(--brand-blue);box-shadow:inset 0 0 0 1.5px var(--brand-blue)}
+.mdf .btn.btn-outline:hover{--bg:rgba(35,150,254,.08)}
 .mdf .plan-feats svg,.mdf .plan.is-featured .plan-feats svg{background:var(--magenta);color:#fff;padding:3px}
 .mdf .plan-credit .credit-cond,.mdf .plan.is-featured .plan-credit .credit-cond{display:block;margin-top:6px;font-size:.74rem;line-height:1.45;font-weight:400;color:#fff;opacity:.68}
 .mdf .plan-price:not(.is-quote){display:grid;grid-template-columns:auto auto auto;justify-content:start;align-items:stretch;column-gap:7px;margin:4px 0 6px}
@@ -1130,9 +1134,9 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .plan-link:hover{color:var(--cta-ink-hover);text-decoration-color:currentColor}
 .mdf .plan-link:focus-visible{outline:2px solid var(--brand-blue);outline-offset:3px;border-radius:2px}
 
-/* C · tarjeta de encaje: borde azul, tinte suave, pasos numerados conectados */
-.mdf #agendar-sec .fit-live{padding:24px;border:2px solid var(--brand-blue);border-radius:16px;background:rgba(35,150,254,.08)}
-.mdf #agendar-sec .fit-verdict{margin:0 0 18px;padding:0 0 16px;border-radius:0;border-bottom:1px solid rgba(35,150,254,.25);background:transparent;font-size:1rem;font-weight:700;line-height:1.4;color:var(--navy)}
+/* C · tarjeta de encaje: borde fino y tenue, fondo casi blanco (que no compita con el formulario), pasos numerados */
+.mdf #agendar-sec .fit-live{padding:24px;border:1px solid rgba(35,150,254,.2);border-radius:16px;background:rgba(255,255,255,.55)}
+.mdf #agendar-sec .fit-verdict{margin:0 0 18px;padding:0 0 16px;border-radius:0;border-bottom:1px solid rgba(24,35,69,.08);background:transparent;font-size:1rem;font-weight:700;line-height:1.4;color:var(--navy)}
 .mdf #agendar-sec .fit-verdict[data-state=ok]{background:transparent;color:var(--navy)}
 .mdf #agendar-sec .fit-verdict[data-state=warn]{background:transparent;color:#6e4600}
 .mdf #agendar-sec .fit-verdict[data-state=no]{background:transparent;color:#c4005a}
@@ -1206,7 +1210,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .plan-meta .pm-ico{grid-column:1;grid-row:1 / span 2;width:18px;height:18px;margin-top:1px;color:#2396FE}
 .mdf .plan-meta dt span{grid-column:2;grid-row:1}
 .mdf .plan-meta dd{grid-column:2;grid-row:2;font-size:.92rem}
-.mdf .plan-end{align-self:end;gap:16px;margin-top:0;padding-top:4px}
+.mdf .plan-end{align-self:stretch;gap:16px;margin-top:0;padding-top:4px}
 /* v32 · inversión ~28% más baja: misma jerarquía, menos aire interno */
 .mdf .plans{--ps:clamp(14px,1.3vw,18px)}
 .mdf .plan{padding:clamp(22px,2vw,28px)}
@@ -1218,7 +1222,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .plan-meta{gap:10px}
 .mdf .plan-meta dd{font-size:.9rem;line-height:1.4}
 .mdf .plan-end{gap:12px;padding-top:0}
-.mdf .plan:not(.is-featured) .plan-end{align-self:start}
+.mdf .plan:not(.is-featured) .plan-end{align-self:stretch}
 .mdf .plan-credit,.mdf .plan.is-featured .plan-credit{padding:10px 14px}
 .mdf .plan.is-featured .plan-price b{font-size:clamp(2.8rem,4vw,3.5rem)}
 .mdf .plan-credit .credit-cond,.mdf .plan.is-featured .plan-credit .credit-cond{margin-top:4px;font-size:.7rem;line-height:1.4}
