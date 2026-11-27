@@ -1447,7 +1447,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .plan.is-featured{border-top:0;border-radius:6px}
 .mdf .plan:nth-child(2):hover{outline-color:var(--brand-blue)}
 .mdf .plan-ico,.mdf .plan-ico.is-rose{background:rgba(35,150,254,.10);color:var(--blue-ink)}
-.mdf .plan.is-featured .plan-ico{background:rgba(255,255,255,.08);color:var(--ice)}
+.mdf .plan.is-featured .plan-ico{background:rgba(255,0,110,.16);color:#ff3d8b}
 .mdf .plan-price.is-quote b{font-size:1.25rem;font-weight:700;letter-spacing:-.01em}
 .mdf .plan-price.is-quote .plan-per{font-size:.86rem;color:var(--ink-mute)}
 .mdf .plan-label{color:var(--ink-mute);letter-spacing:.12em}
