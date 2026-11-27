@@ -307,7 +307,7 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .fuga-mock{overflow:visible}
 .mdf .mk-hand{position:absolute;left:50%;translate:-50% 0;bottom:calc(100% + 36px);display:flex;align-items:center;gap:12px;margin:0;font-family:var(--mdf-caveat),cursive;font-weight:700;font-size:1.9rem;line-height:1;color:var(--magenta);rotate:-3deg;white-space:nowrap;pointer-events:none}
 /* inside the fugas panels, sit the note in the middle of the free band above the example */
-.mdf .fugas-panels .mk-hand{bottom:calc(100% + 22px)}
+.mdf .fugas-panels .mk-hand{bottom:calc(100% + 29px)}
 .mdf .mh-loss{position:relative;padding:2px 12px;font-size:2.3rem}
 .mdf .mh-loss svg{position:absolute;inset:-6px -10px;width:calc(100% + 20px);height:calc(100% + 12px);overflow:visible}
 .mdf .mh-loss path{fill:none;stroke:var(--magenta);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
