@@ -54,7 +54,7 @@
 }
 
 .mdf *,.mdf *::before,.mdf *::after{box-sizing:border-box}
-html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px);scrollbar-color:#2396FE #0f1830}
+html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf{
   margin:0;background:var(--paper);color:var(--ink);
   font-family:var(--sans);font-size:1rem;line-height:1.6;
@@ -1429,3 +1429,40 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px);scrol
   .mdf .lc-stats dd{font-size:1.35rem;text-align:right}
 }
 
+/* ===================== v43 · ajustes de diseño ===================== */
+/* 1 · fugas: la maqueta de ejemplo es secundaria al panel (mismo trato que los bloques del cronograma) */
+.mdf .fuga-panel .mock,.mdf .fuga-panel .mock-chat{background:#f2f8ff;border:1px solid rgba(35,150,254,.14)}
+.mdf .fuga-panel .mock :is(.ad-search,.ad-card,.q-doc,.mf-row i){background:#fff}
+.mdf .fuga-panel .mock .q-days li:not(:first-child,.miss,.cold){background:#fff}
+
+/* 2 · inversión: un solo protagonista (el Mapa, navy + CTA); el resto, tranquilo */
+.mdf .plan:not(.is-featured),.mdf .plan:nth-child(2){border-top:0;border-radius:6px;box-shadow:inset 0 0 0 1px var(--line)}
+.mdf .plan.is-featured{border-top:0;border-radius:6px}
+.mdf .plan:nth-child(2):hover{outline-color:var(--brand-blue)}
+.mdf .plan-ico,.mdf .plan-ico.is-rose{background:rgba(35,150,254,.10);color:var(--blue-ink)}
+.mdf .plan.is-featured .plan-ico{background:rgba(255,255,255,.08);color:var(--ice)}
+.mdf .plan-price.is-quote b{font-size:1.25rem;font-weight:700;letter-spacing:-.01em}
+.mdf .plan-price.is-quote .plan-per{font-size:.86rem;color:var(--ink-mute)}
+.mdf .plan-label{color:var(--ink-mute);letter-spacing:.12em}
+.mdf .plan-feats svg,.mdf .plan.is-featured .plan-feats svg{width:16px;height:16px;margin-top:3px;padding:0;border-radius:0;background:none;color:var(--blue-ink)}
+.mdf .plan.is-featured .plan-feats svg{color:var(--ice)}
+.mdf .plan-feats li,.mdf .plan-meta dd{font-size:.9rem}
+.mdf .plan.is-featured .plan-credit{padding:12px 14px;border:1px solid rgba(222,234,251,.18);border-radius:6px;background:rgba(255,255,255,.05);color:#fff;font-size:.88rem}
+.mdf .plan.is-featured .plan-credit svg{color:var(--ice)}
+.mdf .plan-credit.is-soft,.mdf .plan-credit.is-ghost{border-radius:6px;background:var(--paper-tint);color:var(--ink-soft);font-size:.88rem;font-weight:500}
+.mdf .plan-credit.is-soft .plan-minus{font-weight:700;color:var(--navy)}
+
+/* 5 · casos: sin etiquetas de año/proyecto; cita un paso más chica y con aire parejo arriba y abajo */
+.mdf .case-quote{margin-top:0;padding:22px var(--cp) calc(var(--cp) + 6px)}
+.mdf .case-quote blockquote{padding-top:6px;font-size:clamp(.96rem,1.25vw,1.08rem)}
+@media (min-width:901px){
+  .mdf .case-quote{padding:22px var(--cp) 30px}
+  .mdf .case-quote blockquote{font-size:clamp(.92rem,1.1vw,.98rem)}
+}
+
+/* 6 · pestañas de fugas en móvil: la fila llega al borde de la pantalla y se funde mientras haya más */
+@media (max-width:900px){
+  .mdf.js .fugas-tabs{margin-inline:calc(-1 * var(--gutter));padding:2px var(--gutter);scroll-padding-inline:var(--gutter)}
+  .mdf.js .fugas-tabs button{min-width:104px}
+  .mdf.js .fugas-tabs[data-more="true"]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent)}
+}

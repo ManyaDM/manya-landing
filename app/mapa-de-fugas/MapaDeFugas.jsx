@@ -116,6 +116,12 @@ export default function MapaDeFugas() {
 
       // Pestañas en todos los anchos: un panel visible a la vez (sin JS, los paneles se apilan).
       const tabList = tabs[0].parentElement
+      // pista de "hay más pestañas": fundido a la derecha mientras quede contenido por desplazar
+      const markMore = () => { tabList.dataset.more = String(tabList.scrollLeft + tabList.clientWidth < tabList.scrollWidth - 4) }
+      on(tabList, 'scroll', markMore, { passive: true })
+      on(window, 'resize', markMore)
+      markMore()
+      cleanups.push(() => { delete tabList.dataset.more })
       function paint() {
         tabs.forEach((t, k) => {
           const isOn = k === active
@@ -1562,7 +1568,6 @@ export default function MapaDeFugas() {
             <article className="case">
               <header className="case-top">{" "}
                 <img className="case-logo-img" src="/mapa-de-fugas/logo-storange.png" alt="Storange" width="1000" height="148" />{" "}
-                <span className="case-tag">Venta asistida · 2025–2026</span>{" "}
               </header>
               <p className="case-fig"><b className="pcase-n">5.4x</b><span>más oportunidades desde Meta Ads</span></p>
               <div className="case-viz" role="img" aria-label="Conversaciones por WhatsApp: 1,471 desde Meta Ads frente a 270 desde Google Ads">{" "}
@@ -1588,7 +1593,6 @@ export default function MapaDeFugas() {
             <article className="case">
               <header className="case-top">{" "}
                 <img className="case-logo-img case-logo-navy" src="/mapa-de-fugas/logo-rovcal.webp" alt="ROVCAL" width="337" height="116" />{" "}
-                <span className="case-tag">Venta conversacional · Proyecto Toquepala</span>{" "}
               </header>
               <p className="case-fig"><b className="pcase-n">−61.8%</b><span>costo por lead</span></p>
               <div className="case-viz" role="img" aria-label="Costo por lead: S/ 10.20 antes y S/ 3.90 después">{" "}
@@ -1755,7 +1759,7 @@ export default function MapaDeFugas() {
             </div> */}{" "}
             <b>Agenda tu evaluación gratuita</b>{" "}
             <ul className="price-pills" aria-label="Precio">
-              <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg>Evaluación gratis · 20 min</li>
+              <li className="pill pill-free"><svg aria-hidden="true"><use href="#i-check" /></svg>Consulta gratis · 20 min</li>
               <li className="pill pill-price">Mapa de Fugas · USD 600 + IGV</li>
             </ul>{" "}
             <span>Respondes unas preguntas y eliges tu horario al final.</span>{" "}
