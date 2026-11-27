@@ -238,7 +238,7 @@ export default function MapaDeFugas() {
       const big = byId('calc-big')
       if (!leads || !close || !ticket || !big) return
       const fmt = (n) => 'S/ ' + Math.round(n).toLocaleString('en-US')
-      let shown = 7200, anim = 0, timer = 0, first = true, target = 7200
+      let shown = 14400, anim = 0, timer = 0, first = true, target = 14400
       // primera vez que la cifra entra en pantalla: cuenta desde 0; luego, actualización en vivo normal
       let revealed = reduceMotion || !('IntersectionObserver' in window)
 
@@ -1065,7 +1065,7 @@ export default function MapaDeFugas() {
       const form = byId('calc'); if (!form) return
       const m = (k) => root.querySelector('[data-m="' + k + '"]')
       const paint = () => {
-        const P = (form.querySelector('input[name="scen"]:checked') || { value: 30 }).value
+        const P = (form.querySelector('input[name="scen"]:checked') || { value: 60 }).value
         m('leads').textContent = (+byId('c-leads').value).toLocaleString('en-US')
         m('loss').textContent = P + '%'
         m('close').textContent = byId('c-close').value + '%'
@@ -1526,30 +1526,35 @@ export default function MapaDeFugas() {
           <div className="calc mdf-reveal">
             <form className="calc-controls" id="calc" aria-labelledby="calc-title" onSubmit={noSubmit}>
               <div className="ctrl"><div className="ctrl-top"><label htmlFor="c-leads">Leads al mes</label><output htmlFor="c-leads" id="o-leads">300</output></div><input type="range" id="c-leads" min="50" max="2000" step="10" defaultValue="300" /></div>
-              <div className="ctrl"><div className="ctrl-top"><label htmlFor="c-close">Tasa de cierre</label><output htmlFor="c-close" id="o-close">10%</output></div><input type="range" id="c-close" min="1" max="50" step="1" defaultValue="10" /></div>
+              <div className="ctrl"><div className="ctrl-top"><label htmlFor="c-close">De los leads que SÍ atiendes, ¿qué % cierra?</label><output htmlFor="c-close" id="o-close">10%</output></div><input type="range" id="c-close" min="1" max="50" step="1" defaultValue="10" /></div>
               <div className="ctrl"><div className="ctrl-top"><label htmlFor="c-ticket">Ticket promedio</label><output htmlFor="c-ticket" id="o-ticket">S/ 800</output></div><input type="range" id="c-ticket" min="50" max="10000" step="50" defaultValue="800" /></div>
               <fieldset className="ctrl">
                 <legend>¿Cuántos leads se pierden por fugas?</legend>
                 <div className="scen">{" "}
-                  <label><input type="radio" name="scen" value="15" />Conservador{" "}<b>15%</b></label>{" "}
-                  <label><input type="radio" name="scen" value="30" defaultChecked />Típico{" "}<b>30%</b></label>{" "}
-                  <label><input type="radio" name="scen" value="45" />Alto{" "}<b>45%</b></label>{" "}
+                  <label><input type="radio" name="scen" value="40" />Conservador{" "}<b>40%</b></label>{" "}
+                  <label><input type="radio" name="scen" value="60" defaultChecked />Típico{" "}<b>60%</b></label>{" "}
+                  <label><input type="radio" name="scen" value="88" />Alto{" "}<b>88%</b></label>{" "}
                 </div>
               </fieldset>
             </form>
             <div className="leak-card" aria-live="polite" aria-atomic="true">{" "}
               <span className="lc-k">Ventas que se escapan al mes</span>{" "}
-              <span className="lc-big" id="calc-big">S/ 7,200</span>{" "}
+              <span className="lc-big" id="calc-big">S/ 14,400</span>{" "}
               <span className="lc-unit">de leads que ya pagaste con tu pauta.</span>{" "}
               <div className="lc-math" aria-hidden="true">{" "}
                 <span className="lm-k">Así se calcula</span>{" "}
-                <p className="lm-row"><span><b data-m="leads">300</b><small>leads al mes</small></span><i>×</i><span className="is-loss"><b data-m="loss">30%</b><small>se fugan</small></span><i>×</i><span><b data-m="close">10%</b><small>cierre</small></span><i>×</i><span><b data-m="ticket">S/ 800</b><small>ticket</small></span></p>
+                <p className="lm-row"><span><b data-m="leads">300</b><small>leads al mes</small></span><i>×</i><span className="is-loss"><b data-m="loss">60%</b><small>se fugan</small></span><i>×</i><span><b data-m="close">10%</b><small>cierre</small></span><i>×</i><span><b data-m="ticket">S/ 800</b><small>ticket</small></span></p>
               </div>
               <dl className="lc-stats">
-                <div><dt>Leads perdidos</dt><dd id="k-lost">90</dd></div>
-                <div><dt>Ventas que no ocurren</dt><dd id="k-sales">9</dd></div>
-                <div><dt>Al año</dt><dd id="k-year">S/ 86,400</dd></div>
+                <div><dt>Leads perdidos</dt><dd id="k-lost">180</dd></div>
+                <div><dt>Ventas que no ocurren</dt><dd id="k-sales">18</dd></div>
+                <div><dt>Al año</dt><dd id="k-year">S/ 172,800</dd></div>
               </dl>
+              <div className="calc-cta">
+                <p className="calc-cta-note">Esa cifra es una estimación. El Mapa te dice cuál de las cinco fugas se está llevando la mayor parte.</p>
+                <a className="btn calc-cta-btn" href="#agendar" data-cta="calculadora">Agendar llamada de 20 min{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                <span className="calc-cta-meta">20 min · sin costo</span>
+              </div>
             </div>
           </div>
         </div>

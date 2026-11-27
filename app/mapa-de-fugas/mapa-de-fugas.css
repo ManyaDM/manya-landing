@@ -1569,3 +1569,8 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .cmp-card.is-map .cmp-list svg{background:rgba(35,150,254,.22);color:#bfe3ff}
 .mdf .cmp-card.is-map .cmp-foot{border-top-color:rgba(222,234,251,.14)}
 @media (max-width:900px){.mdf .compare{grid-template-columns:minmax(0,1fr)}}
+
+/* CTA de la calculadora: la cifra es una estimación, el Mapa la convierte en evidencia */
+.mdf .calc-cta{display:grid;gap:10px;justify-items:center;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);text-align:center}
+.mdf .calc-cta-note{margin:0;max-width:46ch;font-size:.9rem;line-height:1.5;color:var(--ink-soft)}
+.mdf .calc-cta-meta{font-size:.8rem;font-weight:600;color:var(--ink-mute)}
