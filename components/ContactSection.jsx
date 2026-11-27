@@ -521,7 +521,7 @@ export default function ContactSection({ data }) {
           ¿Elegiste ese rango por error? Al cerrar este mensaje puedes elegir otro.
         </p>
         <form method="dialog">
-          <button className="btn-submit" autoFocus>Entendido</button>
+          <button className="btn-hero-primary" autoFocus>Entendido</button>
         </form>
       </dialog>
 
