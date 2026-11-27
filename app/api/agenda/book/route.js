@@ -14,7 +14,7 @@ const limiter = createRateLimiter({ windowMs: 10 * 60_000, max: 5 })
 /**
  * POST /api/agenda/book
  * body: { start: ISO, lead: {...form fields}, utms: {...}, page_url, honeypot }
- * → { ok, start, end, meet_link }
+ * → { ok, start, end, minutes, meet_link } (minutes = the assigned person's meeting length)
  */
 export async function POST(request) {
   if (!bookingConfigured()) return json({ error: 'not_configured' }, 503)
@@ -24,7 +24,7 @@ export async function POST(request) {
   const body = await readJson(request)
   if (!body) return json({ error: 'invalid_body' }, 400)
   // Bots that fill the hidden field get a plausible success and nothing is booked.
-  if (body.honeypot) return json({ ok: true, start: body.start || null, end: null, meet_link: '' })
+  if (body.honeypot) return json({ ok: true, start: body.start || null, end: null, minutes: null, meet_link: '' })
 
   const startMs = typeof body.start === 'string' ? Date.parse(body.start) : NaN
   if (!Number.isFinite(startMs) || startMs % 60000 !== 0) return json({ error: 'invalid_start' }, 400)
@@ -55,6 +55,7 @@ export async function POST(request) {
       id: result.bookingId,
       start,
       end,
+      minutes: result.minutes,
       timezone: scheduleOf(result.staff).timezone,
       staff_name: result.staff.name,
       staff_email: result.staff.email,
@@ -66,5 +67,5 @@ export async function POST(request) {
     created_at: new Date().toISOString(),
   })
 
-  return json({ ok: true, start, end, meet_link: result.meetLink })
+  return json({ ok: true, start, end, minutes: result.minutes, meet_link: result.meetLink })
 }

@@ -25,8 +25,9 @@ export async function POST(request) {
   if (denied) return denied
   const v = validateNewStaff(await readJson(request, 4096))
   if (!v.ok) return json({ error: 'invalid', fields: v.errors }, 400)
-  // New people: Mon–Fri with the 13:30–14:30 lunch break, a month ahead, last in the priority order.
-  const row = { ...v.value, days_ahead: 30, weekly_hours: DEFAULT_WEEKLY_HOURS }
+  // New people: Mon–Fri with the 13:30–14:30 lunch break, last in the priority order. Schedule fields are
+  // left out so they inherit the global defaults (column default null after supabase/agenda_003.sql).
+  const row = { ...v.value, weekly_hours: DEFAULT_WEEKLY_HOURS }
   const { data: last, error: maxErr } = await db().from('agenda_staff').select('priority').order('priority', { ascending: false }).limit(1).maybeSingle()
   if (!maxErr) row.priority = (Number(last?.priority) || 0) + 10
   const { data, error } = await selectStaff((cols) => db().from('agenda_staff').insert(row).select(cols).single())
