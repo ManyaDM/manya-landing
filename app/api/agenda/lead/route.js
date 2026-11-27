@@ -1,6 +1,6 @@
 import { json, readJson } from '@/lib/agenda/http'
 import { clientIp, createRateLimiter } from '@/lib/agenda/ratelimit'
-import { cleanPageUrl, cleanUtms, qualify, validateLead } from '@/lib/agenda/validation'
+import { cleanAttribution, cleanPageUrl, cleanUtms, qualify, validateLead } from '@/lib/agenda/validation'
 import { sendToMake } from '@/lib/agenda/webhook'
 
 export const runtime = 'nodejs'
@@ -28,6 +28,7 @@ export async function POST(request) {
     lead: v.lead,
     fit,
     utms: cleanUtms(body.utms),
+    attribution: cleanAttribution(body.attribution),
     page_url: cleanPageUrl(body.page_url) || cleanPageUrl(request.headers.get('referer')),
     created_at: new Date().toISOString(),
   })

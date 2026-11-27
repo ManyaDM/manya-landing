@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { Poppins, DM_Mono, Caveat } from 'next/font/google'
-import { captureUtms } from '@/lib/utm'
+import { captureUtms, readAttribution } from '@/lib/utm'
 import { addMonths, compareMonths, monthGrid, monthOf, todayIn } from '@/lib/agenda/calendar'
 import './mapa-de-fugas.css'
 
@@ -39,6 +39,9 @@ const NOSCRIPT_CSS =
 
 export default function MapaDeFugas() {
   const rootRef = useRef(null)
+
+  // Capture UTMs and ad click ids on mount: the page keeps its own attribution even if the site header is absent.
+  useEffect(() => { captureUtms() }, [])
 
   useEffect(() => {
     const root = rootRef.current
@@ -528,7 +531,7 @@ export default function MapaDeFugas() {
         return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20)
       }
       const leadId = newId() // une el lead y la reserva en Make
-      const agenda = { lead: null, utms: null, honeypot: '', days: [], day: -1, slot: null, view: 'calendar', month: null, booking: false, seq: 0, minutes: 20 }
+      const agenda = { lead: null, utms: null, attribution: null, honeypot: '', days: [], day: -1, slot: null, view: 'calendar', month: null, booking: false, seq: 0, minutes: 20 }
       const WEEKDAYS = [['Lu', 'lunes'], ['Ma', 'martes'], ['Mi', 'miércoles'], ['Ju', 'jueves'], ['Vi', 'viernes'], ['Sá', 'sábado'], ['Do', 'domingo']]
       const fmtMonth = new Intl.DateTimeFormat('es-PE', { timeZone: 'UTC', month: 'long', year: 'numeric' })
       const monthLabel = (mo) => cap(fmtMonth.format(new Date(Date.UTC(mo.y, mo.m - 1, 15))).replace(/ de /, ' '))
@@ -766,7 +769,7 @@ export default function MapaDeFugas() {
           res = await fetch('/api/agenda/book', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ start: slot.start, lead: agenda.lead, utms: agenda.utms, page_url: location.href, honeypot: agenda.honeypot }),
+            body: JSON.stringify({ start: slot.start, lead: agenda.lead, utms: agenda.utms, attribution: agenda.attribution, page_url: location.href, honeypot: agenda.honeypot }),
           })
           data = await res.json().catch(() => ({}))
         } catch (_) { res = null }
@@ -841,8 +844,8 @@ export default function MapaDeFugas() {
         }
       })
 
-      function startAgenda(lead, utms, honeypot) {
-        Object.assign(agenda, { lead, utms, honeypot })
+      function startAgenda(lead, utms, attribution, honeypot) {
+        Object.assign(agenda, { lead, utms, attribution, honeypot })
         slotsHead.classList.remove('hidden')
         slotsDur.textContent = '20 min'
         byId('agendaAlt').textContent = ''
@@ -864,13 +867,15 @@ export default function MapaDeFugas() {
         const lead = { ...v, lead_id: leadId }
         // UTMs: los de la URL actual o, si no hay, los guardados por el sitio (last touch, 30 días)
         const utms = captureUtms()
+        // extra: ids de clic de anuncios (gclid/fbclid/ttclid…) y primera fuente, para Make / conversiones
+        const attribution = readAttribution()
         // Todo formulario completo llega a Make vía el servidor (encaje o no); la reserva llega aparte con el mismo lead_id.
         fetch('/api/agenda/lead', {
           method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lead, utms, page_url: location.href, honeypot }),
+          body: JSON.stringify({ lead, utms, attribution, page_url: location.href, honeypot }),
         }).catch(() => { /* el registro no bloquea la agenda */ })
         if (level === 'no_apto') { renderNoFit(reason, lead); show('nofit') }
-        else { show('agenda'); startAgenda(lead, utms, honeypot) }
+        else { show('agenda'); startAgenda(lead, utms, attribution, honeypot) }
         sending = false
       }
       on(submitBtn, 'click', enviarLead)
