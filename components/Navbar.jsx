@@ -82,6 +82,9 @@ export default function Navbar() {
   // Persist landing UTMs so they survive in-site navigation (e.g. the header CTA drops the query string).
   useEffect(() => { captureUtms() }, [pathname])
 
+  // The internal agenda admin has its own top bar.
+  if (pathname?.startsWith('/agenda-admin')) return null
+
   return (
     <header
       className={`site-head${pathname === '/mapa-de-fugas' ? '' : ' is-wide'}${scrolled ? ' is-scrolled' : ''}${ready ? ' is-ready' : ''}`}

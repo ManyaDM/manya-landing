@@ -1,4 +1,11 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+
 export default function Footer() {
+  const pathname = usePathname()
+  // The internal agenda admin is a standalone tool without the site footer.
+  if (pathname?.startsWith('/agenda-admin')) return null
   return (
     <footer>
       <a href="#" className="nav-logo" aria-label="Volver al inicio">
