@@ -111,6 +111,23 @@
 .agadm-policy input{width:18px;height:18px;margin-top:2px;accent-color:var(--blue);flex:none}
 .agadm-policy .agadm-help{margin-top:2px;font-size:.84rem}
 
+/* schedule overrides: inherited (dashed, muted) vs personalized (solid blue, tag) */
+.agadm-plain{border:0;min-width:0}
+.agadm-ovr-set .agadm-grid{margin-top:8px}
+.agadm-ovr-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.agadm-tag{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(35,150,254,.12);color:#0b63b8}
+.agadm-ovr-box{margin-top:4px;display:grid;gap:6px}
+.agadm-ovr-box.is-inherited{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:4px 4px 4px 12px;
+  border:1.5px dashed var(--field);border-radius:9px;background:var(--ghost)}
+.agadm-inherit{font-size:.88rem;color:var(--ink-soft)}
+.agadm-inherit b{color:var(--navy);font-weight:600}
+.agadm-ovr.is-custom .agadm-ovr-box input{margin-top:0;min-height:44px;padding:8px 12px;border:1.5px solid var(--blue);border-radius:9px;font:inherit;color:var(--navy);background:rgba(35,150,254,.04);width:100%}
+.agadm-ovr.is-custom .agadm-ovr-box input:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(35,150,254,.22)}
+.agadm-ovr-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.agadm-ovr-meta .agadm-muted{font-size:.8rem}
+.agadm-ovr-meta .agadm-link{padding:4px 0}
+.agadm-badge.is-custom{background:rgba(35,150,254,.12);color:#0b63b8}
+
 /* bookings table */
 .agadm-table-wrap{padding:0;overflow-x:auto}
 .agadm-table{width:100%;border-collapse:collapse;font-size:.88rem}
