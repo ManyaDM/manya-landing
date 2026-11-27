@@ -328,17 +328,15 @@ export default function MapaDeFugas() {
       on(root, 'invalid', (e) => { touched.add(e.target); syncAria(e.target) }, true)
 
       const LABELS = {
-        1: ['Paso 1 de 4 · Tus datos', '25%'],
-        2: ['Paso 2 de 4 · Tu negocio', '50%'],
-        3: ['Paso 3 de 4 · Tu operación', '75%'],
+        1: ['Paso 1 de 4 · Encaje', '25%'],
+        2: ['Paso 2 de 4 · Tus datos', '50%'],
+        3: ['Paso 3 de 4 · Tu negocio', '75%'],
         4: ['Paso 4 de 4 · Tu horario', '100%'],
         0: ['Resultado de tu solicitud', '100%'],
       }
 
-      let step1Tracked = false
       function show(view) {
-        if (view === 1) step1Tracked = true
-        trackEvent('form_step', { step: typeof view === 'number' ? view : (view === 'agenda' ? 4 : 0) })
+        trackEvent('step_view', { step: typeof view === 'number' ? view : (view === 'agenda' ? 4 : 0) })
         Object.values(steps).forEach((s) => s.classList.add('hidden'))
         step4.classList.add('hidden')
         stepNoFit.classList.add('hidden')
@@ -356,13 +354,8 @@ export default function MapaDeFugas() {
       }
       function setHead(n) { stepLabel.textContent = LABELS[n][0]; bar.style.width = LABELS[n][1] }
 
-      // La primera interacción con el paso 1 también cuenta como paso visto.
-      const firstField = byId('nombre')
-      if (firstField) on(firstField, 'focus', () => {
-        if (step1Tracked) return
-        step1Tracked = true
-        trackEvent('form_step', { step: 1 })
-      }, { once: true })
+      // El paso 1 se ve al cargar (no pasa por show()), así que se registra acá.
+      trackEvent('step_view', { step: 1 })
 
       $$('.chip-btn').forEach((chip) => {
         on(chip, 'click', () => {
@@ -399,7 +392,11 @@ export default function MapaDeFugas() {
         const d = phoneDigits(v, cc)
         return d.length === r.len && (!r.start || d.startsWith(r.start))
       }
-      const phoneMask = (v, cc = '51') => (phoneDigits(v, cc).match(/\d{1,3}/g) || []).join(' ') // 9XX XXX XXX
+      const phoneMask = (v, cc = '51') => { // 9 dígitos: 3-3-3 (9XX XXX XXX); 10 dígitos: 3-3-4
+        const d = phoneDigits(v, cc)
+        if (d.length === 10) return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6)
+        return (d.match(/\d{1,3}/g) || []).join(' ')
+      }
       const FIELD_RULES = {
         nombre: { strip: /[^\p{L}\p{M}\s'’\-]/gu, check: (v) => (v.match(/\p{L}/gu) || []).length >= 2 },
         empresa: { strip: /[\u0000-\u001f<>]/g, check: (v) => /[\p{L}\p{N}]/u.test(v) && v.trim().length >= 2 },
@@ -434,7 +431,7 @@ export default function MapaDeFugas() {
       if (paisSel && telInput) {
         const syncPhone = () => {
           const cc = paisSel.value, r = PHONE_RULES[cc] || PHONE_RULES[51]
-          telInput.maxLength = r.len + Math.floor((r.len - 1) / 3)
+          telInput.maxLength = phoneMask('1'.repeat(r.len), cc).length
           telInput.placeholder = r.ph
           byId('h-tel').textContent = r.hint
           byId('e-tel').textContent = cc === '51'
@@ -460,7 +457,7 @@ export default function MapaDeFugas() {
       function validChannels() {
         const w = byId('web').value.trim(), ig = byId('instagram').value.trim()
         const okW = !w || /^(https?:\/\/)?[\w-]+(\.[\w-]+)+([\/?#].*)?$/i.test(w), okI = !ig || /^@?[\w.]{1,30}$/.test(ig)
-        const ok = Boolean((w || ig) && okW && okI)
+        const ok = okW && okI
         byId('channelError').classList.toggle('hidden', ok)
         return ok
       }
@@ -469,14 +466,25 @@ export default function MapaDeFugas() {
       function stepOk(n) {
         if (DEV_SKIP_VALIDATION) return true
         if (!validRequired(steps[n])) return false
-        if (n === 2 && !validChannels()) return false
+        if (n === 3 && !validChannels()) return false
         return true
       }
-      $$('[data-next]').forEach((b) => on(b, 'click', () => {
-        const from = Number(b.dataset.next) - 1
+      $$('[data-next]').forEach((b) => on(b, 'click', () => goNext(Number(b.dataset.next) - 1)))
+      /* mismo camino para el botón y para Enter: el paso 1 siempre pasa por el filtro de encaje */
+      function goNext(from) {
         if (!stepOk(from)) return
-        show(Number(b.dataset.next))
-      }))
+        if (from === 1) {
+          const level = qualify({ pauta: byId('pauta').value, equipo: byId('equipo').value, urgencia: '' })
+          if (level.level === 'no_apto') {
+            trackEvent('qualify_fail', { reason: level.reason })
+            renderNoFit(level.reason, {})
+            show('nofit')
+            return
+          }
+          trackEvent('qualify_pass', { level: level.level })
+        }
+        show(from + 1)
+      }
       $$('[data-back]').forEach((b) => on(b, 'click', () => show(Number(b.dataset.back))))
 
       on(byId('modelo'), 'change', (e) => {
@@ -489,7 +497,7 @@ export default function MapaDeFugas() {
         const MSG = {
           pauta: { nada: ['no', 'Aún no inviertes en pauta.'], bajo: ['no', 'Menos de USD 500 al mes: poca evidencia que revisar.'], _: ['ok', 'Inviertes lo suficiente para tener evidencia.'] },
           equipo: { nadie: ['no', 'Hoy nadie atiende de forma consistente.'], _: ['ok', 'Hay quien atiende las oportunidades.'] },
-          urgencia: { ya: ['ok', 'Es prioridad este mes.'], pronto: ['ok', 'Lo quieres listo el próximo mes.'], validar: ['warn', 'Lo validamos contigo en la llamada.'], explorando: ['warn', 'Estás explorando: la llamada te aclara el alcance.'] },
+          ticket: { lt100: ['warn', 'Ticket bajo: el Mapa rinde más donde una venta pesa.'], _: ['ok', 'El valor de una venta alcanza para el Mapa.'] },
         }
         const base = {}
         box.querySelectorAll('[data-fit]').forEach((li) => { base[li.dataset.fit] = li.querySelector('em').textContent })
@@ -507,7 +515,7 @@ export default function MapaDeFugas() {
                 : ['ok', 'Encaja. Al terminar eliges tu horario con Maddy.']
           verdict.dataset.state = vs; verdict.textContent = vt
         }
-        ;['pauta', 'equipo', 'urgencia'].forEach((id) => on(byId(id), 'change', update))
+        ;['pauta', 'equipo', 'ticket'].forEach((id) => on(byId(id), 'change', update))
       })()
 
       function qualify(v) {
@@ -527,14 +535,60 @@ export default function MapaDeFugas() {
         a.target = '_blank'; a.rel = 'noopener'; a.className = 'link'; a.textContent = text
         return a
       }
-      function renderNoFit(reason, lead) {
+      function renderNoFit(reason, lead = {}) {
         byId('noFitReason').textContent = NO_FIT_COPY[reason] || NO_FIT_COPY.pauta
         const alt = byId('noFitAlt')
         alt.textContent = ''
         if (MANYA_CONFIG.whatsappPhone) {
+          const who = lead.nombre ? 'Hola, soy ' + lead.nombre + (lead.empresa ? ' de ' + lead.empresa : '') + '. ' : 'Hola. '
           alt.append('¿Crees que tu caso es distinto? ',
-            waLink('Cuéntanos por WhatsApp', 'Hola, soy ' + lead.nombre + ' de ' + lead.empresa + '. Vi que el Mapa de Fugas no encaja con mi situación actual y quiero saber por dónde empezar.'), '.')
+            waLink('Cuéntanos por WhatsApp', who + 'Vi que el Mapa de Fugas no encaja con mi situación actual y quiero saber por dónde empezar.'), '.')
         }
+      }
+
+      /* ---------- opt-in del no encaje: solo el correo, para avisar cuando haya algo para su etapa ---------- */
+      const optinForm = byId('optinForm')
+      if (optinForm) {
+        const optinMsg = byId('optinMsg'), optinEmail = byId('optinEmail'), optinBtn = byId('optinSubmit')
+        on(optinForm, 'submit', async (e) => {
+          e.preventDefault()
+          const email = optinEmail.value.trim().toLowerCase()
+          const ok = email.length <= 120 && /^[^@\s]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(email)
+          optinEmail.classList.toggle('user-invalid-fallback', !ok)
+          optinEmail.setAttribute('aria-invalid', ok ? 'false' : 'true')
+          if (!ok) {
+            optinMsg.textContent = 'Revisa tu correo (ej.: nombre@empresa.com).'
+            optinMsg.dataset.state = 'err'
+            optinEmail.focus()
+            return
+          }
+          optinBtn.disabled = true
+          optinMsg.textContent = 'Guardando…'
+          optinMsg.dataset.state = ''
+          try {
+            const res = await fetch('/api/agenda/optin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email,
+                answers: { pauta: byId('pauta').value, equipo: byId('equipo').value, ticket: byId('ticket').value },
+                utms: captureUtms(),
+                page_url: location.href,
+                honeypot: byId('optinSitio').value,
+              }),
+            })
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok || !data.ok) throw new Error(data.error || 'failed')
+            trackEvent('optin_submit', { ok: true })
+            optinMsg.textContent = 'Listo. Te aviso en ' + email + ' cuando haya algo para tu etapa.'
+            optinMsg.dataset.state = 'ok'
+            optinForm.reset()
+          } catch (_) {
+            trackEvent('optin_submit', { ok: false })
+            optinMsg.textContent = 'No pudimos guardar tu correo. Inténtalo otra vez en un momento.'
+            optinMsg.dataset.state = 'err'
+          } finally { optinBtn.disabled = false }
+        })
       }
       /* ---------- paso 4: agenda nativa (horarios desde /api/agenda/slots; el servidor asigna a la persona) ---------- */
       const slotPicker = byId('slotPicker')
@@ -898,6 +952,8 @@ export default function MapaDeFugas() {
         delete v.pais
         if (v.telefono) v.telefono = '+' + pais + phoneDigits(v.telefono, pais) // E.164 con el país elegido
         if (v.correo) v.correo = v.correo.trim().toLowerCase()
+        // Solo se manda el lead cuando hay datos de contacto: el paso 1 (encaje) no los pide.
+        if (!v.nombre || !v.correo || !v.telefono) { sending = false; show(2); return }
         const { level, reason } = qualify(v)
         trackEvent('form_qualified', { level })
         const lead = { ...v, lead_id: leadId }
@@ -922,7 +978,7 @@ export default function MapaDeFugas() {
         const fields = [...steps[n].querySelectorAll('input, select')].filter((el) => el.offsetParent !== null)
         const next = fields[fields.indexOf(e.target) + 1]
         if (next) { next.focus(); return }
-        if (n === 3) enviarLead(); else if (stepOk(n)) show(n + 1)
+        if (n === 3) enviarLead(); else goNext(n)
       })
     })()
 
@@ -1873,7 +1929,7 @@ export default function MapaDeFugas() {
             <ul className="fit-checks">
               <li data-fit="pauta" data-state="wait"><span className="fit-ic" aria-hidden="true"><span className="fit-n">1</span><svg className="ic-ok"><use href="#i-check" /></svg><svg className="ic-no"><use href="#i-x" /></svg></span><span><b>Inversión en pauta</b><em>Desde USD 500 al mes.</em></span></li>
               <li data-fit="equipo" data-state="wait"><span className="fit-ic" aria-hidden="true"><span className="fit-n">2</span><svg className="ic-ok"><use href="#i-check" /></svg><svg className="ic-no"><use href="#i-x" /></svg></span><span><b>Quién atiende</b><em>Alguien atiende las oportunidades que llegan.</em></span></li>
-              <li data-fit="urgencia" data-state="wait"><span className="fit-ic" aria-hidden="true"><span className="fit-n">3</span><svg className="ic-ok"><use href="#i-check" /></svg><svg className="ic-no"><use href="#i-x" /></svg></span><span><b>Momento</b><em>Quieres evidencia antes de decidir.</em></span></li>
+              <li data-fit="ticket" data-state="wait"><span className="fit-ic" aria-hidden="true"><span className="fit-n">3</span><svg className="ic-ok"><use href="#i-check" /></svg><svg className="ic-no"><use href="#i-x" /></svg></span><span><b>Ticket promedio</b><em>Ventas de S/ 100 a más.</em></span></li>
             </ul>
           </div>
         </div>
@@ -1892,11 +1948,55 @@ export default function MapaDeFugas() {
             <span>Respondes unas preguntas y eliges tu horario al final. La llamada no es el Mapa: es para ver si el Mapa aplica a tu caso.</span>{" "}
           </div>
           <div className="stepper">{" "}
-            <span className="step-label" id="stepLabel">Paso 1 de 4 · Tus datos</span>{" "}
+            <span className="step-label" id="stepLabel">Paso 1 de 4 · Encaje</span>{" "}
             <div className="bar" aria-hidden="true"><i id="barFill" /></div>
           </div>
           <form id="leadForm" noValidate>
             <div id="step1" className="fieldset">
+              <p className="step-note">Tres preguntas para saber si el Mapa aplica a tu caso. Todavía no pedimos tus datos.</p>
+              <div className="field">{" "}
+                <label htmlFor="pauta">¿Cuánto inviertes en publicidad digital al mes?</label>{" "}
+                <select id="pauta" name="pauta" required data-error="e-pauta">
+                  <option value="">Selecciona un rango</option>
+                  <option value="nada">Aún no invertimos en publicidad</option>
+                  <option value="bajo">Menos de USD 500</option>
+                  <option value="500">USD 500 – 999</option>
+                  <option value="1000">USD 1,000 – 1,999</option>
+                  <option value="2000">USD 2,000 – 4,999</option>
+                  <option value="5000">USD 5,000 o más</option>
+                </select>{" "}
+                <span className="err" id="e-pauta">Elige un rango de inversión mensual.</span>{" "}
+              </div>
+              <div className="field">{" "}
+                <label htmlFor="equipo" id="equipoLabel">¿Quién atiende hoy las oportunidades que llegan?</label>{" "}
+                <select id="equipo" name="equipo" required data-error="e-equipo">
+                  <option value="">Selecciona</option>
+                  <option value="equipo">Un equipo comercial</option>
+                  <option value="persona">Una persona dedicada</option>
+                  <option value="mixto">Lo atiendo yo, entre otras cosas</option>
+                  <option value="nadie">Hoy nadie de forma consistente</option>
+                </select>{" "}
+                <span className="err" id="e-equipo">Elige quién atiende las oportunidades.</span>{" "}
+              </div>
+              <div className="field">{" "}
+                <label htmlFor="ticket">Valor de una venta</label>{" "}
+                <select id="ticket" name="ticket" required data-error="e-ticket" data-hint="h-ticket">
+                  <option value="">Selecciona un rango</option>
+                  <option value="lt100">Menos de S/ 100</option>
+                  <option value="100">S/ 100 – 499</option>
+                  <option value="500">S/ 500 – 1,999</option>
+                  <option value="2000">S/ 2,000 – 9,999</option>
+                  <option value="10000">S/ 10,000 o más</option>
+                </select>{" "}
+                <span className="hint" id="h-ticket">Ticket promedio por venta.</span>{" "}
+                <span className="err" id="e-ticket">Elige un rango aproximado.</span>{" "}
+              </div>
+              <div className="actions-row">{" "}
+                <button className="btn wide" type="button" data-next="2">Ver si encaja{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></button>{" "}
+              </div>
+            </div>
+            <div id="step2" className="fieldset hidden">
+              <p className="step-note">Encaja. Ahora sí, tus datos para la llamada.</p>
               <div className="field">{" "}
                 <label htmlFor="nombre">Tu nombre</label>{" "}
                 <input id="nombre" name="nombre" type="text" autoComplete="name" autoCapitalize="words" spellCheck="false" enterKeyHint="next" maxLength="60" required placeholder="Nombre y apellido" data-error="e-nombre" />{" "}
@@ -1948,15 +2048,17 @@ export default function MapaDeFugas() {
                 </div>
               </div>
               <div className="actions-row">{" "}
-                <button className="btn wide" type="button" data-next="2">Continuar{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></button>{" "}
+                <button type="button" className="btn quiet" data-back="1">Atrás</button>{" "}
+                <button className="btn" type="button" data-next="3">Continuar{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></button>{" "}
               </div>
               <p className="privacy">Al continuar aceptas que Manya use estos datos para contactarte sobre esta llamada. No los compartimos con terceros.</p>
             </div>
-            <div id="step2" className="fieldset hidden">
+            <div id="step3" className="fieldset hidden">
+              <p className="step-note">Opcional: nos ayuda a preparar la llamada.</p>
               <div className="row2">
                 <div className="field">{" "}
-                  <label htmlFor="rubro">Rubro</label>{" "}
-                  <select id="rubro" name="rubro" required data-error="e-rubro">
+                  <label htmlFor="rubro">Rubro <span className="opt">(opcional)</span></label>{" "}
+                  <select id="rubro" name="rubro">
                     <option value="">Selecciona</option>
                     <option value="salud">Salud o clínica</option>
                     <option value="inmobiliaria">Inmobiliaria o construcción</option>
@@ -1965,35 +2067,19 @@ export default function MapaDeFugas() {
                     <option value="retail">Ecommerce o retail</option>
                     <option value="otro">Otro rubro</option>
                   </select>{" "}
-                  <span className="err" id="e-rubro">Elige el rubro de tu negocio.</span>{" "}
                 </div>
                 <div className="field">{" "}
-                  <label htmlFor="ticket">Valor de una venta</label>{" "}
-                  <select id="ticket" name="ticket" required data-error="e-ticket" data-hint="h-ticket">
-                    <option value="">Selecciona un rango</option>
-                    <option value="lt100">Menos de S/ 100</option>
-                    <option value="100">S/ 100 – 499</option>
-                    <option value="500">S/ 500 – 1,999</option>
-                    <option value="2000">S/ 2,000 – 9,999</option>
-                    <option value="10000">S/ 10,000 o más</option>
+                  <label htmlFor="modelo">¿Cómo vendes? <span className="opt">(opcional)</span></label>{" "}
+                  <select id="modelo" name="modelo">
+                    <option value="">Selecciona</option>
+                    <option value="b2b">Venta asistida: un asesor cotiza o se reúne</option>
+                    <option value="whatsapp">Por WhatsApp: consultas, citas o pedidos</option>
+                    <option value="ecommerce">Ecommerce: compran y pagan en tu web</option>
                   </select>{" "}
-                  <span className="hint" id="h-ticket">Ticket promedio por venta.</span>{" "}
-                  <span className="err" id="e-ticket">Elige un rango aproximado.</span>{" "}
                 </div>
               </div>
               <div className="field">{" "}
-                <label htmlFor="modelo">¿Cómo vendes principalmente?</label>{" "}
-                <select id="modelo" name="modelo" required data-error="e-modelo">
-                  <option value="">Selecciona</option>
-                  <option value="b2b">Venta asistida: un asesor cotiza o se reúne</option>
-                  <option value="whatsapp">Por WhatsApp: consultas, citas o pedidos</option>
-                  <option value="ecommerce">Ecommerce: compran y pagan en tu web</option>
-                </select>{" "}
-                <span className="err" id="e-modelo">Elige cómo vendes.</span>{" "}
-              </div>
-              <div className="field">{" "}
-                <span className="flabel" id="canales-label">¿Dónde podemos conocer tu negocio?</span>{" "}
-                <span className="hint">Necesitamos al menos tu web o tu Instagram.</span>{" "}
+                <span className="flabel" id="canales-label">¿Dónde podemos conocer tu negocio? <span className="opt">(opcional)</span></span>{" "}
                 <div className="chips" role="group" aria-labelledby="canales-label">{" "}
                   <button type="button" className="chip-btn" data-channel="web" aria-pressed="false"><span className="dot"><svg aria-hidden="true"><use href="#i-check" /></svg></span>Página web</button>{" "}
                   <button type="button" className="chip-btn" data-channel="instagram" aria-pressed="false"><span className="dot"><svg aria-hidden="true"><use href="#i-check" /></svg></span>Instagram</button>{" "}
@@ -2005,62 +2091,32 @@ export default function MapaDeFugas() {
               <div className="chip-fields">
                 <div className="field hidden" data-field="web"><label htmlFor="web">Tu página web</label><input id="web" name="web" type="text" inputMode="url" autoComplete="url" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="200" placeholder="tunegocio.com" /></div>
                 <div className="field hidden" data-field="instagram"><label htmlFor="instagram">Tu Instagram</label><input id="instagram" name="instagram" type="text" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="31" placeholder="@tunegocio" /></div>
-                <div className="field hidden" data-field="facebook"><label htmlFor="facebook">Tu Facebook</label><input id="facebook" name="facebook" type="text" inputMode="url" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="200" placeholder="facebook.com/tunegocio" /></div>
+                <div className="field hidden" data-field="facebook"><label htmlFor="facebook">Tu Facebook</label><input id="facebook" name="facebook" type="text" inputMode="url" autoComplete="url" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="200" placeholder="facebook.com/tunegocio" /></div>
                 <div className="field hidden" data-field="tiktok"><label htmlFor="tiktok">Tu TikTok</label><input id="tiktok" name="tiktok" type="text" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="31" placeholder="@tunegocio" /></div>
-                <div className="field hidden" data-field="linkedin"><label htmlFor="linkedin">Tu LinkedIn</label><input id="linkedin" name="linkedin" type="text" inputMode="url" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="200" placeholder="linkedin.com/company/tunegocio" /></div>
+                <div className="field hidden" data-field="linkedin"><label htmlFor="linkedin">Tu LinkedIn</label><input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" autoCapitalize="off" spellCheck="false" enterKeyHint="next" maxLength="200" placeholder="linkedin.com/company/tunegocio" /></div>
               </div>
-              <p className="inline-error hidden" id="channelError" role="alert">Marca y completa tu web (ej.: tunegocio.com) o tu Instagram (ej.: @tunegocio).</p>
-              <div className="actions-row">{" "}
-                <button type="button" className="btn quiet" data-back="1">Atrás</button>{" "}
-                <button type="button" className="btn" data-next="3">Continuar{" "}<svg aria-hidden="true"><use href="#i-arrow" /></svg></button>{" "}
-              </div>
-            </div>
-            <div id="step3" className="fieldset hidden">
-              <div className="field">{" "}
-                <label htmlFor="pauta">¿Cuánto inviertes en publicidad digital al mes?</label>{" "}
-                <select id="pauta" name="pauta" required data-error="e-pauta">
-                  <option value="">Selecciona un rango</option>
-                  <option value="nada">Aún no invertimos en publicidad</option>
-                  <option value="bajo">Menos de USD 500</option>
-                  <option value="500">USD 500 – 999</option>
-                  <option value="1000">USD 1,000 – 1,999</option>
-                  <option value="2000">USD 2,000 – 4,999</option>
-                  <option value="5000">USD 5,000 o más</option>
-                </select>{" "}
-                <span className="err" id="e-pauta">Elige un rango de inversión mensual.</span>{" "}
-              </div>
-              <div className="field">{" "}
-                <label htmlFor="equipo" id="equipoLabel">¿Quién atiende hoy las oportunidades que llegan?</label>{" "}
-                <select id="equipo" name="equipo" required data-error="e-equipo">
-                  <option value="">Selecciona</option>
-                  <option value="equipo">Un equipo comercial</option>
-                  <option value="persona">Una persona dedicada</option>
-                  <option value="mixto">Lo atiendo yo, entre otras cosas</option>
-                  <option value="nadie">Hoy nadie de forma consistente</option>
-                </select>{" "}
-                <span className="err" id="e-equipo">Elige quién atiende las oportunidades.</span>{" "}
-              </div>
-              <div className="field">{" "}
-                <label htmlFor="medicion">¿Dónde registras hoy tus leads y ventas?</label>{" "}
-                <select id="medicion" name="medicion" required data-error="e-medicion">
-                  <option value="">Selecciona</option>
-                  <option value="kommo">En Kommo</option>
-                  <option value="crm">En otro CRM</option>
-                  <option value="excel">En Excel o en el mismo WhatsApp</option>
-                  <option value="nada">No lo registramos</option>
-                </select>{" "}
-                <span className="err" id="e-medicion">Elige dónde registras tus leads hoy.</span>{" "}
-              </div>
-              <div className="field">{" "}
-                <label htmlFor="urgencia">¿Cuándo te gustaría tener el diagnóstico listo?</label>{" "}
-                <select id="urgencia" name="urgencia" required data-error="e-urgencia">
-                  <option value="">Selecciona</option>
-                  <option value="ya">Este mes, es prioridad</option>
-                  <option value="pronto">El próximo mes</option>
-                  <option value="validar">Depende de validarlo internamente</option>
-                  <option value="explorando">Solo estoy explorando</option>
-                </select>{" "}
-                <span className="err" id="e-urgencia">Elige un plazo.</span>{" "}
+              <p className="inline-error hidden" id="channelError" role="alert">Revisa la web o el usuario: parece incompleto.</p>
+              <div className="row2">
+                <div className="field">{" "}
+                  <label htmlFor="medicion">¿Dónde registras tus leads? <span className="opt">(opcional)</span></label>{" "}
+                  <select id="medicion" name="medicion">
+                    <option value="">Selecciona</option>
+                    <option value="kommo">En Kommo</option>
+                    <option value="crm">En otro CRM</option>
+                    <option value="excel">En Excel o en el mismo WhatsApp</option>
+                    <option value="nada">No lo registramos</option>
+                  </select>{" "}
+                </div>
+                <div className="field">{" "}
+                  <label htmlFor="urgencia">¿Cuándo lo quieres listo? <span className="opt">(opcional)</span></label>{" "}
+                  <select id="urgencia" name="urgencia">
+                    <option value="">Selecciona</option>
+                    <option value="ya">Este mes, es prioridad</option>
+                    <option value="pronto">El próximo mes</option>
+                    <option value="validar">Depende de validarlo internamente</option>
+                    <option value="explorando">Solo estoy explorando</option>
+                  </select>{" "}
+                </div>
               </div>
               <div className="actions-row">{" "}
                 <button type="button" className="btn quiet" data-back="2">Atrás</button>{" "}
@@ -2089,7 +2145,16 @@ export default function MapaDeFugas() {
               </ul>
             </div>
             <p>Cuando lo tengas andando, vuelve a esta página y lo revisamos.</p>
-            <div className="actions-row"><button type="button" className="btn quiet wide" data-back="3">Cambiar mis respuestas</button></div>
+            <form className="optin" id="optinForm" noValidate>
+              <label htmlFor="optinEmail">Te aviso cuando saquemos algo para tu etapa</label>
+              <div className="optin-row">
+                <input id="optinEmail" name="email" type="email" inputMode="email" autoComplete="email" autoCapitalize="off" spellCheck="false" maxLength="120" placeholder="nombre@empresa.com" required />
+                <button className="btn" type="submit" id="optinSubmit">Avísame</button>
+              </div>
+              <div className="hp" aria-hidden="true"><label htmlFor="optinSitio">No completar</label><input id="optinSitio" name="sitio" type="text" tabIndex={-1} autoComplete="off" /></div>
+              <p className="optin-msg" id="optinMsg" role="status" aria-live="polite" />
+            </form>
+            <div className="actions-row"><button type="button" className="btn quiet wide" data-back="1">Cambiar mis respuestas</button></div>
             <p className="alt" id="noFitAlt" />
           </div>
           <div className="status hidden" id="status" aria-live="polite" />

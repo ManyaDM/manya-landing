@@ -1589,3 +1589,21 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
 .mdf .tel-wrap .tel-cc.is-select:hover{border-color:var(--field)}
 .mdf .tel-wrap .tel-cc.is-select:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;box-shadow:none}
 .mdf .tel-wrap input{padding-left:88px}
+
+/* formulario: nota de cada paso y campos opcionales */
+.mdf .step-note{margin:0 0 2px;font-size:.86rem;line-height:1.45;color:var(--ink-mute)}
+.mdf .field .opt{font-size:.82em;font-weight:500;color:var(--ink-mute)}
+/* no encaja: opt-in solo de correo */
+.mdf .optin{display:grid;gap:8px;margin:16px 0 4px;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:#f8fbff}
+.mdf .optin > label{font-size:.9rem;font-weight:600;color:var(--navy)}
+.mdf .optin-row{display:flex;gap:8px}
+.mdf .optin-row input{flex:1 1 auto;min-width:0;height:48px;padding:10px 14px;border:1.5px solid var(--field);border-radius:10px;background:#fff;color:var(--ink);font-size:16px}
+.mdf .optin-row input:focus-visible{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(35,150,254,.22)}
+.mdf .optin-row .btn{flex:none;min-height:48px}
+.mdf .optin-msg{margin:0;font-size:.84rem;line-height:1.4;color:var(--ink-soft)}
+.mdf .optin-msg[data-state="ok"]{color:#0a7a4b}
+.mdf .optin-msg[data-state="err"]{color:var(--rose-ink)}
+@media (max-width:520px){
+  .mdf .optin-row{flex-direction:column}
+  .mdf .optin-row .btn{width:100%}
+}
