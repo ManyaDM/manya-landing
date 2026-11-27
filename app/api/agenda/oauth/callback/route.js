@@ -1,10 +1,12 @@
+import { randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { OAUTH_COOKIE, adminUrl } from '@/lib/agenda/admin'
-import { checkLoginIdentity, readState, statePurpose } from '@/lib/agenda/auth'
-import { adminConfigured, env, oauthConfigured } from '@/lib/agenda/config'
+import { ADMIN_DOMAIN, checkLoginIdentity, makeState, readState, statePurpose } from '@/lib/agenda/auth'
+import { adminConfigured, bookingConfigured, env, oauthConfigured } from '@/lib/agenda/config'
 import { encrypt } from '@/lib/agenda/crypto'
-import { db } from '@/lib/agenda/db'
-import { SCOPES, exchangeCode, fetchUserInfo, forgetAccessToken, revokeToken } from '@/lib/agenda/google'
+import { db, isMissingSchema } from '@/lib/agenda/db'
+import { SCOPES, buildLoginUrl, exchangeCode, fetchUserInfo, forgetAccessToken, revokeToken } from '@/lib/agenda/google'
+import { hasCalendarScopes, planLoginStaff } from '@/lib/agenda/onboard'
 import { SESSION_COOKIE, isAdmin, isAllowedEmail, newSessionToken, sessionCookieOptions } from '@/lib/agenda/session'
 import { safeEqual } from '@/lib/agenda/sign'
 import { invalidateAvailability } from '@/lib/agenda/service'
@@ -59,9 +61,63 @@ async function login(request, q) {
   const id = checkLoginIdentity(claims)
   if (!id.ok || !(await isAllowedEmail(id.email))) return loginDone(request, 'denied')
 
+  // Sign-in also connects the calendar. A failure here never blocks the login: the panel then shows
+  // the "Conecta tu Google Calendar" banner and the explicit connect flow.
+  const plan = await syncStaffOnLogin(id.email, claims.name, tokens)
+  const session = newSessionToken(id.email, claims.name)
+
+  // Calendar granted but Google sent no refresh token (prompt=select_account on an existing grant) and none
+  // is stored: ask once more with prompt=consent, which always returns one.
+  if (plan?.needsConsent && !state.c) {
+    const nonce = randomBytes(16).toString('base64url')
+    const res = NextResponse.redirect(buildLoginUrl({
+      state: makeState('login', { n: nonce, c: 1 }, env.sessionSecret), domain: ADMIN_DOMAIN, prompt: 'consent', loginHint: id.email,
+    }))
+    res.headers.set('Cache-Control', 'no-store')
+    res.cookies.set(OAUTH_COOKIE, nonce, {
+      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/agenda/oauth', maxAge: 600,
+    })
+    res.cookies.set(SESSION_COOKIE, session, sessionCookieOptions())
+    return res
+  }
+
   const res = loginDone(request, '')
-  res.cookies.set(SESSION_COOKIE, newSessionToken(id.email), sessionCookieOptions())
+  res.cookies.set(SESSION_COOKIE, session, sessionCookieOptions())
   return res
+}
+
+/** Upserts the signed-in person's staff row (see planLoginStaff). → the plan, or null when it failed. */
+async function syncStaffOnLogin(email, name, tokens) {
+  if (!bookingConfigured()) return null
+  try {
+    const { data: existing, error } = await db().from('agenda_staff').select('id,refresh_token_enc').eq('email', email).maybeSingle()
+    if (error) throw error
+    let maxPriority = 0
+    if (!existing) {
+      const { data: last, error: maxErr } = await db().from('agenda_staff').select('priority').order('priority', { ascending: false }).limit(1).maybeSingle()
+      if (!maxErr) maxPriority = last?.priority
+    }
+    const canStore = oauthConfigured() && tokens.refreshToken && hasCalendarScopes(tokens.scope)
+    const tokenEnc = canStore ? encrypt(tokens.refreshToken, env.encryptionKey) : ''
+    const plan = planLoginStaff({ existing, email, name, scope: oauthConfigured() ? tokens.scope : '', tokenEnc, maxPriority })
+    if (plan.action === 'update') {
+      const { error: upErr } = await db().from('agenda_staff').update(plan.row).eq('id', existing.id)
+      if (upErr) throw upErr
+      forgetAccessToken(existing.id)
+      invalidateAvailability()
+    } else if (plan.action === 'insert') {
+      let { error: insErr } = await db().from('agenda_staff').insert(plan.row)
+      if (insErr && isMissingSchema(insErr)) {
+        const { priority: _p, ...legacy } = plan.row // supabase/agenda_002.sql not run yet
+        ;({ error: insErr } = await db().from('agenda_staff').insert(legacy))
+      }
+      if (insErr && insErr.code !== '23505') throw insErr // 23505: created concurrently, keep that row
+    }
+    return plan
+  } catch (e) {
+    console.error('[agenda] login staff sync failed', e.code || e.message)
+    return null
+  }
 }
 
 async function connect(request, q) {
