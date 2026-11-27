@@ -1552,3 +1552,20 @@ html:has(.mdf){scroll-behavior:smooth;scroll-padding-top:calc(80px + 20px)}
   .mdf .hero-meta-mobile{display:grid;gap:3px;order:6;margin:12px 0 0;text-align:center;font-size:max(.72rem,11px);line-height:1.4;color:var(--on-navy-mute)}
   .mdf .hero-meta-mobile span{display:block}
 }
+
+/* comparativo llamada vs Mapa: mismo acento navy que la card destacada de Inversión */
+.mdf .compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.mdf .cmp-card{display:flex;flex-direction:column;gap:14px;padding:clamp(20px,2.4vw,30px);border:1.5px solid var(--navy);border-radius:6px;background:#fff}
+.mdf .cmp-head{display:grid;gap:4px}
+.mdf .cmp-head h3{font-size:1.12rem;font-weight:800;letter-spacing:-.02em;color:var(--navy)}
+.mdf .cmp-meta{font-size:.82rem;font-weight:600;color:var(--ink-mute)}
+.mdf .cmp-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.mdf .cmp-list li{display:flex;align-items:flex-start;gap:10px;font-size:.92rem;line-height:1.45;color:var(--ink-soft)}
+.mdf .cmp-list svg{flex:none;width:18px;height:18px;margin-top:1px;padding:2px;border-radius:50%;background:#eef6ff;color:var(--blue-ink)}
+.mdf .cmp-foot{margin-top:auto;padding-top:12px;border-top:1px solid #edf1f8;font-size:.86rem;font-weight:600;color:var(--navy)}
+.mdf .cmp-card.is-map{background:var(--navy);border-color:var(--navy);color:#fff}
+.mdf .cmp-card.is-map .cmp-head h3,.mdf .cmp-card.is-map .cmp-foot{color:#fff}
+.mdf .cmp-card.is-map .cmp-meta,.mdf .cmp-card.is-map .cmp-list li{color:var(--on-navy-soft)}
+.mdf .cmp-card.is-map .cmp-list svg{background:rgba(35,150,254,.22);color:#bfe3ff}
+.mdf .cmp-card.is-map .cmp-foot{border-top-color:rgba(222,234,251,.14)}
+@media (max-width:900px){.mdf .compare{grid-template-columns:minmax(0,1fr)}}

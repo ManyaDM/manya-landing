@@ -1764,8 +1764,54 @@ export default function MapaDeFugas() {
             <summary>¿Garantizan resultados?</summary>
             <p>No prometemos resultados sin evidencia. Te decimos qué tan firme es cada hallazgo: confirmado, probable o pendiente de validación.</p>
           </details>
+          <details>
+            <summary>¿Mis datos están seguros? Van a ver mi cuenta publicitaria y mi CRM.</summary>
+            {/* TODO(Maddy): confirmar que el acceso de solo lectura, la firma de NDA y la revocación al terminar sean parte del proceso antes de publicar. */}
+            <p>Trabajamos con accesos de solo lectura: vemos campañas, respuestas y conversaciones, pero no podemos modificar ni gastar tu presupuesto. Si necesitas un NDA, lo firmamos antes de empezar. Al terminar el Mapa revocamos los accesos, y tú puedes revocarlos antes desde tu cuenta.</p>
+          </details>
+          <details>
+            <summary>¿Y si mi fuga está en mi equipo de ventas y no en marketing?</summary>
+            <p>El Mapa mide las cinco etapas, incluidas atender, acompañar y cerrar, que son del equipo comercial. Si la fuga está ahí, el Mapa lo muestra con evidencia y la corrección incluye proceso, no solo pauta.</p>
+          </details>
         </div>
       </div>
+      </div>
+      </section>
+      {/* ================= 7b · QUÉ ES CADA COSA ================= */}
+      <section className="section" id="que-es-cada-cosa" aria-labelledby="compare-title">
+      <div className="wrap">
+        <div className="section-head mdf-reveal">
+          <p className="kicker">Qué es cada cosa</p>
+          <h2 className="h2" id="compare-title">La llamada califica.{" "}<span className="lite">El Mapa diagnostica.</span></h2>
+        </div>
+        <div className="compare mdf-reveal">
+          <article className="cmp-card">
+            <header className="cmp-head">
+              <h3>Llamada</h3>
+              <p className="cmp-meta">20 min · sin costo</p>
+            </header>
+            <ul className="cmp-list">
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Conversamos sobre cómo llegan y cómo se atienden tus leads hoy</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>No revisamos tus datos: no da tiempo y no sería serio</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Sales con una hipótesis de dónde está tu fuga principal</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Te digo si el Mapa aplica a tu caso. Si no aplica, también te lo digo</li>
+            </ul>
+            <p className="cmp-foot">La llamada no reemplaza al Mapa. Lo califica.</p>
+          </article>
+          <article className="cmp-card is-map">
+            <header className="cmp-head">
+              <h3>Mapa de Fugas</h3>
+              <p className="cmp-meta">USD 600 + IGV · 7 días hábiles</p>
+            </header>
+            <ul className="cmp-list">
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Entramos a tu cuenta de pauta, tu CRM y tus conversaciones reales</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Medimos las cinco etapas con tus cifras, no con promedios</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Sales con hallazgos clasificados: confirmado, probable o pendiente</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Matriz de prioridad y tres correcciones ordenadas por impacto</li>
+            </ul>
+            <p className="cmp-foot">Se acredita al 100% si corriges con nosotros.</p>
+          </article>
+        </div>
       </div>
       </section>
       {/* ================= 8 · FORMULARIO ================= */}
