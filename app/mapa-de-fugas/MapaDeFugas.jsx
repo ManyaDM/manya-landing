@@ -947,12 +947,22 @@ export default function MapaDeFugas() {
     ;(() => {
       const svg = $('.hero-art .pipe'), layer = byId('pipeFlow'), drop = byId('pipeDrop')
       const rig = byId('pipeRig')
-      if (!svg || !layer || !drop || !rig || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return
+      if (!rig) return
+      // móvil: la tubería se inclina menos (los cálculos de caída usan el mismo ángulo)
+      const narrowPipe = matchMedia('(max-width: 720px)'), BASE_ANGLE = +rig.dataset.angle || 0
+      let CA = 1, SA = 0
+      const setAngle = () => {
+        const deg = narrowPipe.matches ? 3.5 : BASE_ANGLE, a = deg * Math.PI / 180
+        rig.setAttribute('transform', `rotate(${deg} 320 245)`); CA = Math.cos(a); SA = Math.sin(a)
+      }
+      setAngle(); on(narrowPipe, 'change', setAngle)
+      cleanups.push(() => rig.setAttribute('transform', `rotate(${BASE_ANGLE} 320 245)`))
+      if (!svg || !layer || !drop || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return
       const NS = 'http://www.w3.org/2000/svg'
       const tIn = byId('pv-in'), tOut = byId('pv-out'), tLeak = byId('pv-leak')
       const texts = [tIn.textContent, tOut.textContent, tLeak.textContent]
       const TOTAL = 100, SOLD = 12, EVERY = 85, CUT = 288, EXIT = 660, FLOOR = 470
-      const TILT = Math.tan(7 * Math.PI / 180), A = (+rig.dataset.angle || 0) * Math.PI / 180, CA = Math.cos(A), SA = Math.sin(A)
+      const TILT = Math.tan(7 * Math.PI / 180)
       const toWorld = (x, y) => [320 + (x - 320) * CA - (y - 245) * SA, 245 + (x - 320) * SA + (y - 245) * CA]
       let fate = [], spawned = 0, sold = 0, leaked = 0, since = 0, hold = 0, last = 0, id = 0, running = false
       const balls = []
@@ -1268,7 +1278,7 @@ export default function MapaDeFugas() {
             <g className="px-far"><g className="chip-leak" transform="translate(268 80)">
               <rect width="104" height="52" rx="11" fill="#FF006E" />
               <text x="52" y="24" textAnchor="middle" fontSize="20" fontWeight="800" fill="#fff" id="pv-leak" style={{ fontFamily: "var(--mdf-poppins), sans-serif" }}>−88</text>
-              <text x="52" y="40" textAnchor="middle" fontSize="9" letterSpacing="1.4" fill="#ffe1ee" style={{ fontFamily: "var(--mdf-dmmono), monospace" }}>SE FUGAN</text>
+              <text x="52" y="40" textAnchor="middle" fontSize="9.5" fontWeight="500" letterSpacing="1.4" fill="#fff" style={{ fontFamily: "var(--mdf-dmmono), monospace" }}>SE FUGAN</text>
             </g></g>
           </svg>{" "}
         </figure>
