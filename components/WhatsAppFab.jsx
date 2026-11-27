@@ -7,7 +7,7 @@ const HIDDEN_ON = ['/mapa-de-fugas']
 
 export default function WhatsAppFab() {
   const pathname = usePathname()
-  if (HIDDEN_ON.includes(pathname)) return null
+  if (HIDDEN_ON.includes(pathname) || pathname?.startsWith('/agenda-admin')) return null
   return (
     <a
       id="wa-fab"
